@@ -230,6 +230,35 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
 - Total: 2 CONFIRMED static-invisible findings so far (basis-cash Boardroom,
   harvest OUSD). Analyzer untouched; pytest/corpus unaffected.
 
+## Phase 3 sessions 3-4 (2026-08-04) — third protocol: credit-guild
+- Harness `invariant_projects/credit-guild/` (solc 0.8.13, evm london):
+  full Ethereum Credit Guild wiring — Core roles, CreditToken/GuildToken,
+  ProfitManager, RateLimitedMinter, AuctionHouse, two EIP-1167 LendingTerm
+  clones. Handler is core admin; terms/minter hold their protocol roles.
+  `test/CreditGuildHandler.sol`, `test/Invariants.t.sol`, `test/Smoke.t.sol`.
+- 7 invariants (credit/guild/collateral/gauge-weight/votes conservation +
+  issuance consistency + issuance-within-caps): **ALL HOLD** at runs=200/120,
+  `--fuzz-runs 1000`, and a stressed 1500/200 run. Fuzzer reaches every action
+  (~1300 actions/run, fail_on_revert=false).
+- 9 deterministic smoke tests all pass after triage (see invariant_results.md
+  for the wiring/semantics fixes: LendingTerm can't deploy directly -> verified
+  EIP-1167 bytes.concat clone; maxGauges=0 default blocks incrementGauge ->
+  setMaxGauges(10); ProfitManager needs CREDIT_MINTER/BURNER for the PnL loss
+  burn path; call() sets callTime not closeTime; partialRepay needs remaining >
+  minBorrow(100e18); forgive needs fully-elapsed auction; warpDays caps at 30d;
+  surplus buffer is a loss-absorber, not donor-reclaimable; gaugeWeightTolerance
+  raised to 2e18 so balanced gauges don't dead-cap 2nd borrows).
+- **run3 cross-check: all 41 credit-guild findings DISMISSED.** The 10 HIGH
+  reentrancy (ERC20Gauges/ERC20MultiVotes) are internal pure accounting (no
+  external calls); the 2 HIGH Timestamp + BadRandomness (loanId = keccak of
+  timestamp, an identifier) are design-intent; AccessControl `distribute` is
+  permissionless-by-design; StorageCollision/IntegerOverflow/ZeroAddress/
+  Uninitialized/FrontRunning/MEV are standard FPs. The green invariant suite is
+  independent corroboration for the reentrancy/timestamp dismissals.
+- Total: 2 CONFIRMED static-invisible findings (basis-cash, harvest OUSD);
+  credit-guild is the first clean high-value harness. Analyzer untouched;
+  pytest 21 passed / corpus 138/138 unaffected.
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.

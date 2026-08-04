@@ -2,6 +2,23 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #3 (2026-08-04, sessions 3-4)**: invariant testing on a
+> third protocol — **credit-guild** (Ethereum Credit Guild lending loop).
+> Harness `invariant_projects/credit-guild/` wires the full protocol (Core
+> roles, ProfitManager, RateLimitedMinter, AuctionHouse, two EIP-1167
+> LendingTerm clones) and fuzzes the whole borrow -> repay / call -> auction ->
+> bid|forgive -> PnL loop plus gauge voting and rebasing. Result: **all 7
+> invariants HOLD** (CREDIT/GUILD/collateral/gauge-weight/votes conservation,
+> issuance consistency and caps) at 200, 1000, and 1500 fuzz runs; 9/9 smoke
+> tests pass. No new finding — the first clean high-value harness. All 41 run3
+> credit-guild findings were then cross-checked and **DISMISSED**: the 10 HIGH
+> reentrancy reports (ERC20Gauges/ERC20MultiVotes) are internal pure state
+> accounting with no external calls, the 2 HIGH Timestamp + BadRandomness are
+> design-intent (block.timestamp is the protocol clock; the "random" loanId is
+> an identifier), `distribute` is permissionless-by-design, and the rest are
+> standard FPs — corroborated by the invariants holding across every gauge /
+> votes / PnL sequence. Full writeup: `invariant_results.md`.
+
 > **Phase 3 addendum #2 (2026-08-04, session 2)**: invariant testing extended
 > to a second protocol and cross-checked with a second fuzzer.
 > (a) **Echidna 2.3.3** independently reproduced the basis-cash Boardroom

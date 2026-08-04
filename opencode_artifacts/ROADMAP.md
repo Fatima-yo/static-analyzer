@@ -125,6 +125,18 @@ Phase 3 session 2 (2026-08-04) — both remaining steps DONE:
 - Third protocol harness (balancer-v2 / compound-v2 / credit-guild) remains
   the next slot; also optional echidna pass over harvest-ousd.
 
+Phase 3 sessions 3-4 (2026-08-04) — third protocol DONE (credit-guild):
+- Harness `invariant_projects/credit-guild/`: full ECG wiring, two EIP-1167
+  LendingTerm clones, 8 actors, all lending-loop actions fuzzable.
+- 7 invariants ALL HOLD (runs=200/120, 1000 fuzz-runs, stressed 1500/200);
+  9/9 smoke tests pass. No new finding — the first clean high-value harness.
+- All 41 run3 credit-guild findings cross-checked and DISMISSED (10 HIGH
+  reentrancy = internal pure accounting; 2 HIGH Timestamp + BadRandomness
+  loanId = design intent; AccessControl distribute = permissionless-by-design;
+  rest standard FPs). The green invariant suite corroborates those dismissals.
+- Next slots: 4th protocol harness (balancer-v2 / compound-v2) and/or an
+  echidna pass over harvest-ousd / credit-guild.
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 

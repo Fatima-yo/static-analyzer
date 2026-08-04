@@ -206,3 +206,123 @@ Invariants:
   delegation/negative-rebase finding confirmed with 2 deterministic repros.
 - Next: third protocol harness (balancer-v2, compound-v2, or credit-guild), or
   an echidna pass over harvest-ousd.
+
+---
+
+## Protocol 3: credit-guild (Ethereum Credit Guild lending loop) — sessions 3-4
+
+Harness: `invariant_projects/credit-guild/`
+- Vendored from the run1 full-code snapshot (`full_code/credit-guild/
+  Arbitrum_42161/0xb8ae64f...`): `src/core/Core{,.s}ol`,
+  `src/tokens/{CreditToken,GuildToken,ERC20Gauges,ERC20MultiVotes,
+  ERC20RebaseDistributor}.sol`, `src/governance/ProfitManager.sol`,
+  `src/loan/{LendingTerm,AuctionHouse}.sol`, `src/rate-limits/
+  RateLimitedMinter.sol`, OZ deps. solc 0.8.13, evm london, optimizer
+  runs=200; remappings `@openzeppelin/contracts/=`, `@src/=`.
+- `test/CreditGuildHandler.sol` — full ECG wiring: handler is Core
+  default-admin + GOVERNOR + gauge roles; ProfitManager gets CREDIT_MINTER/
+  BURNER (it mints/burns CREDIT when settling PnL — an easy wiring detail to
+  miss, surfaced by the smoke suite). Two `LendingTerm` EIP-1167 clones (the
+  implementation constructor bakes `core=address(1)` and `initialize` asserts
+  the proxy slot is 0, so direct deploys are impossible). LendingTerms hold
+  GAUGE_PNL_NOTIFIER + CREDIT_MINTER/BURNER + RATE_LIMITED_CREDIT_MINTER;
+  `RateLimitedMinter` additionally holds RATE_LIMITED_CREDIT_MINTER.
+  `guild.setMaxGauges(10)` (default 0 makes every `incrementGauge` revert);
+  `gaugeWeightTolerance` raised 1.2e18 -> 2e18 so a balanced 50/50 gauge
+  split doesn't cap every 2nd borrow at 60% of total issuance (dead fuzz
+  weight). 8 actors, 25k GUILD to each term (50/50), 100k CREDIT / 1M
+  collateral each, all rebasing.
+- Actions (each rolls block + warps +12s): borrow / addCollateral /
+  partialRepay / repay / call / bid / forgive / donateSurplus / increment/
+  decrementGauge / transferCredit / transferGuild / transferCollateral /
+  applyGaugeLoss / claimRewards / enterExitRebase / warpDays.
+- `test/Invariants.t.sol` — `CreditGuildInvariants`, 7 invariants:
+  creditConservation (sum of all protocol-held + actor balances == supply
+  within rebase rounding), guildConservation, gaugeWeightConservation
+  (user-sums == gauge weights; live == totalWeight/typeWeight; per-user
+  totals == sum), votesConservation (delegated == received),
+  collateralConservation (term balances == open-loan collateral + forgiven
+  stuck collateral), issuanceConsistency (ProfitManager ledger == terms),
+  issuanceWithinCaps.
+- `test/Smoke.t.sol` — 9 deterministic round-trips that pin the exact
+  protocol transitions and would have caught every wiring bug below.
+
+### Result: ALL 7 INVARIANTS HOLD
+- Green at default runs=200/depth=120 (~10s), at `--fuzz-runs 1000`, and at a
+  stressed runs=1500/depth=200 (~117s, config restored after). The fuzzer
+  reaches every action surface: over 1300 actions/run with ~15% borrowing and
+  every other action exercised. No invariant violation found.
+- This is the strongest signal yet for the lending loop: CREDIT/GUILD/
+  collateral/gauge-weight accounting, the PnL path (call -> auction -> bid /
+  forgive -> notifyPnL -> surplus buffer burn + creditMultiplier), and
+  issuance ledgers are all self-consistent under adversarial randomized
+  sequences. `fail_on_revert=false` keeps revert-heavy actions (e.g. calling
+  a healthy loan) from polluting the checks.
+
+### Smoke-suite wiring findings (fixed; protocol worked as intended)
+1. `LendingTerm` cannot be deployed directly (constructor bakes
+   `core=address(1)`); the hand-rolled solmate-style assembly clone silently
+   deploys zero-byte code under solc 0.8.13 — used the verified
+   bytes.concat EIP-1167 (55-byte) form instead.
+2. `ERC20Gauges.maxGauges` defaults to 0 -> every `incrementGauge` reverts
+   "exceed max gauges"; fixed with `setMaxGauges(10)`.
+3. ProfitManager needs CREDIT_MINTER + CREDIT_BURNER on the core: `notifyPnL`
+   loss path burns the surplus buffer; without the role the burn reverts
+   UNAUTHORIZED and the whole PnL settlement silently rolls back.
+4. `gaugeWeightTolerance` default 120% + 50/50 gauge split caps each term at
+   60% of total issuance: a 2nd loan on the same term always reverts "debt
+   ceiling reached" (dead fuzz weight). Raised to 200% in the harness.
+5. Protocol semantics that the smoke tests initially encoded wrong:
+   `call()` sets `callTime`, NOT `closeTime` (loan closes only at `onBid`);
+   `partialRepay` requires remaining principal > `ProfitManager.minBorrow()`
+   (100e18) — a 100e18 loan can never be partially repaid;
+   `forgive` requires the auction to have fully elapsed (creditAsked -> 0);
+   `warpDays` caps at 30 days per call (`%31`); the surplus buffer is a
+   loss-absorber, NOT a donor-reclaimable pool — `claimRewards` never pays a
+   donor back (assertion corrected).
+
+### Cross-reference with run3 static findings (credit-guild, 41 findings)
+- HIGH Reentrancy x10 (ERC20Gauges x7, ERC20MultiVotes x3): **DISMISSED** —
+  flagged lines are internal pure state accounting (`_incrementGaugeWeight`,
+  `_decrementGaugeWeight`, `_undelegate`, `_writeCheckpoint`); no external
+  calls to untrusted code (the analyzer over-approximates `emit`/hook calls).
+  Empirically consistent with the gauge/votes conservation invariants holding
+  across every increment/decrement/transfer/applyGaugeLoss sequence.
+- HIGH Timestamp x2 (ProfitManager:204, LendingTerm:450) + MEDIUM/LOW
+  Timestamp x8 (AuctionHouse, LendingTerm, ERC20MultiVotes,
+  ERC20RebaseDistributor): **DISMISSED** — `block.timestamp` is the protocol's
+  designed clock for interest accrual, auction phase timing, partial-repay
+  delays, and gauge-loss application deadlines; none is randomness for a
+  security-critical draw.
+- MEDIUM BadRandomness LendingTerm:459: **DISMISSED** —
+  `loanId = keccak256(abi.encode(borrower, term, block.timestamp))` is an
+  identifier, not lottery randomness; predictability of loan IDs is not
+  exploitable.
+- MEDIUM AccessControl ERC20RebaseDistributor:342 (`distribute`): **DISMISSED**
+  — permissionless by design: it burns the caller's own tokens and distributes
+  them proportionately to rebasing accounts.
+- MEDIUM StorageCollision x5 (ProfitManager, LendingTerm, CreditToken,
+  GuildToken, EIP712/CoreRef via inheritance): **DISMISSED** — standard
+  multi-inheritance linearization; the EIP-1167 clones run the implementation's
+  layout on their own storage and all state reads are consistent (the whole
+  invariant suite runs on those clones).
+- MEDIUM IntegerOverflow x3 (OZ ERC20 + ERC20RebaseDistributor): **DISMISSED**
+  — solc 0.8.13 arithmetic panics on overflow; no unchecked blocks.
+- MEDIUM Uninitialized EIP712 x2 / ZeroAddress CoreRef x2 / RateLimitedMinter
+  x4 / FrontRunning+MEV x5: **DISMISSED** — constructor-perm-configuration and
+  governance-bound rate-limit settings (e.g. zero-address core set at deploy,
+  rate limit governance-settable), no attacker-reachable impact.
+- **No credit-guild run3 finding was confirmed.** The lending-loop invariants
+  holding at scale is independent corroboration that the 10 reentrancy and 2
+  timestamp HIGHs are analyzer false positives.
+
+## Status (session 4)
+- basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
+- harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
+- credit-guild: full lending-loop harness GREEN (7/7 invariants at 200, 1000,
+  and 1500 runs; 9/9 smoke tests). No new finding; run3 findings cross-checked
+  (all dismissed).
+- Total: 2 CONFIRMED static-invisible findings across 3 protocols; credit-guild
+  is the first full high-value harness with a clean result.
+- Next: 4th protocol (balancer-v2 / compound-v2), or an echidna pass over
+  harvest-ousd / credit-guild.
