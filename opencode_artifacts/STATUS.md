@@ -201,6 +201,35 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   be internal; `allocateSeigniorage` pulls via transferFrom (approve first).
 - Analyzer untouched; pytest/corpus unaffected (docs only this session).
 
+## Phase 3 session 2 (2026-08-04) — Echidna cross-check + second protocol
+- **Echidna 2.3.3 pass over the basis-cash harness**: crytic-compile 0.4.2
+  installed in a dedicated venv; solc 0.6.12 wired into solc-select (crytic
+  prefers solc-select global over PATH). Verified echidna honors Foundry
+  `prank`/`startPrank`/`stopPrank`/`warp`/`roll`. `test/EchidnaBasisCash.sol` +
+  `echidna.yaml` (property mode, 50k tests, whitelisted action fns). Result:
+  `echidna_earnings_never_exceed_allocated` FAILED with the same 4-call shape
+  (`stake->stake->allocate->withdraw`); the other two pass. **Two independent
+  fuzzers agree** on the Boardroom phantom-reward finding.
+- **Second protocol: harvest OUSD** (`invariant_projects/harvest-ousd/`, solc
+  0.8.28): vendored OUSD + VaultStorage/Governable/OZ deps; `HarvestHandler.sol`
+  (handler is governor + vault; 8 actors; transfer/transferFrom/mint/burn/
+  changeSupply/rebaseOptIn/Out/governanceRebaseOptIn/delegateYield/
+  undelegateYield/warpDays); `OUSDHarness` exposes internal credit maps.
+- Invariants (4): sum(balances)<=supply; creditsConservation; nonRebasing-
+  Conservation; nonRebasing<=supply. At 200 AND 1000 runs: 3 HOLD, 1 fails.
+- **CONFIRMED finding #2 (MEDIUM, fund-lock DoS)**: OUSD yield delegation +
+  negative rebase. `delegateYield` freezes the source's credits and folds them
+  into the target; `balanceOf(target)` = rebased-combined - frozen-source-
+  credits (OUSD.sol:191-194). A `changeSupply` shrink raises cpt; once the
+  rebased combined value < frozen source credits, the subtraction underflows
+  (panic 0x11) and the target's account reverts on every read/transfer
+  (locked). Source is fully insulated; target absorbs the whole loss. Repro'd
+  deterministically (`test/Findings.t.sol`, 2 scenarios incl. double-halve with
+  no opt-out). Static-invisible (run3 harvest findings were SWC-114 approve +
+  a reentrancy borderline-FP — a different issue class entirely).
+- Total: 2 CONFIRMED static-invisible findings so far (basis-cash Boardroom,
+  harvest OUSD). Analyzer untouched; pytest/corpus unaffected.
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.

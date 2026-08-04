@@ -109,6 +109,22 @@ Goal: let a fuzzer find real bugs in real protocols.
 NEXT: second protocol harness (harvest-finance OUSD or compound-v2),
 Echidna pass over the basis-cash harness.
 
+Phase 3 session 2 (2026-08-04) — both remaining steps DONE:
+- Echidna 2.3.3 pass over basis-cash: `test/EchidnaBasisCash.sol` +
+  `echidna.yaml` (property mode, 50k tests). Independently reproduces the same
+  Boardroom finding (identical shrunk 4-call shape); other 2 invariants pass.
+  Two independent fuzzers agree.
+- Second protocol DONE: harvest OUSD (`invariant_projects/harvest-ousd/`,
+  solc 0.8.28). 4 invariants fuzzed (foundry): 3 HOLD at 1000 runs; 1 fails.
+- **CONFIRMED finding #2 (MEDIUM, fund-lock DoS)**: OUSD yield delegation +
+  negative rebase underflows `balanceOf(target)` (panic 0x11) — source credits
+  are frozen and folded into the target; a supply shrink raises cpt until the
+  subtraction underflows, locking the delegated account. 2 deterministic repros
+  in `test/Findings.t.sol`. Static-invisible (run3 harvest findings are a
+  different class: SWC-114 approve + reentrancy borderline-FP).
+- Third protocol harness (balancer-v2 / compound-v2 / credit-guild) remains
+  the next slot; also optional echidna pass over harvest-ousd.
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 

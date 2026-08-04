@@ -2,6 +2,21 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #2 (2026-08-04, session 2)**: invariant testing extended
+> to a second protocol and cross-checked with a second fuzzer.
+> (a) **Echidna 2.3.3** independently reproduced the basis-cash Boardroom
+> finding (identical shrunk 4-call counterexample). (b) **harvest OUSD** harness
+> (`invariant_projects/harvest-ousd/`) found a **second CONFIRMED,
+> analyzer-invisible flaw**: yield delegation + negative rebase underflows
+> `balanceOf` on the delegation target (MEDIUM, fund-lock DoS) — the source's
+> credits are frozen into the target at delegation, and a `changeSupply` shrink
+> raises `rebasingCreditsPerToken_` until the target's `balanceOf` subtraction
+> reverts, locking the account. Deterministic repros:
+> `harvest-ousd/test/Findings.t.sol`. run3 harvest findings (SWC-114 approve,
+> `_adjustAccount` reentrancy borderline-FP) are a different issue class — the
+> accounting bug was invisible to static analysis. Full writeup:
+> `invariant_results.md`.
+
 > **Phase 3 addendum (2026-08-04)**: invariant testing on basis-cash
 > (Phase 3, protocol 1) found a **CONFIRMED, analyzer-invisible accounting
 > flaw**: Boardroom phantom/retroactive reward inflation on `withdraw`

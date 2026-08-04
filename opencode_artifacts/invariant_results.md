@@ -1,6 +1,6 @@
 # Phase 3 — Invariant testing results
 
-Date: 2026-08-04 (Phase 3 session 1)
+Date: 2026-08-04 (Phase 3 sessions 1–2)
 
 ## Protocol 1: basis-cash (Boardroom reward accounting)
 
@@ -87,3 +87,122 @@ Tooling notes (foundry 1.7.1 + solc 0.6.12):
 - basis-cash invariant harness complete and committed. Finding documented.
 - Next: second protocol (harvest-finance or compound-v2) with the same
   handler+invariant pattern.
+
+---
+
+## Protocol 1 cross-check: Echidna on the basis-cash harness (session 2)
+
+Setup: echidna 2.3.3 (`~/.config/.foundry/bin/echidna`) + `crytic-compile`
+(0.4.2) in a dedicated venv (`/tmp/opencode/echidna_venv`). solc 0.6.12 wired
+into `solc-select` (`~/.solc-select/artifacts/solc-0.6.12/solc-0.6.12`) because
+crytic-compile prefers solc-select's global version over PATH.
+
+Harness additions:
+- `test/EchidnaBasisCash.sol` — composition wrapper over `BasisCashHandler`;
+  forwards the 5 fuzz actions and exposes 3 `echidna_*` view properties.
+- `echidna.yaml` — `testMode: property`, `testLimit: 50000`, `seqLen: 100`,
+  `filterBlacklist: false` with an explicit whitelist of the 5 action
+  functions (inherited-function names are matched by the derived contract name).
+
+Cheatcode support verified empirically before the campaign: echidna 2.3.3
+honors Foundry's `prank`, `startPrank`, `stopPrank`, `warp`, `roll` at address
+`0x7109709ECfa91a80626fF3989D68f67F5b1DD12D` (a probe contract confirmed each).
+
+Results (two seeds):
+- `echidna_earnings_never_exceed_allocated`: **FAILED** — independent
+  reproduction of the same Boardroom phantom-reward finding. Seed A shrunk to
+  the identical 4-call shape as foundry:
+  `actorStake(0,1) -> actorStake(1,1) -> allocateSeigniorage(2) ->
+  actorWithdraw(0,1)` (pending=2 + claimed=1 > allocated=2). Seed 12345 also
+  falsified it with a longer unshrunk sequence.
+- `echidna_no_reward_without_stake` and `echidna_share_books_balance`:
+  **passing** (50k tests / 100-deep sequences).
+
+Conclusion: two independent fuzzers (foundry 1.7.1 invariant mode and echidna
+2.3.3) agree on the same confirmed finding. No divergence.
+
+---
+
+## Protocol 2: harvest-finance OUSD (elastic-supply rebasing token)
+
+Harness: `invariant_projects/harvest-ousd/`
+- Vendored from the run1 `full_code` harvest snapshot
+  (implementation `0xd86756...`): `src/contracts/token/OUSD.sol` +
+  `interfaces/IVault|IStrategy|IBasicToken`, `vault/VaultStorage.sol`,
+  `governance/Governable.sol`, `utils/Initializable|Helpers.sol`, and the OZ
+  deps (SafeCast, SafeERC20, IERC20, Address). solc 0.8.28, remapping
+  `@openzeppelin/=src/openzeppelin/`.
+- `test/HarvestHandler.sol` — `OUSDHarness is OUSD` (exposes the `internal`
+  `creditBalances`/`alternativeCreditsPerToken` maps and `_setGovernor`; the
+  `private` `rebasingCredits_` is read via the public high-res getter) plus a
+  handler that is simultaneously the initial **governor** and the **vault**
+  (mint/burn/changeSupply role), with 8 EOA actors and fuzzable actions:
+  `actorTransfer`, `actorTransferFrom`, `vaultMint`, `vaultBurn`,
+  `vaultChangeSupply` (target in [cur/2, 1.5·cur]), `actorRebaseOptIn/Out`,
+  `governanceRebaseOptIn`, `delegateYield`, `undelegateYield`, `warpDays`.
+- `test/Invariants.t.sol` — `HarvestInvariants` (StdInvariant getter ABI, 8
+  senders) with four invariants; `test/Smoke.t.sol` — 7 deterministic round-trip
+  tests; `test/Findings.t.sol` — 2 deterministic repros.
+
+Invariants:
+1. `invariant_sumBalancesLeSupply` — sum(balanceOf(actors)) <= totalSupply.
+   **VIOLATED (via revert; CONFIRMED finding below).**
+2. `invariant_creditsConservation` — rebasingCredits_ == sum(creditBalances of
+   altCreditsPerToken==0 accounts). HOLDS (200 and 1000 runs).
+3. `invariant_nonRebasingConservation` — nonRebasingSupply == sum(balances of
+   StdNonRebasing accounts). HOLDS.
+4. `invariant_nonRebasingLeSupply` — nonRebasingSupply <= totalSupply. HOLDS.
+
+### CONFIRMED finding (MEDIUM, fund-lock DoS): yield delegation + negative rebase underflows the target
+
+- Location: `src/contracts/token/OUSD.sol` — `delegateYield()` (lines 632-694),
+  `balanceOf()` (lines 182-196), `changeSupply()` (lines 597-626).
+- Mechanism: `delegateYield` folds the source's credits into the target
+  (`creditBalances[target]` = combined, OUSD.sol:674-677) and FREEZES the
+  source's credits at its delegation-time balance (OUSD.sol:684-685). For a
+  YieldDelegationTarget, `balanceOf` = rebased-combined - frozen-source-credits
+  (OUSD.sol:191-194). A negative rebase (`changeSupply` shrink) raises
+  `rebasingCreditsPerToken_`; when the rebased combined value drops below the
+  frozen source credits, the subtraction underflows (panic 0x11) and every
+  `balanceOf`/`transfer`/`transferFrom` on the target reverts — the delegated
+  account is locked.
+- Threshold: with a 2-account delegation (source=target=100,000 OUSD, cpt 1e27),
+  underflow starts when totalSupply < ~400,000 OUSD (cpt > 2e27).
+- Fuzzer counterexample (shrunk to 3 calls): `actorTransferFrom(...) ->
+  delegateYield(0,238) -> vaultChangeSupply(4)`. Cleaner deterministic repros in
+  `test/Findings.t.sol`:
+  - `test_yieldDelegationNegativeRebaseLocksTarget`: delegate actor4->actor2,
+    actor6 opts out, halve supply (vaultChangeSupply(1228)); source keeps
+    100,000 OUSD (fully insulated), target's `balanceOf` reverts and a 1-wei
+    transfer from the target reverts too.
+  - `test_yieldDelegationDoubleHalveLocksTarget`: delegate + two halvings, no
+    opt-out needed (cpt 1e27 -> 2e27 -> 4e27 crosses the threshold).
+- Impact: the delegation target's account is bricked (funds locked) and the
+  negative rebase is absorbed asymmetrically (source keeps full value, target
+  bears the entire loss) — an accounting asymmetry, not just a rounding edge.
+  Requires a governor-initiated delegation plus a large (>~50% combined)
+  negative rebase, or repeated smaller shrinks.
+- Class: elastic-supply accounting. Invisible to static analysis: run3 flagged
+  only the `_adjustAccount` reentrancy angle (borderline FP) and never the
+  rebase-vs-delegation arithmetic. A second static-invisible confirmed finding.
+
+### Harness note (reported for completeness, not exploitable)
+- `changeSupply` reverts when `_newTotalSupply <= nonRebasingSupply`
+  (`totalSupply - nonRebasingSupply` underflow) or when `rebasingSupply == 0`
+  makes `(credits*1e18 + rebasingSupply - 1)` underflow. The production Vault
+  computes backing >= non-rebasing supply, so this is a defensive bound; the
+  handler guards `target <= nonRebasingSupply`.
+
+## Cross-reference with run3 static findings (harvest, 5 findings)
+- run3 harvest findings: `approve` allowance-overwrite (genuine, known
+  SWC-114) and `_adjustAccount` reentrancy (borderline FP — internal read-only
+  chain, no external value transfer). Neither is what invariant testing found.
+- The confirmed OUSD finding is a **third distinct issue class** (rebase /
+  delegation accounting) entirely outside the static detector's view.
+
+## Status (session 2)
+- basis-cash: foundry + echidna agree on the Boardroom finding.
+- harvest-ousd: harness complete; 3/4 invariants HOLD at 1000 runs; the
+  delegation/negative-rebase finding confirmed with 2 deterministic repros.
+- Next: third protocol harness (balancer-v2, compound-v2, or credit-guild), or
+  an echidna pass over harvest-ousd.
