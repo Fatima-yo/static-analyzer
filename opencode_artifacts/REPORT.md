@@ -2,6 +2,13 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum (2026-08-04)**: invariant testing on basis-cash
+> (Phase 3, protocol 1) found a **CONFIRMED, analyzer-invisible accounting
+> flaw**: Boardroom phantom/retroactive reward inflation on `withdraw`
+> (MEDIUM, fund-lock DoS). The static analyzer has zero Boardroom findings in
+> run3; the flaw is a cross-function arithmetic property only a fuzzer catches.
+> Full writeup: `invariant_results.md`.
+
 > **Phase 2 addendum (2026-08-04)**: this report documents the Phase 1 run over
 > the original 22-protocol corpus (121 findings). After the solc coverage-gap
 > fix the full 60-protocol TVL corpus was re-run: **44/60 protocols with

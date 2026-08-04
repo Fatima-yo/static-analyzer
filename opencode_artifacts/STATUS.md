@@ -182,6 +182,25 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   (447 findings, HIGH 178 / MEDIUM 205 / LOW 64, 44 protocols). The Phase 1
   v2 artifacts (HIGH 36/MED 62/LOW 23, 121) are superseded.
 
+## Phase 3 (2026-08-04) — invariant testing (first protocol: basis-cash)
+- Harness `invariant_projects/basis-cash/` (foundry 1.7.1, solc 0.6.12,
+  standalone handler, no forge-std): `test/BasisCashHandler.sol`,
+  `test/Invariants.t.sol`, `test/Findings.t.sol`; vendored basis-cash + OZ at
+  `src/`. Fuzz actions roll block + warp +12s per action (constant timestamps
+  are a harness artifact that over-credits all stakers retroactively).
+- Invariants: (1) earnings(claimed+pending) <= allocated — **VIOLATED**;
+  (2) no reward without stake — holds; (3) share books balance — holds.
+- **CONFIRMED finding (MEDIUM, fund-lock DoS)**: Boardroom `withdraw`/`stake`
+  rewrite the last snapshot's `totalShares` retroactively; remaining directors'
+  per-snapshot claims inflate past the cash the boardroom holds -> late
+  claimers' `claimDividends`/`withdraw` revert (stuck funds). Reproduced by
+  fuzzer (4-call counterexample, multiple seeds/runs) and deterministic
+  scenario. Details + cross-ref in `opencode_artifacts/invariant_results.md`.
+- Tooling learnings: solc 0.6.x `assert(false)` == INVALID opcode == Foundry
+  "InvalidFEOpcode" (use `require`+message); public fuzzable setup helpers must
+  be internal; `allocateSeigniorage` pulls via transferFrom (approve first).
+- Analyzer untouched; pytest/corpus unaffected (docs only this session).
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.

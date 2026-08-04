@@ -88,17 +88,26 @@ Phase 1 null result).
 ## Phase 3 — Invariant testing per protocol
 Goal: let a fuzzer find real bugs in real protocols.
 
-1. Install Echidna (and confirm Foundry from Phase 1).
+1. Install Echidna (and confirm Foundry from Phase 1). — DONE: Echidna 2.3.3 at
+   `~/.config/.foundry/bin/echidna`; Foundry 1.7.1.
 2. Pick protocols: basis-cash (known findings/shape) + one more to be chosen
    (candidates: harvest-finance OUSD, balancer-v2, compound-v2).
 3. Scaffold Foundry project per protocol; vendor contracts + deps; make compile.
+   — DONE for basis-cash (`invariant_projects/basis-cash/`).
 4. Invariant suites (foundry fuzz + echidna):
    - Accounting conserves: sum(balances) == totalSupply / rebasing credits math
    - CEI: no fund drain via reentrant callback
    - Reward-rate consistency: rate == totalRewards / duration; no early-exit abuse
    - Single-sided redemption / migration can't profit at protocol expense
    - Protocol can't lose value to msg.sender
+   — IN PROGRESS. basis-cash: 3 invariants fuzzed (foundry). One VIOLATED:
+     Boardroom phantom/retroactive reward inflation (see
+     `opencode_artifacts/invariant_results.md`). Echidna pass pending.
 5. Triage failures into real bugs; cross-reference analyzer findings.
+   — basis-cash finding triaged as CONFIRMED (MEDIUM, fund-lock DoS); not
+     visible to the static analyzer (no Boardroom findings in run3).
+NEXT: second protocol harness (harvest-finance OUSD or compound-v2),
+Echidna pass over the basis-cash harness.
 
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
