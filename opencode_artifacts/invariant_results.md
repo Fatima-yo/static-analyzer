@@ -395,18 +395,97 @@ activity invariant before being replaced).
 - **No compound-v2 run3 finding was confirmed**, consistent with all three
   invariants holding across the money-market loop.
 
-## Status (session 6)
+## Protocol 5: hundred-finance HundredBond — sessions 7-8
+
+Harness: `invariant_projects/hundred-bond/`
+- Vendored from the run1 full-code snapshot (`full_code/hundred-finance/
+  Polygon_137/0x636b5b572e5b6869d9d72124ebb67eca0babcaea/contracts/
+  HundredBond.sol`, the 92-line Polygon variant) + OZ 4.4.1 deps. solc 0.8.0,
+  optimizer runs=200, remapping `@openzeppelin/contracts/=src/`.
+- `test/Hnd.sol` — HND governance token, 1M ether minted to the handler (the
+  single accounting sink that every conservation invariant is measured
+  against). `test/MockEscrow.sol` — a veCRV-semantics `IVotingEscrow` mock:
+  `create_lock_for` (first lock, requires `end > now`) and `deposit_for`
+  (requires an existing lock) each pull `_value` HND from `msg.sender` (the
+  bond, which approves in the v2 path) via `transferFrom`.
+- `test/HundredBondHandler.sol` — the handler deploys HND -> MockEscrow ->
+  HundredBond so it is the bond's **owner** (owns all HND, approves the bond
+  once for `type(uint256).max`); 8 actor addresses; fuzzable `ownerMint`
+  (clamped to the owner's HND backing), `actorBurn` (clamped to the actor's
+  HNDb), `actorRedeem`, `warp` (cap 200 weeks so the mock's int128 lock
+  amounts can never approach their bound). All value flows are plain ERC20
+  `transferFrom`/`transfer` — there are **zero `.value()` cheatcodes**, so
+  the compound-v2 prank+value revert leak cannot recur by construction.
+- `test/Invariants.t.sol` — `HundredBondInvariants` (StdInvariant getter ABI,
+  8 senders) with three invariants; `test/Smoke.t.sol` — 9 deterministic tests.
+
+Invariants:
+1. `invariant_hndbIsBacked` — `hnd.balanceOf(bond) == bond.totalSupply()`
+   (every HNDb outstanding is backed 1:1 by HND sitting in the bond). HOLDS.
+2. `invariant_hndbSupply` — `totalSupply == sum of the 8 actors' balances`
+   (HNDb is a plain ERC20; only the owner mints to actors). HOLDS.
+3. `invariant_hndConservation` — owner/handler + bond + escrow + actors == the
+   initial 1M ether mint (HND is never created or destroyed). HOLDS.
+
+### Result: ALL 3 INVARIANTS HOLD
+- Green at default runs=200/depth=120 (~2s) and at runs=1000/depth=300 (~24s,
+  300k calls per invariant with ~2.5k swallowed reverts each — the reverts are
+  expired-lock redeems and no-backing mints, i.e. the fuzzer keeps hammering
+  the surfaces that revert). 9/9 smoke tests pass.
+- The Polygon v2 path is internally consistent: `mint` pulls backing 1:1
+  before `_mint`; `burn` burns HNDb then returns the backing to the owner;
+  `redeem` (create-lock then deposit) moves exactly `balance_` from the bond
+  to the escrow and burns `balance_` HNDb — supply and backing move in lockstep
+  under every adversarial sequence. No protocol flaw surfaced.
+
+### Design observations (documented via smoke tests, not invariant violations)
+1. **v1 escrow path is broken against veCRV-semantics escrows.** With
+   `escrow_is_v2 = false`, `redeem()` first does `hnd.transfer(beneficiary,
+   balance_)` (backing leaves the bond) and then calls
+   `escrow.deposit_for(beneficiary, balance_)`, which pulls `_value` from
+   `msg.sender` (the bond) — the bond never approves the escrow in this path,
+   and it no longer holds the HND anyway. `redeem()` **always reverts**.
+   `test_v1_redeem_always_reverts` pins this: even with a pre-existing
+   long-lived lock, redeem reverts atomically and the user's HNDb + the bond's
+   backing are untouched. Only relevant if a deployment sets `escrow_is_v2 =
+   false`; the Polygon deployment uses v2 (and Polygon's v2 path approves the
+   escrow; Moonriver's v2 path has no approve — see note below).
+2. **`burn` is an exit to the owner, not the user.** Burning HNDb returns the
+   backing to the owner (HundredBond.sol:49-52). A user who exits via burn
+   gets nothing; only `redeem` (locking HND into their escrow) returns value.
+   Combined with (3) below, a user whose lock expires has no profitable exit.
+3. **An expired escrow lock can never be re-locked through the bond.** The v2
+   `redeem` creates a lock only when `locked_.end == 0`; once a lock exists
+   and its `end` has passed, the `else` branch requires
+   `locked_.end >= now + bondUnlockDuration`, which can never hold again (no
+   extend call). The user's only option is `burn`, which gives the backing to
+   the owner — a UX/design fragility (in the real system the user can extend
+   the lock directly in the voting escrow, but the bond provides no path).
+4. **Moonriver variant**: identical except the v2 path omits `hnd.approve`
+   (Moonriver.sol:68/71-72). Against an escrow that pulls from `msg.sender`
+   this would also always revert; the production escrow there must pull from
+   `_addr` or hold a standing allowance. The escrow source is not in the
+   corpus, so this stays an observation.
+5. `rescueHnd` after 51 weeks drains the entire backing (HundredBond.sol:87-90)
+   — an emergency escape hatch by design; documented, not exposed to the fuzzer
+   (the invariants only hold pre-rescue).
+
+### Cross-reference with run3 static findings (hundred-finance, 0 findings)
+- `run3/hundred-finance.json` contains **0 findings**, so there is nothing to
+  cross-check. The three green invariants are independent confirmation that
+  the bond's HND/HNDb accounting is sound; the observations above are
+  structure-level (dead v1 path, exit asymmetry), not analyzer-visible.
+
+## Status (session 8)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
 - harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
-- credit-guild: full lending-loop harness GREEN (7/7 invariants at 200, 1000,
-  and 1500 runs; 9/9 smoke tests). No new finding; run3 findings cross-checked
-  (all dismissed).
-- compound-v2: CEther money-market harness GREEN (3/3 invariants at 200 and
-  1000 runs; 9/9 smoke tests). No new finding; the 7 run3 findings are all
-  dismissed (governance config + error-formatting noise). Root-caused a
-  **foundry prank+value revert leak** that cost a full 1e24 actor balance in
-  fuzz; fixed by moving to real Actor contracts (no value cheatcodes).
-- Total: 2 CONFIRMED static-invisible findings across 4 protocols; both
-  lending-loop harnesses (credit-guild, compound-v2) came back clean.
-- Next: 5th protocol (balancer-v2) or an echidna pass over the newer
+- credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
+- compound-v2: CEther money-market harness GREEN (3/3 invariants; 9/9 smoke).
+- hundred-bond: bond token-accounting harness GREEN (3/3 invariants at 200 and
+  1000 runs; 9/9 smoke tests). No new finding; run3 hundred-finance is empty
+  (0 findings). Two design observations (broken v1 escrow path; burn/exit
+  asymmetry) documented.
+- Total: **2 CONFIRMED static-invisible findings across 5 protocols**; three
+  clean harnesses (credit-guild, compound-v2, hundred-bond).
+- Next: 6th protocol (balancer-v2) or an echidna pass over the newer
   harnesses.

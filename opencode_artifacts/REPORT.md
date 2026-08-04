@@ -2,6 +2,28 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #5 (2026-08-04, sessions 7-8)**: invariant testing on a
+> fifth protocol — **hundred-finance HundredBond** (Polygon variant, solc
+> 0.8.0, vendored OZ 4.4.1). Harness `invariant_projects/hundred-bond/` wires
+> the owner-only `mint` (pulls HND backing 1:1 from the owner) / `burn`
+> (returns HND to the owner) / `redeem` (burns HNDb and locks the user's HND
+> into a mock veCRV-semantics `MockEscrow`) loop through a prank-routed handler
+> with 8 actors (no `.value()` cheatcodes anywhere). Result: **all 3 invariants
+> HOLD** — HNDb is backed 1:1 (`hnd.balanceOf(bond) == supply`), HNDb supply
+> equals the sum of holder balances, and HND is conserved across
+> owner/bond/escrow/actors (exactly 1M ether) — at 200 and 1000 fuzz runs
+> (300k calls per invariant); 9/9 smoke tests pass. No protocol flaw in the v2
+> path. Two design observations surfaced by the harness: (a) the **v1 escrow
+> path** (`escrow_is_v2=false`) makes `redeem()` **always revert** against a
+> veCRV-semantics escrow — it first `hnd.transfer`s the backing to the user,
+> then asks the escrow to `deposit_for` the same amount from the bond with no
+> `approve` (demonstrated by `test_v1_redeem_always_reverts`); (b) an exit via
+> `burn` pays the **owner**, not the user, and a user whose escrow lock has
+> expired can never `redeem` again (no re-lock path through the bond) — a
+> design-fragility / UX note, not a loss. run3 `hundred-finance.json` = 0
+> findings, so there is nothing to cross-check. Full writeup:
+> `invariant_results.md`.
+
 > **Phase 3 addendum #4 (2026-08-04, sessions 5-6)**: invariant testing on a
 > fourth protocol — **compound-v2** (CEther money market). Harness
 > `invariant_projects/compound-v2/` vendors the flattened 0.4.x `CEther.sol`,

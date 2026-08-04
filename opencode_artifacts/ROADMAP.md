@@ -152,6 +152,23 @@ Phase 3 sessions 5-6 (2026-08-04) — fourth protocol DONE (compound-v2):
 - Next slots: 5th protocol harness (balancer-v2) and/or an echidna pass over
   credit-guild / compound-v2.
 
+Phase 3 sessions 7-8 (2026-08-04) — fifth protocol DONE (hundred-finance):
+- Harness `invariant_projects/hundred-bond/`: vendored Polygon HundredBond
+  (solc 0.8.0, OZ 4.4.1), mock HND + veCRV-semantics MockEscrow, owner-routed
+  handler with 8 actors (no value cheatcodes — the compound-v2 prank+value
+  lesson applied by construction).
+- 3 invariants ALL HOLD (HNDb backing exact, HNDb supply exact, HND conserved
+  == 1M ether) at runs=200 and 1000/depth=300; 9/9 smoke tests pass. No
+  protocol flaw in the v2 path.
+- Design observations (not losses): the v1 escrow path makes `redeem()`
+  always revert against a veCRV-semantics escrow (transfers backing to the
+  user before the escrow pull, no approve — see
+  `test_v1_redeem_always_reverts`); `burn` pays the owner, not the user; a
+  user's expired escrow lock can never be redeemed again through the bond.
+- run3 `hundred-finance.json` = 0 findings (nothing to cross-check).
+- Next slots: 6th protocol harness (balancer-v2) and/or an echidna pass over
+  the newer harnesses.
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 

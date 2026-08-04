@@ -291,6 +291,39 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   lending/money-market harnesses (credit-guild, compound-v2) clean. Analyzer
   untouched; pytest 21 passed / corpus 138/138 unaffected.
 
+## Phase 3 sessions 7-8 (2026-08-04) — fifth protocol: hundred-finance HundredBond
+- Harness `invariant_projects/hundred-bond/` (solc 0.8.0, optimizer runs=200,
+  remapping `@openzeppelin/contracts/=src/`): vendored the Polygon variant
+  `HundredBond.sol` (92 lines, `escrow_is_v2` constructor flag, `escrow.approve`
+  in the v2 path) + OZ 4.4.1 deps; `test/Hnd.sol` (HND, 1M ether to the
+  handler), `test/MockEscrow.sol` (veCRV-semantics: `locked`/`deposit_for`/
+  `create_lock_for` pull from `msg.sender`), `test/HundredBondHandler.sol`
+  (handler IS the bond owner, approves the bond once; 8 actors; ownerMint /
+  actorBurn / actorRedeem / warp — all ERC20 flows, zero `.value()` cheatcodes,
+  so the compound-v2 prank+value trap cannot recur), `test/Invariants.t.sol`,
+  `test/Smoke.t.sol` (9 tests).
+- 3 invariants (hndbIsBacked exact, hndbSupply exact, hndConservation == 1M
+  ether): **ALL HOLD** at runs=200/depth=120 and runs=1000/depth=300 (300k
+  calls per invariant, ~2.5k swallowed reverts each — expired-lock redeems /
+  no-backing mints). 9/9 smoke tests pass, including `test_v1_redeem_always_reverts`.
+- **Design findings (not protocol losses)**: (a) the **v1 escrow path
+  (`escrow_is_v2=false`) makes `redeem()` always revert** against a
+  veCRV-semantics escrow — `hnd.transfer(beneficiary, balance_)` moves the
+  backing out of the bond, then `escrow.deposit_for` tries to pull the same
+  amount from the bond with no `approve` (HundredBond.sol:65-66); (b) `burn`
+  pays the **owner**, not the user, and once a user's escrow lock expires
+  `redeem` reverts forever (no re-lock path through the bond) — early/late
+  exit leaves the user's HND with the owner (design choice / UX fragility,
+  not theft); (c) `rescueHnd` after 51 weeks drains the whole backing (by
+  design; documented, not fuzzable).
+- **run3 cross-check: `run3/hundred-finance.json` has 0 findings** — nothing
+  to cross-check; the invariant suite is independent confirmation that the v2
+  token accounting is sound.
+- Total: 2 CONFIRMED static-invisible findings across 5 protocols
+  (basis-cash, harvest-ousd); three clean high-value harnesses (credit-guild,
+  compound-v2, hundred-bond). Analyzer untouched; pytest 21 passed / corpus
+  138/138 unaffected.
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.
