@@ -169,6 +169,25 @@ Phase 3 sessions 7-8 (2026-08-04) — fifth protocol DONE (hundred-finance):
 - Next slots: 6th protocol harness (balancer-v2) and/or an echidna pass over
   the newer harnesses.
 
+Phase 3 sessions 9-10 (2026-08-04) — sixth protocol DONE (balancer-v2):
+- Harness `invariant_projects/balancer-v2/`: vendored the full Vault corpus
+  (solc 0.7.6, pure ERC20) with 2 constant-product MINIMAL_SWAP_INFO mock
+  pools, a permissive authorizer, 3 flash-loan recipients (repay / no-repay /
+  under-repay) and 8 pranked actors; all swap/join/exit/flash-loan/
+  internal-balance actions fuzzable.
+- 8 invariants (token conservation exact, vault-ledger exact — physical
+  vault balance == pool virtual cash + internal balances — and pool-share
+  conservation) ALL HOLD at 200 and 1000 runs (300k calls/invariant); 8/8
+  smoke tests pass. Teeth-check: removing the internal-balance credit in
+  `UserBalance._depositToInternalBalance` makes all 3 ledger invariants FAIL,
+  so they demonstrably catch internal-accounting bugs.
+- All 19 run3 balancer-v2 findings DISMISSED — the guarded-subtraction
+  flashLoan/pool-balance/asset-transfer/swap-index paths were exercised green
+  (flashLoan under-repay/no-repay reverts hit `BAL#515` atomically); the 2
+  ZeroAddress are authenticate-gated governance + a constructor-only param.
+- Next slots: 7th protocol harness (lido / ionic-protocol / rocket-pool) and/or
+  an echidna pass over the newer harnesses.
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 

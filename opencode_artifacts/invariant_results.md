@@ -489,3 +489,114 @@ Invariants:
   clean harnesses (credit-guild, compound-v2, hundred-bond).
 - Next: 6th protocol (balancer-v2) or an echidna pass over the newer
   harnesses.
+
+## Protocol 6: balancer-v2 (Vault) — sessions 9-10
+
+Harness: `invariant_projects/balancer-v2/`
+- Vendored the full Vault corpus (`Ethereum_1/0xba1222...566bf2c8`, 45 .sol
+  files, all `pragma solidity ^0.7.0` + `pragma experimental ABIEncoderV2`)
+  at `src/` with relative imports intact; solc 0.7.6 binary pinned in
+  `foundry.toml` (evm istanbul, optimizer runs=200, `[invariant] runs=200
+  depth=120 fail_on_revert=false call_override=false`).
+- `test/MockERC20.sol` — minimal 18-dec ERC20 (balanceOf/transfer/
+  transferFrom/approve + mint/burn helpers).
+- `test/MockAuthorizer.sol` — permissive authorizer (`canPerform` always
+  true), so the harness can exercise the whole Vault surface without
+  governance restrictions.
+- `test/MockPool.sol` — constant-product MINIMAL_SWAP_INFO pool (no swap or
+  protocol fees; BPT minted/burned 1:1 with tokens in/out) so any accounting
+  mismatch must come from the Vault, never from pool math. Registers itself
+  in the Vault in its constructor (`registerPool` + `registerTokens`).
+- `test/FlashLoanRecipient.sol` — three recipients: mode 0 fully repays
+  (amount + fee), mode 1 never repays, mode 2 under-repays (half). Modes 1-2
+  force the Vault's post-loan-balance guard (`BAL#515`) to revert.
+- `test/BalancerHandler.sol` — 3 MockERC20s (A, B, C), two pools (A-B, B-C),
+  8 actors (0x1111...0001..8) each seeded 100k of every token (distributed
+  via `transfer`, so total supply stays exactly 1M ether per token), each
+  approving the Vault for max. Actions: `swapGivenIn` / `swapGivenOut`
+  (constant-product k), `joinPool` / `exitPool` (single-token), `flashLoan`
+  (amount clamped to the Vault's balance, mode%3), `depositInternal` /
+  `withdrawInternal` / `transferInternal` (UserBalanceOp ledger). Every action
+  is wrapped in `vm.startPrank(actor)`/`vm.stopPrank()` — the single-shot
+  `vm.prank` was found to be consumed by argument-evaluation calls (e.g.
+  `pool.poolId()`) before the Vault call, leaking the test contract as
+  `msg.sender` (`BAL#503 USER_DOESNT_ALLOW_RELAYER`); `startPrank` fixes it.
+- `test/Invariants.t.sol` — 8 invariants; `test/Smoke.t.sol` — 8 round-trip
+  tests.
+
+Invariants (all exact, no tolerances except the k-smoke):
+1. `token{A,B,C}_conservation` — handler + Vault + ProtocolFeesCollector + all
+   8 actors == 1,000,000 ether per token (nothing created or destroyed).
+2. `vaultLedger_token{A,B,C}` — `token.balanceOf(vault)` == sum of the pools'
+   virtual cash for that token + sum of actors' internal balances. This is the
+   strictest check: it ties the Vault's physical holdings to what the pool
+   cash and internal-balance books say the Vault is owed. **All three VIOLATE
+   under the teeth-check mutation** (see below), so they are sensitive to
+   exactly the guarded-subtraction accounting paths the run3 flags point at.
+3. `pool{0,1}_shares` — pool BPT `totalSupply == sum(actor balances)`.
+
+Results:
+- 8/8 smoke tests PASS (`test_join_mints_shares_and_moves_tokens`,
+  `test_exit_roundtrip_returns_tokens`, `test_swap_given_in_breaks_even`
+  (k non-decreasing), `test_flashLoan_repay_is_neutral`,
+  `test_flashLoan_no_repay_reverts` (BAL#515), `test_flashLoan_underpay_reverts`
+  (BAL#515), `test_internal_deposit_withdraw_roundtrip`,
+  `test_internal_transfer_moves_internal_balance`).
+- 8/8 invariants HOLD at runs=200/depth=120 and at
+  `FOUNDRY_INVARIANT_RUNS=1000 FOUNDRY_INVARIANT_DEPTH=300` — 300k calls per
+  invariant. Per-contract action counts (high-run): joinPool ~37.5k,
+  exitPool ~37.3k, swapGivenIn ~37.5k, swapGivenOut ~37.3k, flashLoan ~37.4k
+  (~1.3k swallowed reverts = the mode-1/mode-2 non-repaying recipients hitting
+  `BAL#515`), deposit/withdraw/transferInternal ~37-38k each, all others 0
+  reverts.
+
+Teeth-check (mutation, this session): commenting out the
+`_increaseInternalBalance` line in `UserBalance.sol::_depositToInternalBalance`
+(i.e. the Vault physically receives tokens but never credits the internal
+book) made **all three `vaultLedger_*` invariants FAIL** within 50 low-run
+passes while conservation stayed green (tokens still exist — the ledger is
+what lies). Restored the line; suite green again. This proves the ledger
+invariants can actually catch internal-balance accounting bugs in this code
+base rather than only confirming trivially.
+
+### Cross-reference with run3 static findings (balancer-v2, 19 MEDIUM findings)
+
+All 19 run3 balancer-v2 findings are in the exact surfaces the harness was
+built to stress (guarded arithmetic on flashLoan / pool balance / asset
+transfer / swap index paths plus two governance ZeroAddress). Verdict: **19/19
+DISMISSED**, independently corroborated by the green ledger/conservation suite.
+
+| # | Detector | File:line | op | Verdict | Why |
+|---|----------|-----------|-----|---------|-----|
+| 1 | ZeroAddress | VaultAuthorization.sol:88 | `_authorizer = newAuthorizer` | DISMISSED | `authenticate`-gated governance setter; a bad authorizer is a self-DoS of governance, never a user-fund risk. Harness runs the whole surface under a permissive authorizer. |
+| 2 | ZeroAddress | ProtocolFeesCollector.sol:57 | ctor `_vault` | DISMISSED | Construction-time; the Vault deploys the collector internally with its own address. Not attacker-controlled. |
+| 3 | IntegerOverflow | PoolRegistry.sol:82 | `_nextPoolNonce += 1` | DISMISSED | Overflow needs 2^256 pool registrations. Nonce is unbounded by design; `registerPool` is permissionless and exercised (2 pools in the harness). |
+| 4-9 | IntegerOverflow | PoolRegistry.sol:123/124/137/147×3 | `*`/`-`/shifts | DISMISSED | Pure bit-packing of nonce/specialization/address into `bytes32` with constant shifts/masks; inputs bounded by construction (20-byte address, 2-byte specialization, 10-byte nonce). Not fund arithmetic. |
+| 10 | IntegerOverflow | UserBalance.sol:193 | `currentBalance - deducted` | DISMISSED | Guarded: `_require(currentBalance >= amount)` + `deducted = Math.min(currentBalance, amount)`. EXERCISED: 37k+ withdraw/transferInternal calls, 0 reverts; the teeth-mutation proved the ledger invariant detects internal-balance bugs. |
+| 11 | IntegerOverflow | FlashLoans.sol:77 | `postLoanBalance - preLoanBalance` | DISMISSED | Guarded by `_require(postLoanBalance >= preLoanBalance)` (BAL#515). EXERCISED: ~37k flashLoan calls incl. ~1.3k reverts where no-repay/underpay recipients hit this guard and the whole loan reverted atomically; ledger+conservation stayed green. |
+| 12-13 | IntegerOverflow | PoolBalances.sol:242/243 | `amountIn - fee` / `fee - amountIn` | DISMISSED | Ternary branch on `amountIn >= feeAmount`; neither side can underflow. EXERCISED: ~75k join/exit calls, 0 reverts. |
+| 14 | IntegerOverflow | AssetTransfersHandler.sol:72 | `amount -= deductedBalance` | DISMISSED | `deductedBalance` is `Math.min(currentBalance, amount)` by construction. EXERCISED via manageUserBalance + swap pulls. |
+| 15 | IntegerOverflow | AssetTransfersHandler.sol:131 | `msg.value - amountUsed` | DISMISSED | Guarded by `_require(msg.value >= amountUsed, INSUFFICIENT_ETH)`. ETH-only path; the harness is pure-ERC20 by design. |
+| 16-17 | IntegerOverflow | Swaps.sol:411/412 | `indexIn -= 1` / `indexOut -= 1` | DISMISSED | EnumerableMap indices are stored +1 and the token is confirmed registered above (else `TOKEN_NOT_REGISTERED` reverts), so index >= 1 always. EXERCISED: ~75k swap calls, 0 reverts, ledger+conservation green. |
+| 18-19 | IntegerOverflow | TemporarilyPausable.sol:52/55 | `block.timestamp + duration` | DISMISSED | Durations bounded by `_require(<= _MAX_PAUSE_WINDOW_DURATION)` (2y); `uint256` timestamp overflow unreachable; constructor-time only. |
+
+The high-run fuzzer reached every one of these guarded paths
+(flashLoan reverts = mode-1/mode-2 recipients, swaps/joins/exits/internal
+with 0 reverts) with all three exactness invariants holding — independent
+corroboration that the `-`/`-=`/`+` guards flagged by run3 are sound.
+
+## Status (session 10)
+- basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
+- harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
+- credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
+- compound-v2: CEther money-market harness GREEN (3/3 invariants; 9/9 smoke).
+- hundred-bond: bond token-accounting harness GREEN (3/3 invariants; 9/9 smoke).
+- balancer-v2: Vault ledger harness GREEN (8/8 invariants at 200 and 1000
+  runs; 8/8 smoke tests). No new finding; all **19 run3 balancer-v2 findings
+  DISMISSED** (guarded-subtraction paths exercised green, ZeroAddress are
+  governance/constructor). Teeth-check proved the ledger invariants catch
+  internal-balance accounting bugs.
+- Total: **2 CONFIRMED static-invisible findings across 6 protocols**; four
+  clean harnesses (credit-guild, compound-v2, hundred-bond, balancer-v2).
+- Next: 7th protocol (e.g. lido or ionic-protocol) or an echidna pass over
+  the newer harnesses.

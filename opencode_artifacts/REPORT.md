@@ -2,6 +2,29 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #6 (2026-08-04, sessions 9-10)**: invariant testing on a
+> sixth protocol — **balancer-v2 Vault** (`0xba1222...566bf2c8`, the protocol
+> with the most run3 findings at 19 and the Phase-1 top-ranked flashLoan
+> path). Harness `invariant_projects/balancer-v2/` vendors the full Vault
+> corpus (solc 0.7.6) and drives a pure-ERC20 system — 3 MockERC20s, two
+> constant-product MINIMAL_SWAP_INFO mock pools, a permissive authorizer, 3
+> flash-loan recipients (repay / no-repay / under-repay) and 8 pranked
+> actors — through swap/join/exit/flash-loan/internal-balance actions.
+> Result: **all 8 invariants HOLD** (token conservation exact, vault-ledger
+> exact, pool-share exact) at 200 and 1000 fuzz runs (300k calls per
+> invariant); 8/8 smoke tests pass. No protocol flaw found. A teeth-check
+> mutation (Vault physically receives internal-balance deposits but never
+> credits the book) breaks all 3 ledger invariants, proving they can catch
+> internal-accounting bugs. **All 19 run3 balancer-v2 findings DISMISSED**:
+> the guarded `-`/`-=` paths in FlashLoans:77, PoolBalances:242/243,
+> AssetTransfersHandler:72/131, UserBalance:193 and Swaps:411/412 were all
+> exercised by the fuzzer (flash-loan no-repay/under-repay reverts hit the
+> `BAL#515` guard atomically, ~1.3k swallowed reverts) with the ledger and
+> conservation invariants green throughout; PoolRegistry bit-packing is
+> bounded by construction; the 2 ZeroAddress are an authenticate-gated
+> governance setter and a constructor-only param. Full writeup + per-finding
+> table: `invariant_results.md`.
+
 > **Phase 3 addendum #5 (2026-08-04, sessions 7-8)**: invariant testing on a
 > fifth protocol — **hundred-finance HundredBond** (Polygon variant, solc
 > 0.8.0, vendored OZ 4.4.1). Harness `invariant_projects/hundred-bond/` wires

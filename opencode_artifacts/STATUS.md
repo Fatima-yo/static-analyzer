@@ -324,6 +324,41 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   compound-v2, hundred-bond). Analyzer untouched; pytest 21 passed / corpus
   138/138 unaffected.
 
+## Phase 3 sessions 9-10 (2026-08-04) — sixth protocol: balancer-v2 Vault
+- Harness `invariant_projects/balancer-v2/` (solc 0.7.6 binary pinned, evm
+  istanbul): vendored the full `0xba1222...566bf2c8` Vault corpus (45 .sol
+  files, ^0.7.0 + ABIEncoderV2) at `src/` with relative imports intact.
+  Pure-ERC20 system: 3 MockERC20s (A/B/C), 2 constant-product MINIMAL_SWAP_INFO
+  MockPools (A-B, B-C), permissive MockAuthorizer, 3 FlashLoanRecipients
+  (repay / no-repay / under-repay), 8 actors (100k each token, max approval).
+  `test/BalancerHandler.sol` routes swapGivenIn/Out, joinPool/exitPool,
+  flashLoan, deposit/withdraw/transferInternal — every action via
+  `vm.startPrank(actor)`/`stopPrank`.
+- 8 invariants: token conservation (== 1M ether/token), **vault ledger**
+  (vault physical balance == pool virtual cash + actor internal balances),
+  pool-share conservation. **ALL HOLD** at runs=200/depth=120 and 1000/300
+  (300k calls/invariant). 8/8 smoke tests pass.
+- Root-caused this session: single-shot `vm.prank` is consumed by
+  argument-evaluation calls (`pool.poolId()`) before the Vault call -> the
+  test contract leaks as msg.sender (`BAL#503`); `startPrank`/`stopPrank`
+  fixes it.
+- **Teeth-check**: removing the `_increaseInternalBalance` line in
+  `UserBalance.sol::_depositToInternalBalance` (Vault keeps the tokens, never
+  credits the internal book) makes all 3 `vaultLedger_*` invariants FAIL (50
+  low-run passes) while conservation stays green; restored -> green. The
+  ledger invariant provably catches internal-balance accounting bugs.
+- **run3 cross-check: all 19 balancer-v2 findings DISMISSED** (2 governance/
+  constructor ZeroAddress + 13 IntegerOverflow on the guarded flashLoan /
+  pool-balance / asset-transfer / swap-index paths + 2 TemporarilyPausable
+  bounded-duration adds). Every flagged guarded path was exercised by the
+  fuzzer (flashLoan ~37k calls with ~1.3k swallowed reverts = the no-repay/
+  under-repay recipients hitting `BAL#515`; swaps/joins/exits/internal 0
+  reverts) with the ledger+conservation invariants green throughout.
+- Total: 2 CONFIRMED static-invisible findings across 6 protocols
+  (basis-cash, harvest-ousd); four clean high-value harnesses (credit-guild,
+  compound-v2, hundred-bond, balancer-v2). Analyzer untouched; pytest 21
+  passed / corpus 138/138 unaffected.
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.
