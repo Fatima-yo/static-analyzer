@@ -41,10 +41,9 @@ class TestComprehensiveDetectors:
                 owner = msg.sender;
             }
             
-            // VULNERABLE: Missing access control
-            function withdraw(uint256 amount) public {
-                balance -= amount;
-                payable(msg.sender).transfer(amount);
+            // VULNERABLE: Missing access control (privileged setter, no guard)
+            function setBalance(uint256 newBalance) public {
+                balance = newBalance;
             }
             
             // VULNERABLE: Using tx.origin for authorization
@@ -139,7 +138,7 @@ class TestComprehensiveDetectors:
             
             // VULNERABLE: Using block.timestamp for time-based logic
             function canUpdate() public view returns (bool) {
-                return block.timestamp >= 1000;
+                return block.timestamp == 1000;
             }
         }
         """
@@ -241,11 +240,15 @@ class TestComprehensiveDetectors:
         pragma solidity ^0.8.0;
         
         contract UninitializedVulnerable {
-            // VULNERABLE: Uninitialized storage variable
+            // VULNERABLE: Uninitialized storage variable, later read
             uint256 public uninitializedValue;
             
-            // VULNERABLE: Uninitialized storage variable
+            // VULNERABLE: Uninitialized storage variable, later read
             address public uninitializedAddress;
+            
+            function read() public view returns (uint256, address) {
+                return (uninitializedValue, uninitializedAddress);
+            }
         }
         """
         
@@ -532,11 +535,21 @@ class TestComprehensiveDetectors:
         // SPDX-License-Identifier: MIT
         pragma solidity ^0.8.0;
         
-        contract StorageCollisionVulnerable {
-            // VULNERABLE: Storage collision in upgradeable contracts
-            uint256 public value;
-            address public owner;
-            mapping(address => uint256) public balances;
+        contract BaseA {
+            uint256 public valueA;
+            address public ownerA;
+            
+            function initialize() public {
+                valueA = 1;
+            }
+        }
+        
+        contract BaseB {
+            mapping(address => uint256) public balancesB;
+        }
+        
+        contract StorageCollisionVulnerable is BaseA, BaseB {
+            uint256 public combined;
         }
         """
         
@@ -629,9 +642,20 @@ class TestComprehensiveDetectors:
                 payable(to).transfer(amount);
             }
             
+            // VULNERABLE: Unprotected privileged setter
+            function setBalance(uint256 x) public {
+                balance = x;
+            }
+            
+            // VULNERABLE: Address param stored into state without zero check
+            address public feeRecipient;
+            function setFeeRecipient(address recipient) public {
+                feeRecipient = recipient;
+            }
+            
             // Timestamp dependence
             function timeBased() public {
-                if (block.timestamp > 1000) {
+                if (block.timestamp == 1000) {
                     // Do something
                 }
             }

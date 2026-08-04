@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_factory, _WETH] without a zero-address check.",
+    "line_number": 238,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/uniswap-v2/Ethereum_1/0x7a250d5630b4cf539739df2c5dacb4c659f2488d/UniswapV2Router02.sol",
+    "source_code": "9061:109:0"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "MEDIUM",
+    "message": "Oracle read ('getamountsout') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 476,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/uniswap-v2/Ethereum_1/0x7a250d5630b4cf539739df2c5dacb4c659f2488d/UniswapV2Router02.sol",
+    "source_code": "19103:56:0"
+  }
+]

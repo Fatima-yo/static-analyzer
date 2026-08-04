@@ -1,0 +1,330 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 234,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8114:23:6"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 259,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8899:28:6"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 287,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "9883:22:6"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_nameFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2542:28:20"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_versionFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2576:31:20"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_token] without a zero-address check.",
+    "line_number": 26,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/rate-limits/RateLimitedMinter.sol",
+    "source_code": "1016:352:34"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 45,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/rate-limits/RateLimitedMinter.sol",
+    "source_code": "1590:196:34"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 45,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/rate-limits/RateLimitedMinter.sol",
+    "source_code": "1590:196:34"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [coreAddress] without a zero-address check.",
+    "line_number": 19,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/core/CoreRef.sol",
+    "source_code": "601:75:28"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setCore' uses address parameter(s) [newCore] without a zero-address check.",
+    "line_number": 49,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/core/CoreRef.sol",
+    "source_code": "1572:168:28"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'ProfitManager' inherits from multiple state-bearing base contracts (CoreRef, Pausable); verify storage layout ordering.",
+    "line_number": 29,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/governance/ProfitManager.sol",
+    "source_code": "1257:20504:30"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "HIGH",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 204,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/governance/ProfitManager.sol",
+    "source_code": "9250:1083:30"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'claimGaugeRewards' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 444,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/governance/ProfitManager.sol",
+    "source_code": "18854:1005:30"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'claimGaugeRewards' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 444,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/governance/ProfitManager.sol",
+    "source_code": "18854:1005:30"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 82,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/AuctionHouse.sol",
+    "source_code": "3104:1442:31"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 128,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/AuctionHouse.sol",
+    "source_code": "4841:2934:31"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'LendingTerm' inherits from multiple state-bearing base contracts (CoreRef, Pausable); verify storage layout ordering.",
+    "line_number": 20,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "987:36455:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 337,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "13046:613:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "HIGH",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 450,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "18634:2783:32"
+  },
+  {
+    "detector": "BadRandomness",
+    "severity": "MEDIUM",
+    "message": "Predictable randomness from block data (hash). Randomness derived from blockhash/timestamp/number/difficulty is manipulable by miners and can be gamed.",
+    "line_number": 459,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "18963:85:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 613,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "23704:2657:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 692,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "26585:2131:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 760,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/loan/LendingTerm.sol",
+    "source_code": "29045:1671:32"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'CreditToken' inherits from multiple state-bearing base contracts (CoreRef, Pausable, ERC20, ERC20MultiVotes, ERC20Permit, EIP712, ERC20RebaseDistributor); verify storage layout ordering.",
+    "line_number": 18,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/CreditToken.sol",
+    "source_code": "681:4404:36"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 39,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/CreditToken.sol",
+    "source_code": "1219:133:36"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 39,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/CreditToken.sol",
+    "source_code": "1219:133:36"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 148,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20MultiVotes.sol",
+    "source_code": "5999:484:38"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 390,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20MultiVotes.sol",
+    "source_code": "14865:39:38"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 414,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20MultiVotes.sol",
+    "source_code": "15686:186:38"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 477,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20MultiVotes.sol",
+    "source_code": "17880:25:38"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'GuildToken' inherits from multiple state-bearing base contracts (CoreRef, Pausable, ERC20, ERC20Gauges, ERC20MultiVotes, ERC20Permit, EIP712); verify storage layout ordering.",
+    "line_number": 37,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/GuildToken.sol",
+    "source_code": "1930:10500:40"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 214,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "9673:26:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 285,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "12021:33:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 302,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "12585:31:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 335,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "13722:33:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 378,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "15418:31:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 406,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "16414:23:37"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 489,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20Gauges.sol",
+    "source_code": "19364:26:37"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 132,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20RebaseDistributor.sol",
+    "source_code": "6346:958:39"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 174,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20RebaseDistributor.sol",
+    "source_code": "8216:28:39"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'distribute' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 342,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/credit-guild/Arbitrum_42161/0xb8ae64f191f829fc00a4e923d460a8f2e0ba3978/src/tokens/ERC20RebaseDistributor.sol",
+    "source_code": "15537:2351:39"
+  }
+]

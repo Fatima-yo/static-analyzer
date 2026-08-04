@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_proxy] without a zero-address check.",
+    "line_number": 1070,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/convex-finance/Ethereum_1/0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b/ConvexToken.sol",
+    "source_code": "39470:241:0"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'updateOperator' appears to perform a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 1083,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/convex-finance/Ethereum_1/0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b/ConvexToken.sol",
+    "source_code": "39780:91:0"
+  }
+]

@@ -1,0 +1,146 @@
+[
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'AddressesProvider' inherits from multiple state-bearing base contracts (SafeOwnableUpgradeable, OwnableUpgradeable, Initializable, Initializable, ContextUpgradeable, ContextUpgradeable, OwnableUpgradeable, SafeOwnableUpgradeable); verify storage layout ordering.",
+    "line_number": 12,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "404:5467:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFlywheelRewards' uses address parameter(s) [flywheelRewardsModule] without a zero-address check.",
+    "line_number": 65,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "2021:240:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setPlugin' uses address parameter(s) [plugin] without a zero-address check.",
+    "line_number": 79,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "2537:181:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setRedemptionStrategy' uses address parameter(s) [strategy, outputToken] without a zero-address check.",
+    "line_number": 93,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "3002:264:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFundingStrategy' uses address parameter(s) [strategy, inputToken] without a zero-address check.",
+    "line_number": 112,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "3693:253:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setAddress' uses address parameter(s) [newAddress] without a zero-address check.",
+    "line_number": 150,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "4984:117:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setBalancerPoolForTokens' uses address parameter(s) [pool] without a zero-address check.",
+    "line_number": 170,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/AddressesProvider.sol",
+    "source_code": "5506:188:14"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPendingOwner' uses address parameter(s) [newPendingOwner] without a zero-address check.",
+    "line_number": 51,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/SafeOwnableUpgradeable.sol",
+    "source_code": "1602:386:15"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'transferOwnership' uses address parameter(s) [newOwner] without a zero-address check.",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Optimism_10/0xb0033576a9e444dd801d5b69e1b63dbc459a6115/implementation/0x8d5b096c99b26d07c7f8d8a8f25be97427687f73/contracts/ionic/SafeOwnableUpgradeable.sol",
+    "source_code": "2839:155:15"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'AddressesProvider' inherits from multiple state-bearing base contracts (SafeOwnableUpgradeable, OwnableUpgradeable, Initializable, Initializable, ContextUpgradeable, ContextUpgradeable, OwnableUpgradeable, SafeOwnableUpgradeable); verify storage layout ordering.",
+    "line_number": 12,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "404:5467:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFlywheelRewards' uses address parameter(s) [flywheelRewardsModule] without a zero-address check.",
+    "line_number": 65,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "2021:240:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setPlugin' uses address parameter(s) [plugin] without a zero-address check.",
+    "line_number": 79,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "2537:181:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setRedemptionStrategy' uses address parameter(s) [strategy, outputToken] without a zero-address check.",
+    "line_number": 93,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "3002:264:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFundingStrategy' uses address parameter(s) [strategy, inputToken] without a zero-address check.",
+    "line_number": 112,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "3693:253:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setAddress' uses address parameter(s) [newAddress] without a zero-address check.",
+    "line_number": 150,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "4984:117:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setBalancerPoolForTokens' uses address parameter(s) [pool] without a zero-address check.",
+    "line_number": 170,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/AddressesProvider.sol",
+    "source_code": "5506:188:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPendingOwner' uses address parameter(s) [newPendingOwner] without a zero-address check.",
+    "line_number": 51,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/SafeOwnableUpgradeable.sol",
+    "source_code": "1602:386:1"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'transferOwnership' uses address parameter(s) [newOwner] without a zero-address check.",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ionic-protocol/Base_8453/0xcd4d7c8e2ba627684a9b18f7fe88239341d3ba5c/implementation/0x1d7669b6bdfdb83066dd7c0ada4b630b25cbc28a/contracts/ionic/SafeOwnableUpgradeable.sol",
+    "source_code": "2839:155:1"
+  }
+]

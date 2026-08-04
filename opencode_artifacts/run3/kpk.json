@@ -1,0 +1,450 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8557:24:105"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8344:23:105"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkOivFactory' inherits from multiple state-bearing base contracts (Ownable, Ownable, Ownable, Ownable, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard); verify storage layout ordering.",
+    "line_number": 76,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/KpkOivFactory.sol",
+    "source_code": "4901:59470:128"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkShares' inherits from multiple state-bearing base contracts (UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, RecoverFunds, RecoverFunds, RecoverFunds, RecoverFunds); verify storage layout ordering.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "1089:44059:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'requestSubscription' uses address parameter(s) [subscriptionAsset, receiver] without a zero-address check.",
+    "line_number": 217,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "7454:1853:134"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('assetsIn') is credited to 'subscriptionAssets' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 231,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "8109:49:134"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 269,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "9344:1030:134"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 383,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "13169:959:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_initializeState' uses address parameter(s) [params] without a zero-address check.",
+    "line_number": 665,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "22968:858:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_approveSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 772,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "27689:1239:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_rejectSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 799,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "29071:696:134"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 1056,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "41593:27:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setFeeReceiver' uses address parameter(s) [newFeeReceiver] without a zero-address check.",
+    "line_number": 1102,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "43159:151:134"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPerformanceFeeModule' uses address parameter(s) [newPerformanceFeeModule] without a zero-address check.",
+    "line_number": 1141,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Optimism_10/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "44941:205:134"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8557:24:71"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8344:23:71"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkOivFactory' inherits from multiple state-bearing base contracts (Ownable, Ownable, Ownable, Ownable, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard); verify storage layout ordering.",
+    "line_number": 76,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/KpkOivFactory.sol",
+    "source_code": "4901:59470:94"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkShares' inherits from multiple state-bearing base contracts (UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, RecoverFunds, RecoverFunds, RecoverFunds, RecoverFunds); verify storage layout ordering.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "1089:44059:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'requestSubscription' uses address parameter(s) [subscriptionAsset, receiver] without a zero-address check.",
+    "line_number": 217,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "7454:1853:100"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('assetsIn') is credited to 'subscriptionAssets' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 231,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "8109:49:100"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 269,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "9344:1030:100"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 383,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "13169:959:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_initializeState' uses address parameter(s) [params] without a zero-address check.",
+    "line_number": 665,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "22968:858:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_approveSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 772,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "27689:1239:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_rejectSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 799,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "29071:696:100"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 1056,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "41593:27:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setFeeReceiver' uses address parameter(s) [newFeeReceiver] without a zero-address check.",
+    "line_number": 1102,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "43159:151:100"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPerformanceFeeModule' uses address parameter(s) [newPerformanceFeeModule] without a zero-address check.",
+    "line_number": 1141,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Ethereum_1/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "44941:205:100"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8557:24:37"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8344:23:37"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkOivFactory' inherits from multiple state-bearing base contracts (Ownable, Ownable, Ownable, Ownable, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard); verify storage layout ordering.",
+    "line_number": 76,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/KpkOivFactory.sol",
+    "source_code": "4901:59470:60"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkShares' inherits from multiple state-bearing base contracts (UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, RecoverFunds, RecoverFunds, RecoverFunds, RecoverFunds); verify storage layout ordering.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "1089:44059:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'requestSubscription' uses address parameter(s) [subscriptionAsset, receiver] without a zero-address check.",
+    "line_number": 217,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "7454:1853:66"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('assetsIn') is credited to 'subscriptionAssets' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 231,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "8109:49:66"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 269,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "9344:1030:66"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 383,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "13169:959:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_initializeState' uses address parameter(s) [params] without a zero-address check.",
+    "line_number": 665,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "22968:858:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_approveSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 772,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "27689:1239:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_rejectSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 799,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "29071:696:66"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 1056,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "41593:27:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setFeeReceiver' uses address parameter(s) [newFeeReceiver] without a zero-address check.",
+    "line_number": 1102,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "43159:151:66"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPerformanceFeeModule' uses address parameter(s) [newPerformanceFeeModule] without a zero-address check.",
+    "line_number": 1141,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Base_8453/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "44941:205:66"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8557:24:3"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8344:23:3"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkOivFactory' inherits from multiple state-bearing base contracts (Ownable, Ownable, Ownable, Ownable, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard, ReentrancyGuard); verify storage layout ordering.",
+    "line_number": 76,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/KpkOivFactory.sol",
+    "source_code": "4901:59470:26"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'KpkShares' inherits from multiple state-bearing base contracts (UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, UUPSUpgradeable, RecoverFunds, RecoverFunds, RecoverFunds, RecoverFunds); verify storage layout ordering.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "1089:44059:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'requestSubscription' uses address parameter(s) [subscriptionAsset, receiver] without a zero-address check.",
+    "line_number": 217,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "7454:1853:32"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('assetsIn') is credited to 'subscriptionAssets' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 231,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "8109:49:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 269,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "9344:1030:32"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 383,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "13169:959:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_initializeState' uses address parameter(s) [params] without a zero-address check.",
+    "line_number": 665,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "22968:858:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_approveSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 772,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "27689:1239:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_rejectSubscriptionRequest' uses address parameter(s) [request] without a zero-address check.",
+    "line_number": 799,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "29071:696:32"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 1056,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "41593:27:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setFeeReceiver' uses address parameter(s) [newFeeReceiver] without a zero-address check.",
+    "line_number": 1102,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "43159:151:32"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPerformanceFeeModule' uses address parameter(s) [newPerformanceFeeModule] without a zero-address check.",
+    "line_number": 1141,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/kpk/Arbitrum_42161/0x0d94255fde65d302616b02a2f070cdb21190d420/src/kpkShares.sol",
+    "source_code": "44941:205:32"
+  }
+]

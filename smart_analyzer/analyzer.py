@@ -18,6 +18,7 @@ from .utils import (
     timing_context, error_context, with_progress
 )
 from .plugins import load_all_plugins
+from .context import AnalyzerContext, set_analysis_context
 
 
 class Analyzer:
@@ -154,6 +155,14 @@ class Analyzer:
             # Reset unchecked context
             self._unchecked_context = UncheckedContext()
             
+            # Build project-wide context so detectors can reason about contracts,
+            # inheritance and cross-references instead of raw node patterns.
+            context = AnalyzerContext(ast_data)
+            set_analysis_context(context)
+            # Node ids collide across compilations; never reuse cross-file caches.
+            from .context import _reentry_call_cache
+            _reentry_call_cache.clear()
+            
             # Walk AST and run detectors
             for node in walk_ast_generator(ast_root):
                 # Update unchecked context
@@ -180,6 +189,9 @@ class Analyzer:
                 
                 # Update unchecked context after processing
                 self._unchecked_context.exit(node)
+            
+            # Clear project context for this file
+            set_analysis_context(None)
     
     def analyze_contracts_generator(self, folder_path: str) -> Generator[Finding, None, None]:
         """

@@ -141,6 +141,21 @@ class TimestampFinding(Finding):
             self.severity = Severity.MEDIUM
 
 @dataclass
+class BadRandomnessFinding(Finding):
+    def __post_init__(self):
+        self.type = "Bad Randomness"
+        if not self.severity:
+            self.severity = Severity.MEDIUM
+
+
+@dataclass
+class DoSFinding(Finding):
+    def __post_init__(self):
+        self.type = "Denial of Service"
+        if not self.severity:
+            self.severity = Severity.HIGH
+
+@dataclass
 class GasLimitFinding(Finding):
     def __post_init__(self):
         self.type = "Gas Limit"
@@ -263,6 +278,45 @@ class UpgradeFinding(Finding):
 class CrossChainFinding(Finding):
     def __post_init__(self):
         self.type = "Cross Chain"
+        if not self.severity:
+            self.severity = Severity.HIGH
+
+
+@dataclass
+class ValueFlowFinding(Finding):
+    """Balance-accounting / value-flow mismatch where a counterparty can
+    redirect funds (fee-on-transfer, rebasing or attacker-chosen tokens)."""
+    def __post_init__(self):
+        self.type = "Value Flow"
+        if not self.severity:
+            self.severity = Severity.MEDIUM
+
+
+@dataclass
+class CallbackReentrancyFinding(Finding):
+    """Reentrancy via token-transfer callback hooks (ERC777 / ERC721 / ERC1155 /
+    ERC223) or callback-handler functions making untrusted calls."""
+    def __post_init__(self):
+        self.type = "Callback Reentrancy"
+        if not self.severity:
+            self.severity = Severity.HIGH
+
+
+@dataclass
+class IntegerTruncationFinding(Finding):
+    """Precision-loss / rounding-down from divide-before-multiply in value math."""
+    def __post_init__(self):
+        self.type = "Integer Truncation"
+        if not self.severity:
+            self.severity = Severity.MEDIUM
+
+
+@dataclass
+class OracleTaintFinding(Finding):
+    """Oracle read (Chainlink / AMM TWAP) flowing into value movement without
+    manipulation or staleness validation."""
+    def __post_init__(self):
+        self.type = "Oracle Taint"
         if not self.severity:
             self.severity = Severity.HIGH
 

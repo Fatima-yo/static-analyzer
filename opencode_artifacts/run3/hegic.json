@@ -1,0 +1,26 @@
+[
+  {
+    "detector": "SignatureReplay",
+    "severity": "CRITICAL",
+    "message": "Signature verification detected without replay protection. This allows signature reuse attacks. Add nonce/hash tracking or timestamp validation.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/hegic/Arbitrum_42161/0x431402e8b9de9aa016c743880e04e517074d8cec/implementation/0x3f770ac673856f105b586bb393d122721265ad46/openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol",
+    "source_code": "1971:1414:11"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'StandardArbERC20' inherits from multiple state-bearing base contracts (L2GatewayToken, ERC20PermitUpgradeable, Initializable, ERC20Upgradeable, ContextUpgradeable, EIP712Upgradeable, Cloneable); verify storage layout ordering.",
+    "line_number": 29,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/hegic/Arbitrum_42161/0x431402e8b9de9aa016c743880e04e517074d8cec/implementation/0x3f770ac673856f105b586bb393d122721265ad46/contracts/tokenbridge/arbitrum/StandardArbERC20.sol",
+    "source_code": "1012:3018:5"
+  },
+  {
+    "detector": "CrossChain",
+    "severity": "HIGH",
+    "message": "Cross-chain function 'bridgeInit' lacks access control.",
+    "line_number": 43,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/hegic/Arbitrum_42161/0x431402e8b9de9aa016c743880e04e517074d8cec/implementation/0x3f770ac673856f105b586bb393d122721265ad46/contracts/tokenbridge/arbitrum/StandardArbERC20.sol",
+    "source_code": "1473:1792:5"
+  }
+]

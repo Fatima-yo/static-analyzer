@@ -1,0 +1,26 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_morpho] without a zero-address check.",
+    "line_number": 23,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/angle/Ethereum_1/0x4b1b4fec85e265ce8b152fb233512fe4002fdec3/contracts/swapper/LevSwapper/BaseLevSwapperMorpho.sol",
+    "source_code": "878:282:2"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 2832,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/angle/Polygon_137/0xf0c19e507ff17d0258cb39bd8ea6b94c2c371b16/MockCurveTokenStakerAaveBP.sol",
+    "source_code": "111797:925:30"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'MockCurveTokenStakerAaveBP' inherits from multiple state-bearing base contracts (BorrowStakerStorage, Initializable, ERC20PermitUpgradeable, ERC20Upgradeable, ContextUpgradeable, EIP712Upgradeable); verify storage layout ordering.",
+    "line_number": 2915,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/angle/Polygon_137/0xf0c19e507ff17d0258cb39bd8ea6b94c2c371b16/MockCurveTokenStakerAaveBP.sol",
+    "source_code": "116112:2112:30"
+  }
+]

@@ -46,3 +46,9 @@ test_contracts/*.abi
 
 # Ignore main config if you want (uncomment if needed)
 # analyzer_config.yaml
+# Solc native binaries (re-downloadable via the dispatcher / binaries.soliditylang.org)
+solc_versions/solc-*
+
+# Foundry build output
+out/
+opencode_artifacts/exploit_pocs/out/

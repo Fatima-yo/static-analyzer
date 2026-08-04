@@ -1,0 +1,114 @@
+[
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'RewardsCoordinator' inherits from multiple state-bearing base contracts (Initializable, OwnableUpgradeable, ContextUpgradeable, Pausable, ReentrancyGuardUpgradeable, RewardsCoordinatorStorage); verify storage layout ordering.",
+    "line_number": 21,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "1009:31779:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 243,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "10678:1151:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 270,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "11875:582:10"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setClaimerFor' uses address parameter(s) [claimer] without a zero-address check.",
+    "line_number": 280,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "12503:239:10"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setRewardsUpdater' uses address parameter(s) [_rewardsUpdater] without a zero-address check.",
+    "line_number": 384,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "16957:176:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 395,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "17390:811:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 414,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "18280:2015:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 459,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "20444:790:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 482,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "21666:2174:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 528,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "23846:1449:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 633,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "28663:883:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 705,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinator.sol",
+    "source_code": "31660:459:10"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable 'operatorAVSSplitBips' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 96,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinatorStorage.sol",
+    "source_code": "4750:83:11"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable 'operatorPISplitBips' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 99,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/eigencloud/Ethereum_1/0x29a954e9e7f12936db89b183ecdf879fbbb99f14/src/contracts/core/RewardsCoordinatorStorage.sol",
+    "source_code": "4951:62:11"
+  }
+]

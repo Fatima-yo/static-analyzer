@@ -1,0 +1,10 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setGovernance' uses address parameter(s) [_governance] without a zero-address check.",
+    "line_number": 211,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yearn-finance/Ethereum_1/0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e/YFI.sol",
+    "source_code": "7866:144:0"
+  }
+]

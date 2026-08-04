@@ -1,86 +1,91 @@
 """
 Reentrancy vulnerability detector.
 
-This module provides detectors for reentrancy vulnerabilities
-using the super-pythonic approach.
+This module provides detectors for reentrancy vulnerabilities using the
+super-pythonic approach.
+
+Reentrancy is only reported when a low-level external call is followed by a state
+modification within the same function (check-effects-interactions violation) and
+the function does not carry a reentrancy guard.  Unchecked calls are only reported
+when the boolean result of a low-level call is neither stored nor validated.
 """
 
 from typing import Dict, Any, List
+
 from ..utils import detector, parse_src
 from ..findings import ReentrancyFinding, UncheckedCallFinding, Severity
+from ..context import (
+    get_analysis_context, walk_nodes,
+    low_level_call_member, call_target, _expr_contains_this,
+    collect_state_events, call_result_checked, function_reentrancy_guarded,
+    reentrancy_events,
+)
+
+
+def _parse_line(node: Dict[str, Any], file_path: str) -> Any:
+    return parse_src(node.get("src"), file_path)
 
 
 @detector("reentrancy", "🔄 Reentrancy", "Detects reentrancy vulnerabilities", category="security")
 def detect_reentrancy(node: Dict[str, Any], findings: List, file_path: str = None) -> None:
-    """
-    Detect potential reentrancy vulnerabilities via .call() usage.
-    
-    Args:
-        node: AST node to analyze
-        findings: List to append findings to
-        file_path: Path to the source file
-    """
-    if node.get("nodeType") == "FunctionCall":
-        expr = node.get("expression", {})
-        
-        # Check for direct .call() usage
-        if expr.get("nodeType") == "MemberAccess" and expr.get("memberName") == "call":
-            line_num = parse_src(node.get("src"), file_path)
+    """Detect potential reentrancy via external calls that violate the
+    checks-effects-interactions ordering."""
+    if node.get("nodeType") != "FunctionDefinition":
+        return
+
+    ctx = get_analysis_context()
+    if ctx is None:
+        return
+    cinfo = ctx.contract_for_function(node)
+    if cinfo is None:
+        return
+
+    if function_reentrancy_guarded(ctx, cinfo, node):
+        return
+
+    body = node.get("body")
+    events = reentrancy_events(ctx, cinfo, body, func=node)
+    call_indices = [i for i, (k, _) in enumerate(events) if k == "call"]
+    write_indices = [i for i, (k, _) in enumerate(events) if k == "write"]
+
+    for ci in call_indices:
+        _, call_node = events[ci]
+        target = call_target(call_node)
+        if target is not None and _expr_contains_this(target):
+            continue
+        if any(wi > ci for wi in write_indices):
             findings.append(ReentrancyFinding(
-                message="Potential reentrancy via `.call()`.",
+                message="Potential reentrancy: external call is followed by a state "
+                        "modification (checks-effects-interactions violation).",
                 severity=Severity.HIGH,
-                line_number=line_num,
+                line_number=_parse_line(call_node, file_path),
                 file_path=file_path,
-                source_code=node.get("src")
+                source_code=call_node.get("src")
             ))
-        
-        # Check for .call() with options
-        elif expr.get("nodeType") == "FunctionCallOptions":
-            inner_expr = expr.get("expression", {})
-            if inner_expr.get("nodeType") == "MemberAccess" and inner_expr.get("memberName") == "call":
-                line_num = parse_src(node.get("src"), file_path)
-                findings.append(ReentrancyFinding(
-                    message="Potential reentrancy via `.call()` with options.",
-                    severity=Severity.HIGH,
-                    line_number=line_num,
-                    file_path=file_path,
-                    source_code=node.get("src")
-                ))
+            return
 
 
-@detector("unchecked_call", "⚠️ Unchecked Call", "Detects unchecked external calls without require()")
+@detector("unchecked_call", "⚠️ Unchecked Call", "Detects unchecked external calls without require()", category="security")
 def detect_unchecked_call(node: Dict[str, Any], findings: List, file_path: str = None) -> None:
-    """
-    Detect unchecked external calls.
-    
-    Args:
-        node: AST node to analyze
-        findings: List to append findings to
-        file_path: Path to the source file
-    """
-    if node.get("nodeType") == "FunctionCall":
-        expr = node.get("expression", {})
-        
-        # Check for direct .call() usage without require
-        if expr.get("nodeType") == "MemberAccess" and expr.get("memberName") == "call":
-            line_num = parse_src(node.get("src"), file_path)
+    """Detect low-level external calls whose boolean result is discarded or never
+    validated."""
+    if node.get("nodeType") != "FunctionDefinition":
+        return
+
+    body = node.get("body")
+    seen = set()
+    for n in walk_nodes(body):
+        if low_level_call_member(n) is None:
+            continue
+        if n.get("id") in seen:
+            continue
+        seen.add(n.get("id"))
+        if not call_result_checked(body, n):
             findings.append(UncheckedCallFinding(
-                message="`call` used without require().",
+                message="Low-level call result is not checked; a failed call may go "
+                        "unnoticed.",
                 severity=Severity.MEDIUM,
-                line_number=line_num,
+                line_number=_parse_line(n, file_path),
                 file_path=file_path,
-                source_code=node.get("src")
+                source_code=n.get("src")
             ))
-        
-        # Check for .call() with options without require
-        elif expr.get("nodeType") == "FunctionCallOptions":
-            inner_expr = expr.get("expression", {})
-            if inner_expr.get("nodeType") == "MemberAccess" and inner_expr.get("memberName") == "call":
-                line_num = parse_src(node.get("src"), file_path)
-                findings.append(UncheckedCallFinding(
-                    message="`call` used without require().",
-                    severity=Severity.MEDIUM,
-                    line_number=line_num,
-                    file_path=file_path,
-                    source_code=node.get("src")
-                )) 

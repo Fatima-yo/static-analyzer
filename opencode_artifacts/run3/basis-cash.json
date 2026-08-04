@@ -1,0 +1,362 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 55,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Oracle.sol",
+    "source_code": "2016:35:5"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 65,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Oracle.sol",
+    "source_code": "2472:39:5"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 68,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Oracle.sol",
+    "source_code": "2606:39:5"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'update' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 49,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Oracle.sol",
+    "source_code": "1763:1118:5"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [admin_] without a zero-address check.",
+    "line_number": 75,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Timelock.sol",
+    "source_code": "2703:378:7"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setPendingAdmin' uses address parameter(s) [pendingAdmin_] without a zero-address check.",
+    "line_number": 120,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Timelock.sol",
+    "source_code": "3908:285:7"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_cash, _bond, _share, _cashOracle, _boardroom] without a zero-address check.",
+    "line_number": 50,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Treasury.sol",
+    "source_code": "1432:557:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 108,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Treasury.sol",
+    "source_code": "3092:796:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 139,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Treasury.sol",
+    "source_code": "4172:1325:8"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 30,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Bond.sol",
+    "source_code": "849:94:1"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 30,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Bond.sol",
+    "source_code": "849:94:1"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 10,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Share.sol",
+    "source_code": "378:10:6"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 29,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Share.sol",
+    "source_code": "900:94:6"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 29,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Share.sol",
+    "source_code": "900:94:6"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 13,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Cash.sol",
+    "source_code": "450:10:2"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 42,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Cash.sol",
+    "source_code": "1351:94:2"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 42,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Cash.sol",
+    "source_code": "1351:94:2"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_cash, _share] without a zero-address check.",
+    "line_number": 41,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/Boardroom.sol",
+    "source_code": "993:219:0"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 25,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/token/LPTokenWrapper.sol",
+    "source_code": "665:39:35"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 42,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distributor/InitialCashDistributor.sol",
+    "source_code": "1183:40:16"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'distribute' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 33,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distributor/InitialCashDistributor.sol",
+    "source_code": "889:481:16"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_share, _daibacLPPool, _daibasLPPool] without a zero-address check.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distributor/InitialShareDistributor.sol",
+    "source_code": "626:445:17"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 42,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distributor/InitialShareDistributor.sol",
+    "source_code": "1246:59:17"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'distribute' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 36,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distributor/InitialShareDistributor.sol",
+    "source_code": "1077:596:17"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setRewardDistribution' uses address parameter(s) [_rewardDistribution] without a zero-address check.",
+    "line_number": 18,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/interfaces/IRewardDistributionRecipient.sol",
+    "source_code": "432:172:22"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 11,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/test/MockDai.sol",
+    "source_code": "315:14:33"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 83,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACDAIPool.sol",
+    "source_code": "2593:39:9"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisCash_, dai_] without a zero-address check.",
+    "line_number": 113,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACDAIPool.sol",
+    "source_code": "3691:210:9"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACDAIPool.sol",
+    "source_code": "6481:877:9"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 83,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACSUSDPool.sol",
+    "source_code": "2595:39:10"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisCash_, susd_] without a zero-address check.",
+    "line_number": 113,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACSUSDPool.sol",
+    "source_code": "3697:213:10"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACSUSDPool.sol",
+    "source_code": "6494:877:10"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 83,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDCPool.sol",
+    "source_code": "2595:39:11"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisCash_, usdc_] without a zero-address check.",
+    "line_number": 113,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDCPool.sol",
+    "source_code": "3697:213:11"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDCPool.sol",
+    "source_code": "6493:877:11"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisShare_, lptoken_] without a zero-address check.",
+    "line_number": 88,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/DAIBACLPTokenSharePool.sol",
+    "source_code": "2933:221:14"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 189,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/DAIBACLPTokenSharePool.sol",
+    "source_code": "5759:881:14"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 83,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACyCRVPool.sol",
+    "source_code": "2611:39:13"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisCash_, ycrv_] without a zero-address check.",
+    "line_number": 113,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACyCRVPool.sol",
+    "source_code": "3713:213:13"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACyCRVPool.sol",
+    "source_code": "6510:877:13"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisShare_, lptoken_] without a zero-address check.",
+    "line_number": 87,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/DAIBASLPTokenSharePool.sol",
+    "source_code": "2836:221:15"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 178,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/DAIBASLPTokenSharePool.sol",
+    "source_code": "5410:877:15"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amount') is credited to '_totalSupply' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 83,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDTPool.sol",
+    "source_code": "2595:39:12"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [basisCash_, usdt_] without a zero-address check.",
+    "line_number": 113,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDTPool.sol",
+    "source_code": "3697:213:12"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/basis-cash/Ethereum_1/0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a/contracts/distribution/BACUSDTPool.sol",
+    "source_code": "6493:877:12"
+  }
+]

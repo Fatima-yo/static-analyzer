@@ -1,0 +1,58 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setOwner' uses address parameter(s) [newOwner] without a zero-address check.",
+    "line_number": 95,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "2863:192:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFeeRecipient' uses address parameter(s) [newFeeRecipient] without a zero-address check.",
+    "line_number": 139,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "4230:248:0"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "HIGH",
+    "message": "The amount requested in the token transfer ('assets') is credited to 'shares' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 183,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "5850:88:0"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "HIGH",
+    "message": "The amount requested in the token transfer ('assets') is credited to 'shares' without verifying the balance actually received. A fee-on-transfer or rebasing token (or an address chosen by the caller) makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 283,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "10072:88:0"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'liquidate' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 347,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "12753:3286:0"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'setAuthorizationWithSig' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 446,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "16956:1162:0"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 489,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/morpho-blue/Ethereum_1/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb/src/Morpho.sol",
+    "source_code": "19160:76:0"
+  }
+]

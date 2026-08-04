@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 13,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/pendle/Ethereum_1/0x888888888889758f76e7103c6cbf23abbf58f946/implementation/0x663c21103915b68e9da797cfdf3cab01a037d5ff/contracts/pendle/contracts/core/libraries/MiniHelpers.sol",
+    "source_code": "360:168:7"
+  },
+  {
+    "detector": "UncheckedCall",
+    "severity": "MEDIUM",
+    "message": "Low-level call result is not checked; a failed call may go unnoticed.",
+    "line_number": 424,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/pendle/Ethereum_1/0x888888888889758f76e7103c6cbf23abbf58f946/implementation/0x663c21103915b68e9da797cfdf3cab01a037d5ff/contracts/pendle/contracts/router/base/ActionBase.sol",
+    "source_code": "14841:32:25"
+  }
+]

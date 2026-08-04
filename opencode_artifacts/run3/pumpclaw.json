@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('COST_PER_EPOCH') is credited to 'agents' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 313,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/pumpclaw/Base_8453/0x7e285e7e5b05d39e4e235973529af825df0cc033/src/LastAIStanding.sol",
+    "source_code": "12151:340:8"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'kill' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 368,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/pumpclaw/Base_8453/0x7e285e7e5b05d39e4e235973529af825df0cc033/src/LastAIStanding.sol",
+    "source_code": "14404:1236:8"
+  }
+]

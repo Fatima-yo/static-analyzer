@@ -1,0 +1,162 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_asset, _core] without a zero-address check.",
+    "line_number": 59,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "2336:961:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 119,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "4490:21:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'approve' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 259,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "10524:201:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'mint' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 289,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "11541:657:6"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 303,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "12204:110:6"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 303,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "12204:110:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'withdraw' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 313,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "12574:858:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'redeem' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 349,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "13952:928:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 89,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "3327:27:6"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'claimReferralRewards' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 569,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "23262:264:6"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'claimReferralRewards' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 569,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Ethereum_1/0x5eb0df003ac658241686b79fc93a4b9be18b0ebf/src/Pool.sol",
+    "source_code": "23262:264:6"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_feed] without a zero-address check.",
+    "line_number": 13,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/grace/Base_8453/0x04c52e456dc35f492aafab142f53b8f68fb76bce/src/feeds/API3Feed.sol",
+    "source_code": "261:63:0"
+  }
+]

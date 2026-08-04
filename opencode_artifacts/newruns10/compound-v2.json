@@ -1,0 +1,58 @@
+[
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'approve' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 1131,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "39447:232:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setPendingAdmin' uses address parameter(s) [newPendingAdmin] without a zero-address check.",
+    "line_number": 2106,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "84646:631:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setComptroller' uses address parameter(s) [newComptroller] without a zero-address check.",
+    "line_number": 2156,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "86488:718:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setInterestRateModelFresh' uses address parameter(s) [newInterestRateModel] without a zero-address check.",
+    "line_number": 2311,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "93766:1323:0"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 2525,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "102397:25:0"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 2534,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "102681:21:0"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 2535,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-v2/Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol",
+    "source_code": "102744:21:0"
+  }
+]

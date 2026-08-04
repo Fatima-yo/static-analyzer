@@ -1,0 +1,58 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8557:24:3"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8344:23:3"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 211,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "7284:22:29"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 206,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "7073:21:29"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 208,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts/contracts/governance/TimelockController.sol",
+    "source_code": "7384:16:13"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 207,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts/contracts/governance/TimelockController.sol",
+    "source_code": "7270:460:13"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'updateDelay' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 449,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/yieldnest/Ethereum_1/0x4f1fbd7debc53fdd7dd9b5d296fef57f81bc0591/lib/openzeppelin-contracts/contracts/governance/TimelockController.sol",
+    "source_code": "15485:286:13"
+  }
+]

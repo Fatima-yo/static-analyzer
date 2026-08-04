@@ -1,0 +1,162 @@
+[
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'acceptOwnership' writes an ownership/admin state variable but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/lib/openzeppelin-contracts/contracts/access/Ownable2Step.sol",
+    "source_code": "1734:206:1"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setDefaultFees' uses address parameter(s) [_fees] without a zero-address check.",
+    "line_number": 90,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Factory.sol",
+    "source_code": "3379:406:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 103,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Factory.sol",
+    "source_code": "4003:25:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 114,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Factory.sol",
+    "source_code": "4464:25:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 126,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Factory.sol",
+    "source_code": "5035:25:6"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 76,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "2743:42:7"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [_token0, _token1] without a zero-address check.",
+    "line_number": 69,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "2421:502:7"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 103,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "3917:148:7"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 95,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "3532:35:7"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 156,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "6165:1108:7"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 156,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "6165:1108:7"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "MEDIUM",
+    "message": "Oracle read ('getreserves') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 157,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "6285:13:7"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 178,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "7388:1252:7"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 178,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "7388:1252:7"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "MEDIUM",
+    "message": "Oracle read ('getreserves') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 179,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "7523:13:7"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "MEDIUM",
+    "message": "Oracle read ('getreserves') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 204,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2Pair.sol",
+    "source_code": "9078:13:7"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_mint' uses address parameter(s) [to] without a zero-address check.",
+    "line_number": 39,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2ERC20.sol",
+    "source_code": "1287:200:5"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_burn' uses address parameter(s) [from] without a zero-address check.",
+    "line_number": 45,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2ERC20.sol",
+    "source_code": "1493:208:5"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_transfer' uses address parameter(s) [from, to] without a zero-address check.",
+    "line_number": 56,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2ERC20.sol",
+    "source_code": "1882:219:5"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'transferFrom' uses address parameter(s) [from] without a zero-address check.",
+    "line_number": 72,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/treasure/Arbitrum_42161/0x77fa938998e196701c324149f771efd6e980df0a/src/UniswapV2/core/UniswapV2ERC20.sol",
+    "source_code": "2405:307:5"
+  }
+]
