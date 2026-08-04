@@ -259,6 +259,38 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   credit-guild is the first clean high-value harness. Analyzer untouched;
   pytest 21 passed / corpus 138/138 unaffected.
 
+## Phase 3 sessions 5-6 (2026-08-04) — fourth protocol: compound-v2
+- Harness `invariant_projects/compound-v2/` (solc 0.5.8, evm istanbul):
+  flattened 0.4.x `CEther.sol` + `src/SimpleComptroller.sol` (permissive policy
+  hooks, 1e18 prices, 1.08e18 liquidation incentive, faithful
+  liquidateCalculateSeizeTokens) + `src/SimpleInterestRateModel.sol`
+  (White-Paper, under the borrow-rate cap). Two CEther markets (exchange rate
+  0.02e18), 8 **real Actor contracts** owning 1M ETH each that call the markets
+  with themselves as `msg.sender` (`test/Actor.sol`), handler routes
+  mint/redeem/borrow/repay/repayBehalf/liquidate/transfer/transferFrom/warpBlocks.
+- 3 invariants (ctokenConservation exact, ethConservation exact == 8e24,
+  borrowLedger within 1e9): **ALL HOLD** at runs=200/depth=120, invariant
+  runs=1000, and `--fuzz-runs 5000`; 9/9 smoke tests pass.
+- **Foundry prank+value revert leak (root-caused this session):** the first
+  handler used `vm.startPrank(actor)` + high-level `c.mint.value(x)()`. Under
+  the invariant fuzz runner a reverting value call lost exactly one full actor
+  balance (1e24): conservation broke to 7e24 with the handler's own post-action
+  check never firing (the revert unwound the whole handler call before _tick),
+  and every hand-replay of the shrunken counterexample (direct / outer-prank /
+  low-level-swallowed-reverts) PASSED — the loss is fuzz-context-only. A
+  low-level `.call.value()`-from-a-0-balance-handler variant instead silently
+  did nothing (caught by a temporary activity invariant). Fix: real Actor
+  contracts doing ordinary atomic EVM transfers — no value cheatcodes at all.
+  After the redesign: conservation green, activity verified, instrumentation
+  stripped.
+- **run3 cross-check: all 7 compound-v2 findings DISMISSED.** SWC-114 `approve`
+  overwrite (pattern-TP, needs a racing malicious spender), 3x governance
+  ZeroAddress (`_setPendingAdmin`/`_setComptroller`/`_setInterestRateModel`),
+  3x IntegerOverflow in the pure `fail()` error-formatting helper.
+- Total: 2 CONFIRMED static-invisible findings across 4 protocols; both
+  lending/money-market harnesses (credit-guild, compound-v2) clean. Analyzer
+  untouched; pytest 21 passed / corpus 138/138 unaffected.
+
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.

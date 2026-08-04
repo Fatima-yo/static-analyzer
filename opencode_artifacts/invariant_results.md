@@ -316,13 +316,97 @@ Harness: `invariant_projects/credit-guild/`
   holding at scale is independent corroboration that the 10 reentrancy and 2
   timestamp HIGHs are analyzer false positives.
 
-## Status (session 4)
+## Protocol 4: compound-v2 (CEther money market) — sessions 5-6
+
+Harness: `invariant_projects/compound-v2/`
+- Vendored from the run1 full-code snapshot (`full_code/compound-v2/
+  Ethereum_1/0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5/CEther.sol`), flattened
+  to a single self-contained file. solc 0.5.8, evm istanbul, optimizer runs=200.
+  The 0.4.x CToken has no external imports and a public constructor, so it
+  compiles as-is (the last two protocols both needed EIP-1167 workarounds; this
+  one just worked).
+- `src/SimpleComptroller.sol` — permissive comptroller: every policy hook
+  (mint/borrow/redeem/repay/liquidate/seize/transfer) returns NO_ERROR,
+  `getUnderlyingPrice` = 1e18 for both markets, liquidation incentive 1.08e18,
+  and a faithful `liquidateCalculateSeizeTokens` with the exchange-rate-zero
+  guard and the `seizeShares < amount` consistency re-check.
+- `src/SimpleInterestRateModel.sol` — White-Paper rate model (baseRate 5e12,
+  multiplier 4.95e14) whose `getBorrowRate` never hits the borrow-rate cap, so
+  `accrueInterest` always succeeds.
+- `test/Actor.sol` + `test/CompoundV2Handler.sol` — **real on-chain Actor
+  contracts** (see "Foundry prank+value bug" below) each owning 1M ETH, plus a
+  handler that routes 8 actions (mint / redeem / borrow / repay / repayBehalf /
+  liquidate / transfer / transferFrom) plus `warpBlocks` through them. Each
+  successful action rolls the block so `accrueInterest` sees a positive delta.
+  Two CEther markets (cethA/cethB) at initial exchange rate 0.02e18. Action
+  clamps: mint/repay to balance, borrow to market cash, repay to debt, redeem
+  to holdings, transfer to balance; liquidations skip same-market
+  (nonReentrant guard) and over-seize (borrower lacks the collateral tokens the
+  seize would need) cases.
+- `test/Invariants.t.sol` — `CompoundV2Invariants`, 3 invariants:
+  ctokenConservation (totalSupply == sum of holder balances, exact),
+  ethConservation (actors + both markets + handler == 8e24, exact),
+  borrowLedger (sum of per-account `borrowBalanceStored` == `totalBorrows`,
+  within 1e9 wei per-account truncation).
+- `test/Smoke.t.sol` — 9 deterministic round-trips: mint/redeem round-trip,
+  mint/borrow/repay loop, capped-repay solvency, interest accrues across
+  blocks, transfer/transferFrom, two liquidation tests (repaid ledger delta is
+  principal minus a block's accrued interest; seized collateral bounded by the
+  1.08 incentive at the 0.02 exchange rate), and a mixed stress sequence that
+  must end with all three invariants holding.
+
+### Result: ALL 3 INVARIANTS HOLD
+- Green at default runs=200/depth=120 (~4s), at invariant runs=1000/depth=120
+  (~20s), and at `--fuzz-runs 5000`; 9/9 smoke tests pass. The fuzzer reaches
+  every action surface (24k calls/run with zero handler-level reverts), and the
+  ETH conservation invariant (which a real cToken harness would flag if any
+  action leaked or misdirected underlying) holds exactly across ~100k+ mint/
+  borrow/repay/redeem/liquidate operations.
+- No protocol flaw surfaced: CEther's ETH accounting, cToken supply math,
+  accrual, and the seize/liquidate path are internally consistent under
+  adversarial randomized sequences.
+
+### Foundry prank+value bug (the real find of this session)
+The first handler called the markets via `vm.startPrank(actor)` +
+`c.mint.value(x)()` (high-level cheatcode-pranked value calls). Under the
+invariant fuzz runner (real-tx sender + inner prank) exactly one full actor
+balance (1e24) vanished on a reverting value call: conservation broke by 1e24
+with the handler's own post-action check (`broken`) never firing because the
+revert bubbled out of the whole handler call before `_tick`. Hand-written
+replays of the shrunken counterexample passed every time (direct / outer-prank
+/ low-level-call-with-swallowed-reverts), so the loss is fuzz-context-only:
+foundry's prank balance redirection interacts badly with high-level `.value()`
+calls that revert. The fix was architectural — **real Actor contracts** that own
+their ETH and call the markets as ordinary atomic EVM transfers, eliminating
+every value-carrying cheatcode — after which conservation went green and the
+smoke suite confirmed value actually moves (a low-level `.call.value()`-from-a-
+0-balance-handler variant silently did nothing under fuzz and was rejected by an
+activity invariant before being replaced).
+
+### Cross-reference with run3 static findings (compound-v2, 7 findings)
+- FrontRunning CEther.sol:1131 (`approve` overwrites allowance, SWC-114):
+  **DISMISSED (pattern-TP)** — real known Compound pattern but requires a
+  malicious spender racing a legitimate transaction; not a protocol flaw, and
+  the transfer/transferFrom/approve loops in the harness stayed consistent.
+- ZeroAddress x3 (`_setPendingAdmin`, `_setComptroller`, `_setInterestRateModel`)
+  and IntegerOverflow x3 (error-formatting `+` and `fail()` index arithmetic):
+  **DISMISSED (baseline/noise)** — constructor/governance configuration and
+  pure formatting helpers, none on any value path exercised by the harness.
+- **No compound-v2 run3 finding was confirmed**, consistent with all three
+  invariants holding across the money-market loop.
+
+## Status (session 6)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
 - harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
 - credit-guild: full lending-loop harness GREEN (7/7 invariants at 200, 1000,
   and 1500 runs; 9/9 smoke tests). No new finding; run3 findings cross-checked
   (all dismissed).
-- Total: 2 CONFIRMED static-invisible findings across 3 protocols; credit-guild
-  is the first full high-value harness with a clean result.
-- Next: 4th protocol (balancer-v2 / compound-v2), or an echidna pass over
-  harvest-ousd / credit-guild.
+- compound-v2: CEther money-market harness GREEN (3/3 invariants at 200 and
+  1000 runs; 9/9 smoke tests). No new finding; the 7 run3 findings are all
+  dismissed (governance config + error-formatting noise). Root-caused a
+  **foundry prank+value revert leak** that cost a full 1e24 actor balance in
+  fuzz; fixed by moving to real Actor contracts (no value cheatcodes).
+- Total: 2 CONFIRMED static-invisible findings across 4 protocols; both
+  lending-loop harnesses (credit-guild, compound-v2) came back clean.
+- Next: 5th protocol (balancer-v2) or an echidna pass over the newer
+  harnesses.

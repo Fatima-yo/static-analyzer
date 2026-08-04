@@ -2,6 +2,26 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #4 (2026-08-04, sessions 5-6)**: invariant testing on a
+> fourth protocol — **compound-v2** (CEther money market). Harness
+> `invariant_projects/compound-v2/` vendors the flattened 0.4.x `CEther.sol`,
+> runs it against a permissive `SimpleComptroller` + White-Paper
+> `SimpleInterestRateModel`, and fuzzes the whole mint / redeem / borrow / repay
+> / repayBehalf / liquidate / transfer / transferFrom loop through **real
+> on-chain Actor contracts** (8 actors, 1M ETH each, two markets). Result:
+> **all 3 invariants HOLD** — cToken supply conservation (exact), underlying
+> ETH conservation (exact, actors + markets + handler == 8e24), and the borrow
+> ledger (per-account sum == totalBorrows within 1e9 wei) — at 200 and 1000
+> fuzz runs and `--fuzz-runs 5000`; 9/9 smoke tests pass. No new finding; the 7
+> run3 compound-v2 findings (SWC-114 approve pattern-TP, 3x governance
+> ZeroAddress, 3x error-formatting IntegerOverflow) are all dismissed. The
+> session also root-caused a **foundry prank+value revert leak**: a high-level
+> `c.mint.value(x)()` under `vm.startPrank` can lose the pranked account's full
+> balance when the call reverts under the invariant runner (reproduced as a 1e24
+> fuzz-only violation, invisible to direct/outer-prank/low-level replays); fixed
+> by moving every value-carrying operation into real Actor contracts (no value
+> cheatcodes). Full writeup: `invariant_results.md`.
+
 > **Phase 3 addendum #3 (2026-08-04, sessions 3-4)**: invariant testing on a
 > third protocol — **credit-guild** (Ethereum Credit Guild lending loop).
 > Harness `invariant_projects/credit-guild/` wires the full protocol (Core

@@ -137,6 +137,21 @@ Phase 3 sessions 3-4 (2026-08-04) — third protocol DONE (credit-guild):
 - Next slots: 4th protocol harness (balancer-v2 / compound-v2) and/or an
   echidna pass over harvest-ousd / credit-guild.
 
+Phase 3 sessions 5-6 (2026-08-04) — fourth protocol DONE (compound-v2):
+- Harness `invariant_projects/compound-v2/`: flattened 0.4.x CEther.sol against
+  a permissive SimpleComptroller + White-Paper rate model, fuzzed through 8
+  **real Actor contracts** (each owns its ETH, calls markets with itself as
+  msg.sender — no value cheatcodes).
+- 3 invariants ALL HOLD (ctoken supply exact, ETH conservation exact, borrow
+  ledger within 1e9) at runs=200 and 1000, plus --fuzz-runs 5000; 9/9 smoke
+  tests pass. No new finding; the 7 run3 compound-v2 findings (SWC-114 approve
+  pattern-TP, 3x ZeroAddress, 3x error-formatting IntegerOverflow) dismissed.
+- Root-caused a **foundry prank+value revert leak** (fuzz-only 1e24 loss that
+  every hand-replay passes); the Actor-contract redesign eliminated the whole
+  cheatcode-value class of bugs from the harness.
+- Next slots: 5th protocol harness (balancer-v2) and/or an echidna pass over
+  credit-guild / compound-v2.
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 
