@@ -1,13 +1,11 @@
 # CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 morpho-blue)
 
 Resume point: Phase 3 protocol 9 (morpho-blue) is COMPLETE and COMMITTED
-(ebd8417..morpho-blue commit). The Morpho lending-ledger harness is GREEN
-(10/10 invariants at 200/120 and 500/300, 150k calls, 0 reverts; 8/8 smoke
-tests); all 7 run3 morpho-blue findings DISMISSED. The **echidna 2.3.3
-cross-check over the morpho-blue harness is IN PROGRESS** — the venv was
-recreated (crytic-compile 0.4.2 installed), but the `EchidnaMorphoBlue.sol`
-wrapper, `echidna.yaml`, and solc 0.8.19 wiring are NOT yet done, and no
-echidna run has happened.
+(morpho-blue commit). The Morpho lending-ledger harness is GREEN (10/10
+invariants at 200/120 and 500/300, 150k calls, 0 reverts; 8/8 smoke tests);
+all 7 run3 morpho-blue findings DISMISSED; **the echidna 2.3.3 cross-check
+PASSED** (session 17, committed) — 10/10 properties, 50234 calls, 0 failures.
+Next: the 10th protocol (see NEXT STEP).
 
 ## Phase 3 status (9 protocols)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna 2.3.3 agree).
@@ -60,28 +58,23 @@ echidna run has happened.
   liquidate AccessControl = permissionless by design; setAuthorizationWithSig =
   EIP-712 ecrecover; _accrueInterest reentrancy = owner-whitelisted IRM).
 
-## NEXT STEP (echidna 2.3.3 cross-check over morpho-blue) — partially set up
-1. `test/EchidnaMorphoBlue.sol` — composition wrapper over `MorphoHandler`
-   forwarding the 12 fuzz actions + `echidna_*` properties (mirror
-   `invariant_projects/rocket-pool/test/EchidnaRocketPool.sol`).
-2. `echidna.yaml` — `testMode: property`, `testLimit: 50000`, `seqLen: 100`,
-   `filterBlacklist: false`, whitelist the 12 wrapper action fns.
-3. Environment (venv was wiped with /tmp on reboot — recreated this session):
-   - venv: `/tmp/opencode/echidna_venv` with crytic-compile 0.4.2 INSTALLED
-     (recreate if wiped: `python3 -m venv /tmp/opencode/echidna_venv &&
-     /tmp/opencode/echidna_venv/bin/pip install crytic-compile`).
-   - `~/.solc-select/artifacts/` currently has solc-0.6.12/0.7.6/0.8.36;
-     **needs solc-0.8.19** (copy from
-     `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.19` and
-     set global version) to match the project solc pin.
-   - echidna binary: `~/.config/.foundry/bin/echidna` (2.3.3).
-   - NOTE: the handler uses `vm.warp` via the forge cheatcode address; echidna
-     honors warp/prank/startPrank (verified in the rocket-pool session).
-4. Run with the venv's crytic-compile on PATH + solc-select global 0.8.19:
-   `cd invariant_projects/morpho-blue && echidna test/EchidnaMorphoBlue.sol
-   --contract EchidnaMorphoBlue --config echidna.yaml` (see the rocket-pool
-   session notes for the exact invocation/crytic compile flags).
-5. Append the results to `invariant_results.md` + `STATUS.md` and commit.
+## NEXT STEP (10th protocol) — pick a target from the run3 canonical list
+The morpho-blue protocol is done including its echidna cross-check. The next
+session starts protocol 10: pick a remaining high-value project from
+`opencode_artifacts/run3/`, build the same playbook harness
+(`invariant_projects/<proto>/`), then document + commit.
+Echidna environment for future cross-checks (all set up this session):
+- venv `/tmp/opencode/echidna_venv` (crytic-compile 0.4.2; recreate if wiped:
+  `python3 -m venv /tmp/opencode/echidna_venv &&
+  /tmp/opencode/echidna_venv/bin/pip install crytic-compile`).
+- solc-select (pip-installed, global = 0.8.19; artifacts have
+  0.6.12/0.7.6/0.8.19/0.8.36). echidna binary: `~/.config/.foundry/bin/echidna`.
+- morpho-blue cross-check recap: `test/EchidnaMorphoBlue.sol` + `echidna.yaml`
+  (testLimit 50000, seqLen 100, whitelist of 12 forwarded fuzz actions); ran
+  `cd invariant_projects/morpho-blue && echidna test/EchidnaMorphoBlue.sol
+  --contract EchidnaMorphoBlue --config echidna.yaml` with
+  `$HOME/.local/bin` + venv bin on PATH. Result: 10/10 passing, 50234 calls,
+  cov 14843 (seed 5539492503410371496), appended to `invariant_results.md`.
 
 ## Key paths
 - Analyzer: `/home/fatima/Downloads/static-analyzer` (venv `analyzer_env/`)
@@ -98,5 +91,5 @@ project re-run 44/60, 447 findings; all new-detector HIGHs triaged DISMISSED;
 canonical artifacts = run3) and Phase 3 sessions 1-2 (basis-cash + harvest
 OUSD CONFIRMED findings). Phase 3 sessions 3-4 (credit-guild), 5-6
 (compound-v2), 7-8 (hundred-bond), 9-10 (balancer-v2), 11-12 (ionic),
-13-14 (rocket-pool) and 15-16 (morpho-blue) are summarized in the sections
-above.
+13-14 (rocket-pool) and 15-17 (morpho-blue, incl. echidna cross-check) are
+summarized in the sections above.

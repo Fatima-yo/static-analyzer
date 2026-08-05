@@ -928,6 +928,34 @@ Verdict: **7/7 DISMISSED**, independently corroborated by the green
 ledger/residual suite (the residual invariants are the exact
 `balanceOf`-delta discipline the ValueFlow findings call for).
 
+### Protocol 9 cross-check: Echidna on the morpho-blue harness
+
+`test/EchidnaMorphoBlue.sol` (composition wrapper, the rocket-pool pattern) +
+`echidna.yaml` (testMode property, testLimit 50000, seqLen 100, whitelist of
+the 12 forwarded fuzz actions). echidna 2.3.3 with crytic-compile 0.4.2
+(venv) and solc 0.8.19 via solc-select (added to `~/.solc-select/artifacts/`,
+global = 0.8.19). Result (fresh random seed 5539492503410371496):
+
+```
+echidna_weth_ledger_residual: passing
+echidna_usdc_balance_conserved: passing
+echidna_market_solvent_m0: passing
+echidna_supply_shares_conserved_m1: passing
+echidna_usdc_ledger_residual: passing
+echidna_borrow_shares_conserved_m1: passing
+echidna_borrow_shares_conserved_m0: passing
+echidna_weth_balance_conserved: passing
+echidna_supply_shares_conserved_m0: passing
+echidna_market_solvent_m1: passing
+Total calls: 50234, 0 failures, cov 14843 instr, corpus 13
+```
+
+**10/10 properties passing.** The residual properties hold under echidna's
+arbitrary byte-level calldata fuzzing too, confirming the {0,1} per-action
+bound is a property of Morpho's arithmetic, not of the foundry fuzzer's call
+distribution. Both independent fuzzing engines agree with the foundry
+150k-call runs.
+
 ## Status (session 16)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
 - harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
@@ -964,5 +992,6 @@ ledger/residual suite (the residual invariants are the exact
   **18/18 run3 ionic findings verified**, and **7/7 + 3/3 + 19/19 run3
   morpho-blue/rocket-pool/balancer-v2 findings DISMISSED**; seven clean
   harnesses (credit-guild, compound-v2, hundred-bond, balancer-v2,
-  ionic-protocol, rocket-pool, morpho-blue).
-- Next: an echidna pass over the morpho-blue harness, or the 10th protocol.
+  ionic-protocol, rocket-pool, morpho-blue), of which rocket-pool and
+  morpho-blue additionally pass echidna cross-checks.
+- Next: the 10th protocol.

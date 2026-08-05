@@ -359,7 +359,7 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   compound-v2, hundred-bond, balancer-v2). Analyzer untouched; pytest 21
   passed / corpus 138/138 unaffected.
 
-## Phase 3 sessions 15-16 (2026-08-05) — ninth protocol: morpho-blue
+## Phase 3 sessions 15-17 (2026-08-05) — ninth protocol: morpho-blue
 - Harness `invariant_projects/morpho-blue/` (solc 0.8.19 pinned, evm paris,
   via_ir): vendored the full `0xbbbbbbbb...ffcb` `Morpho.sol` + interfaces +
   libraries verbatim at `src/core/` (no source edits). Two cross-token markets
@@ -396,10 +396,19 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   divergence); `liquidate` is permissionless by design; `setAuthorizationWithSig`
   is EIP-712 `ecrecover`-guarded (detector missed the sig-check pattern);
   `_accrueInterest` reentrancy is a read-only call to an owner-whitelisted IRM.
+- **Echidna cross-check (session 17): all 10 properties passing.**
+  `test/EchidnaMorphoBlue.sol` + `echidna.yaml` (testLimit 50000, seqLen 100,
+  whitelist of the 12 fuzz actions). echidna 2.3.3 with crytic-compile 0.4.2
+  (venv recreated at `/tmp/opencode/echidna_venv`) and solc 0.8.19 via
+  solc-select (installed, added to `~/.solc-select/artifacts/`, global =
+  0.8.19). 50234 calls, 0 failures, cov 14843 — the {0,1} per-action residual
+  bound holds under echidna's byte-level fuzzing, matching the foundry 150k-call
+  runs. Full output in `invariant_results.md`.
 - Total: 2 CONFIRMED static-invisible findings across 9 protocols
   (basis-cash, harvest-ousd); seven clean high-value harnesses (credit-guild,
   compound-v2, hundred-bond, balancer-v2, ionic-protocol, rocket-pool,
-  morpho-blue); 18/18 run3 ionic findings verified + 7/7 + 3/3 + 19/19 run3
+  morpho-blue) of which rocket-pool and morpho-blue pass echidna cross-checks;
+  18/18 run3 ionic findings verified + 7/7 + 3/3 + 19/19 run3
   morpho-blue/rocket-pool/balancer-v2 findings DISMISSED. Analyzer untouched;
   pytest 21 passed / corpus 138/138 unaffected.
 
