@@ -1,0 +1,16 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+libs = ["lib"]
+solc = "/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.10"
+evm_version = "shanghai"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+
+[invariant]
+runs = 200
+depth = 120
+fail_on_revert = false
+call_override = false

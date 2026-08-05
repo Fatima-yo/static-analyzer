@@ -600,3 +600,136 @@ corroboration that the `-`/`-=`/`+` guards flagged by run3 are sound.
   clean harnesses (credit-guild, compound-v2, hundred-bond, balancer-v2).
 - Next: 7th protocol (e.g. lido or ionic-protocol) or an echidna pass over
   the newer harnesses.
+
+## Protocol 7: ionic-protocol (Ionic lending markets) — sessions 11-12
+
+Harness: `invariant_projects/ionic-protocol/`
+- Vendored the ionic core verbatim from the run1 full-code snapshot into
+  `src/compound/`, `src/ionic/`, `src/utils/`, `src/oracles/`, `src/adrastia/`,
+  `src/adrastia-periphery/rates/`; OZ deps vendored into `lib/
+  openzeppelin-contracts-upgradeable/` and `lib/openzeppelin-contracts/`.
+  Build pinned to solc 0.8.10, evm shanghai, optimizer runs 200,
+  bytecode_hash none.
+- Three stubs at literal import paths (`src/PoolLens.sol`,
+  `src/IonicUniV3Liquidator.sol`, `src/ionic/AuthoritiesRegistry.sol`) keep
+  `CToken.sol` / `CTokenInterfaces.sol` unmodified. Permissioning is
+  neutralized in the stubs: `PoolLens.getHealthFactor = 0` +
+  `IonicUniV3Liquidator.healthFactorThreshold = 0` makes every liquidation
+  take the permissionless branch, and `MockFeeDistributor.canCall` returns
+  true so `CToken.isAuthorized` never blocks.
+- `test/SimpleComptroller.sol` — no oracle; pins both asset prices at 1e18
+  implicitly and implements faithful seize math:
+  `seizeTokens = repay * (1.08e18 incentive + 2.8e16 protocolSeizeShare +
+  10e16 feeSeizeShare) / collateral.exchangeRateCurrent()`, i.e. a constant
+  `TOTAL_SEIZE_PENALTY = 1.208e18`.
+- `test/SimpleInterestRateModel.sol` — `borrowRatePerBlock = 3e12`
+  (< `borrowRateMaxMantissa = 5e12` in CTokenInterfaces) so `accrueInterest`
+  never reverts; supply rate 0.
+- `test/MockFeeDistributor.sol` — IFeeDistributor implementer acting as the
+  `ionicAdmin` (the `CErc20Delegator` constructor requires
+  `msg.sender == ionicAdmin_`); its `deployMarket` is `public` only because
+  `deployCErc20` (the interface fn) must call it internally. `canCall` → true.
+- `test/IonicHandler.sol` — 2 markets (cUSDC 6dp / cWETH 18dp), 4 actors
+  (0x1111...0001..0004), funding `[1_000_000e6, 10_000e18]`. Delegator setup:
+  `new CErc20Delegate()` + `new CTokenFirstExtension()` →
+  `MockFeeDistributor(cErc20Delegate, cTokenFirstExtension)` →
+  `deployMarket(...)` → `_setImplementationSafe(cErc20Delegate, "")` →
+  `_setAddressesProvider(ap)` → `setMarket(m, 0.8e18)`. Handler is the
+  `AddressesProvider` owner, so the admin-setter actions
+  (`adminSetAddress`, `adminSetFlywheelRewards`, `adminSetPlugin`,
+  `adminSetRedemptionStrategy`, `adminSetFundingStrategy`,
+  `adminSetBalancerPool`, `adminSetPendingOwner`, `adminTransferOwnership`)
+  work. Every action calls `_tick()` = `VM.roll(block.number + 1)` so
+  `accrueInterest` sees a positive block delta; `warpBlocks(b)` rolls
+  `+ (b % 500) + 1`.
+- `test/Actor.sol` — actor performs mint/redeem/borrow/repay/repayBehalf/
+  liquidate/transfer/approveUnderlying via low-level calls with itself as
+  `msg.sender` (no pranks, no `.value()` cheatcodes — value flows are atomic
+  EVM transfers, per the compound-v2 lesson). Liquidation bounding:
+  `maxRepay = collateral.balanceOf(borrower) * exchangeRate / 1.208e18` so
+  `seizeTokens` never exceed the borrower's collateral (otherwise
+  `liquidateBorrowFresh` reverts).
+- `test/Invariants.t.sol` — `IonicInvariants` (StdInvariant getter ABI,
+  `targetContracts` = handler, 4 targeted senders) with three invariants;
+  `test/Smoke.t.sol` — 12 deterministic tests.
+
+Invariants (all exact except the rounding-tolerant borrow ledger):
+1. `invariant_ctokenConservation` — per market, `sum(actor cToken balanceOf)
+   == cToken.totalSupply()` (cTokens are only minted to actors / burned from
+   them; the market holds none). HOLDS.
+2. `invariant_underlyingConservation` — per market, `handler + actors +
+   market underlying balance == totalUnderlyingMinted[i]` (nothing created or
+   destroyed; supply is capped by the funding amounts). HOLDS.
+3. `invariant_borrowLedger` — `sum(actor borrowBalanceCurrent)` within
+   `ROUNDING_TOLERANCE = 1e9` of `totalBorrowsCurrent` (per-market accrual
+   rounding across the two 6dp/18dp books). HOLDS.
+
+Results:
+- 12/12 smoke tests PASS: 4 end-to-end market flows
+  (`test_liquidate_endToEnd`, `test_accrualConservation` with
+  `warpBlocks(1000)`, `test_transferConvervation`, `test_repayBehalf`) plus 8
+  zero-address acceptance tests (below).
+- 3/3 invariants HOLD at runs=200/depth=120 (24k calls per invariant, 0
+  reverts, `actorLiquidate` called 1462× with 0 reverts) and at
+  `FOUNDRY_INVARIANT_RUNS=500 FOUNDRY_INVARIANT_DEPTH=300` (150k calls per
+  invariant, 0 reverts, ~108s). The borrow-ledger tolerance only absorbs the
+  rate-model accrual rounding; the two conservation checks are exact.
+
+### Cross-reference with run3 static findings (ionic-protocol, 18 MEDIUM findings)
+
+All 18 run3 ionic findings are **CONFIRMED** (16 ZeroAddress + 2
+StorageCollision upgrade-hazard). The 16 ZeroAddress findings are 8 unique
+setters duplicated across the Optimism and Base deployments; each is pinned
+by a dedicated smoke test that asserts the setter must NOT revert on
+`address(0)`:
+
+| # | Function | File:line | Verdict | Why |
+|---|----------|-----------|---------|-----|
+| 1 | `setFlywheelRewards(flywheelRewardsModule)` | AddressesProvider.sol:65 | CONFIRMED | No zero check; `test_setFlywheelRewards_zeroAccepted` proves `address(0)` is stored without revert. |
+| 2 | `setPlugin(plugin)` | AddressesProvider.sol:79 | CONFIRMED | No zero check; `test_setPlugin_zeroAccepted`. |
+| 3 | `setRedemptionStrategy(strategy, outputToken)` | AddressesProvider.sol:93 | CONFIRMED | No zero check; `test_setRedemptionStrategy_zeroAccepted`. |
+| 4 | `setFundingStrategy(strategy, inputToken)` | AddressesProvider.sol:112 | CONFIRMED | No zero check; `test_setFundingStrategy_zeroAccepted`. |
+| 5 | `setAddress(newAddress)` | AddressesProvider.sol:150 | CONFIRMED | No zero check; `test_setAddress_zeroAccepted`. |
+| 6 | `setBalancerPoolForTokens(pool)` | AddressesProvider.sol:170 | CONFIRMED | No zero check; `test_setBalancerPool_zeroAccepted`. |
+| 7 | `_setPendingOwner(newPendingOwner)` | SafeOwnableUpgradeable.sol:51 | CONFIRMED | No zero check (only `onlyOwner`); `test_setPendingOwner_zeroAccepted`. |
+| 8 | `transferOwnership(newOwner)` | SafeOwnableUpgradeable.sol:89 | CONFIRMED | No zero check (only `onlyOwner`); `test_transferOwnership_zeroAccepted`. |
+
+All eight are `onlyOwner`-gated admin configuration setters, so the impact is
+misconfiguration / permanently bricked-references (and, for the pending-owner
+pair, an ownership transfer to `address(0)` leaving the contract effectively
+ownerless until `_acceptOwner` is gated against `address(0)`) — MEDIUM, not
+HIGH: the address(0) can only be written by the owner themselves.
+
+- StorageCollision ×2 (AddressesProvider.sol:12, one per chain): **CONFIRMED
+  as a documented upgrade hazard, not an active collision.** `forge inspect
+  storage-layout` places `pendingOwner` at slot 101 — after
+  ContextUpgradeable `__gap[50]` (slots 1-50) and OwnableUpgradeable
+  `__gap[49]` (slots 52-100) — so the current layout does not overlap any OZ
+  variable. But `SafeOwnableUpgradeable`'s own NatSpec states the contract
+  class's intent: "Existing OwnableUpgradeable contracts cannot be upgraded
+  due to the extra storage variable that will shift the other." Inserting
+  `pendingOwner` before `_addresses` moves every AddressesProvider field +1
+  slot (in a plain-Ownable layout `_addresses` sits at slot 101); an in-place
+  proxy upgrade from an OwnableUpgradeable-era implementation would read
+  `pendingOwner`/`_addresses`/`plugins`/... from shifted locations and corrupt
+  stored state. Latent; benign for a from-genesis deployment, which is what
+  the invariants exercise.
+
+## Status (session 12)
+- basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
+- harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
+- credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
+- compound-v2: CEther money-market harness GREEN (3/3 invariants; 9/9 smoke).
+- hundred-bond: bond token-accounting harness GREEN (3/3 invariants; 9/9 smoke).
+- balancer-v2: Vault ledger harness GREEN (8/8 invariants at 200 and 1000
+  runs; 8/8 smoke tests); 19/19 run3 findings DISMISSED.
+- ionic-protocol: lending-market harness GREEN (3/3 invariants at 200 and 500
+  runs, 150k calls, 0 reverts; 12/12 smoke tests). All **18 run3 ionic
+  findings CONFIRMED** — 16 ZeroAddress (8 owner setters × 2 chains, each
+  smoke-pinned) and 2 StorageCollision (documented upgrade hazard; no active
+  slot overlap in the current layout).
+- Total: **2 CONFIRMED static-invisible findings** (basis-cash, harvest-ousd)
+  and **18/18 run3 ionic findings verified**; five clean harnesses
+  (credit-guild, compound-v2, hundred-bond, balancer-v2, ionic-protocol).
+- Next: 8th protocol (e.g. lido or rocket-pool) or an echidna pass over the
+  newer harnesses.
