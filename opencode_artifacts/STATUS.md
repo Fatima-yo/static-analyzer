@@ -1,6 +1,6 @@
 # Analyzer precision work — session status
 
-Date: 2026-08-04 (Phase 2 session log appended; Phase 1 log below unchanged)
+Date: 2026-08-05 (Phase 3 session log appended; Phase 1/2 logs below unchanged)
 
 ## Objective
 Reduce analyzer false-positive rate on the 22-protocol real-world corpus while
@@ -358,6 +358,50 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   (basis-cash, harvest-ousd); four clean high-value harnesses (credit-guild,
   compound-v2, hundred-bond, balancer-v2). Analyzer untouched; pytest 21
   passed / corpus 138/138 unaffected.
+
+## Phase 3 sessions 15-16 (2026-08-05) — ninth protocol: morpho-blue
+- Harness `invariant_projects/morpho-blue/` (solc 0.8.19 pinned, evm paris,
+  via_ir): vendored the full `0xbbbbbbbb...ffcb` `Morpho.sol` + interfaces +
+  libraries verbatim at `src/core/` (no source edits). Two cross-token markets
+  — A: USDC loan / WETH coll (2000 USDC/WETH, LLTV 86%, fee 10%), B: WETH loan
+  / USDC coll (1/2000, LLTV 80%, fee 0) — on MockIrm (5% APR), MockOracle
+  (price settable), MockERC20s; 8 actors (1M USDC + 1000 WETH), prank-based
+  sender (all value ERC20, no `.value()` cheatcodes), low-level swallowed
+  reverts (rocket-pool fuzzer-commit lesson). `MorphoHandler.sol` (12 fuzz
+  actions incl. liquidate with oracle shocks to 0.001%–100% of honest price),
+  `Invariants.t.sol` (10 invariants), `Smoke.t.sol` (8 tests),
+  `Debug.t.sol` (shrunk counterexample replay).
+- 10 invariants: supply-share conservation (actors + feeRecipient +
+  address(0) — covers a zero fee recipient), borrow-share conservation,
+  per-token no-leak balance-sheet (physical >= idle + counterpart collateral),
+  **per-action ledger residual in {0,1}**, market solvency. **ALL HOLD** at
+  runs=200/depth=120 and 500/300 (150k calls/invariant, 0 reverts). 8/8 smoke
+  tests pass.
+- **Found and root-caused Morpho's 1-wei repay dust**: the absolute
+  balance-sheet identity is NOT exact — the virtual-share model
+  (SharesMathLib VIRTUAL_SHARES=1e6) lets a repayment of the last borrow share
+  compute `assets` one wei above `totalBorrowAssets`, overpaying 1 wei into the
+  pool per full-book-share repay (Morpho.sol:290 comment). The gap accumulates
+  over borrow→full-repay cycles (observed 2 wei), so no fixed tolerance is
+  sound. Reformulated the ledger invariant as the exact per-action bound:
+  each action may diverge physical vs book by at most +1 (never <0 = no value
+  leak) — the `lastUsdcResidual`/`lastWethResidual` handler trackers. This is
+  also precisely the `balanceOf`-delta discipline the run3 ValueFlow detector
+  recommends.
+- **run3 cross-check: all 7 morpho-blue findings DISMISSED.** ZeroAddress
+  `setOwner`/`setFeeRecipient` are the documented governance-renouncement
+  pattern (interface: "the owner can be set to the zero address"; smoke-pinned
+  one-way door); ValueFlow supply/repay require fee-on-transfer tokens, which
+  the interface explicitly excludes (and the residual invariant would catch the
+  divergence); `liquidate` is permissionless by design; `setAuthorizationWithSig`
+  is EIP-712 `ecrecover`-guarded (detector missed the sig-check pattern);
+  `_accrueInterest` reentrancy is a read-only call to an owner-whitelisted IRM.
+- Total: 2 CONFIRMED static-invisible findings across 9 protocols
+  (basis-cash, harvest-ousd); seven clean high-value harnesses (credit-guild,
+  compound-v2, hundred-bond, balancer-v2, ionic-protocol, rocket-pool,
+  morpho-blue); 18/18 run3 ionic findings verified + 7/7 + 3/3 + 19/19 run3
+  morpho-blue/rocket-pool/balancer-v2 findings DISMISSED. Analyzer untouched;
+  pytest 21 passed / corpus 138/138 unaffected.
 
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for

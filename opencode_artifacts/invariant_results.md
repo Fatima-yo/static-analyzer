@@ -838,7 +838,97 @@ Results (two seeds):
 Conclusion: two independent fuzzers (foundry 1.7.1 invariant mode and echidna
 2.3.3) agree: the rocket-pool rETH token-accounting harness is GREEN.
 
-## Status (session 14)
+## Protocol 9: morpho-blue (Morpho lending ledger) — sessions 15-16
+
+Harness: `invariant_projects/morpho-blue/`
+- Vendored `Morpho.sol` + interfaces + libraries verbatim from the run3
+  full-code snapshot into `src/core/`, solc 0.8.19 (the real deployment
+  compiler, pinned in `foundry.toml`, `evm_version = "paris"`,
+  `via_ir = true`). No source edits to the core.
+- `src/mocks/MockERC20.sol` (standard USDC 6dp + WETH 18dp), `MockOracle.sol`
+  (returns `price_`, settable — used for liquidation shocks),
+  `MockIrm.sol` (constant 5% APR per-second WAD).
+- `test/MorphoHandler.sol` — two cross-token markets: A = loan USDC / coll
+  WETH (oracle 2000 USDC/WETH, LLTV 86%, fee 10%) and B = loan WETH / coll
+  USDC (oracle 1/2000, LLTV 80%, fee 0%). 8 actors prefunded 1M USDC + 1000
+  WETH, `targetSenders` = actors, prank-based sender redirection (all value is
+  ERC20, no ETH — the balancer-v2 playbook). Every Morpho call routes through
+  a low-level call whose revert is swallowed, so handler functions never
+  revert (the rocket-pool lesson: foundry's invariant fuzzer commits state for
+  reverted calls). Fuzz actions: supply, supplyCollateral, borrow, withdraw,
+  withdrawCollateral, repay, liquidate (oracle shocked to a random 0.001%–100%
+  of the honest price, then restored — all invariants are price-independent),
+  accrue, warp, setFee, setFeeRecipient, setOwner (governance ones owner-gated
+  while owner == OWNER).
+- `test/Invariants.t.sol` — `MorphoInvariants` (raw StdInvariant ABI), target
+  = handler, 8 targeted senders, 12 selectors; `test/Smoke.t.sol` — 8
+  deterministic tests; `test/Debug.t.sol` — shrunk-counterexample replay.
+
+Invariants (10, all exact ledger identities):
+1. `invariant_supplySharesConserved_m0/m1` — sum(actors + feeRecipient +
+   address(0)) supply shares == totalSupplyShares. HOLDS.
+2. `invariant_borrowSharesConserved_m0/m1` — sum(actors) borrow shares ==
+   totalBorrowShares. HOLDS.
+3. `invariant_usdc/wethBalanceConserved` — morpho's token balance is never
+   below the market idle pool plus the counterpart market's collateral for
+   that token (USDC = m0 idle + m1 collateral, WETH = m1 idle + m0
+   collateral). HOLDS.
+4. `invariant_usdc/wethLedgerResidual` — every token-moving action moves the
+   physical balance in lockstep with the book, or exceeds it by exactly the
+   protocol's 1-wei repay rounding. HOLDS.
+5. `invariant_marketSolvent_m0/m1` — totalSupplyAssets >= totalBorrowAssets.
+   HOLDS.
+
+Results:
+- 8/8 smoke tests PASS (roundtrips; liquidate unhealthy position; bad-debt
+  write-off keeps solvency; fee accrual credits the fee recipient;
+  insufficient-liquidity revert; zero-address + owner guards incl. the
+  documented `setOwner(0)` one-way door; same-block roundtrip creates no free
+  value).
+- 10/10 invariants HOLD at runs=200/depth=120 (24k calls per invariant, 0
+  reverts) and at `FOUNDRY_INVARIANT_RUNS=500 FOUNDRY_INVARIANT_DEPTH=300`
+  (150k calls per invariant, 0 reverts).
+
+### The harness surfaced a real protocol-rounding behavior: 1-wei repay dust
+
+The absolute balance-sheet identity (`balanceOf(morpho) == idle + collateral`)
+is NOT exact: it can diverge by more than 1 wei. Root-caused with a shrunk
+5-call counterexample (`supplyCollateral → supply → borrow → repay → repay`):
+Morpho's virtual-share accounting (`SharesMathLib`: VIRTUAL_SHARES = 1e6,
+VIRTUAL_ASSETS = 1) lets a repayment of the last borrow share compute
+`assets = toAssetsUp(shares)` one wei above `totalBorrowAssets`, so `repay`
+pulls `totalBorrowAssets + 1` into the pool while zeroing the borrow book
+(Morpho.sol:290: "`assets` may be greater than `totalBorrowAssets` by 1").
+Each full-book-share repayment of a micro-borrow cycle adds another +1 wei of
+dust (observed delta 2 across two cycles), so the cumulative gap is unbounded
+over fuzzing and no fixed tolerance is sound.
+
+Resolution: the ledger invariant was reformulated as the exact per-action
+bound — each single action may diverge physical vs book by at most +1 wei
+(repay/liquidate rounding), never less than 0 (no value leak). The handler
+records `lastUsdcResidual`/`lastWethResidual` per routed call and the residual
+invariants assert them in {0, 1}. This is both the strongest no-value-creation
+check (a mint-without-transfer, borrow-without-transfer, or flash-loan theft
+pushes the residual out of {0, 1}) and, coincidentally, exactly the
+`balanceOf`-delta discipline the run3 ValueFlow detector recommends.
+
+### Cross-reference with run3 static findings (morpho-blue, 7 findings)
+
+| # | Detector | File:line | op | Verdict | Why |
+|---|----------|-----------|-----|---------|-----|
+| 1 | ZeroAddress | Morpho.sol:95 | `setOwner` | DISMISSED | By design — the interface documents "the owner can be set to the zero address" (one-way governance renouncement, no two-step transfer). Smoke-pinned: `setOwner(0)` permanently locks governance with "not owner"; no funds at risk. |
+| 2 | ZeroAddress | Morpho.sol:139 | `setFeeRecipient` | DISMISSED | By design — same governance-renouncement pattern; fee shares simply accrue to address(0). Harness covers it: fee-share conservation sums address(0) as a tracked position, so a zero fee recipient cannot orphan book value. |
+| 3 | ValueFlow | Morpho.sol:183 | `supply` | DISMISSED | The credit equals the atomically-transferred `assets` for standard (non-fee-on-transfer) ERC20s, which the interface explicitly requires ("tokens with fees on transfer are not supported"). The residual invariant IS the recommended balanceOf-delta check and stays {0,1} across 150k calls — a FoT divergence would trip it. |
+| 4 | ValueFlow | Morpho.sol:283 | `repay` | DISMISSED | Same documented token assumption as #3; `safeTransferFrom(assets)` matches the borrow-book decrement exactly. |
+| 5 | AccessControl | Morpho.sol:347 | `liquidate` | DISMISSED | Permissionless liquidation is the intended design (incentive-bounded; requires `!_isHealthy` against the governance-set oracle). Harness drives liquidate from arbitrary actors under oracle shocks; all invariants green. |
+| 6 | AccessControl | Morpho.sol:446 | `setAuthorizationWithSig` | DISMISSED | The access control IS the EIP-712 signature check (`require(signatory != address(0) && authorization.authorizer == signatory)`); the detector missed the `ecrecover` pattern. Nonce/deadline guarded. |
+| 7 | Reentrancy | Morpho.sol:489 | `_accrueInterest` | DISMISSED | The "external call" is `IIrm.borrowRate` to an owner-whitelisted IRM (only `enableIrm`, itself onlyOwner); state mutation after a read-only trusted-dependency call is not exploitable. In all token-moving functions Morpho follows checks-effects-interactions strictly (state written before transfers/callbacks), exercised by the whole harness. |
+
+Verdict: **7/7 DISMISSED**, independently corroborated by the green
+ledger/residual suite (the residual invariants are the exact
+`balanceOf`-delta discipline the ValueFlow findings call for).
+
+## Status (session 16)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
 - harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
 - credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
@@ -860,8 +950,19 @@ Conclusion: two independent fuzzers (foundry 1.7.1 invariant mode and echidna
   (`_tick()`). All **3 run3 rocket-pool findings DISMISSED** (constructor
   ZeroAddress; burn front-run/MEV against deterministic collateral-ratio
   pricing).
-- Total: **2 CONFIRMED static-invisible findings** (basis-cash, harvest-ousd)
-  and **18/18 run3 ionic findings verified**; six clean harnesses
-  (credit-guild, compound-v2, hundred-bond, balancer-v2, ionic-protocol,
-  rocket-pool).
-- Next: 9th protocol (e.g. lido) or an echidna pass over the newer harnesses.
+- morpho-blue: Morpho lending-ledger harness GREEN (10/10 invariants at 200
+  and 500 runs, 150k calls, 0 reverts; 8/8 smoke tests). Surfaced and
+  root-caused Morpho's 1-wei repay dust (virtual-share rounding lets a
+  full-book-share repayment overpay 1 wei; cumulative gap unbounded, so the
+  ledger invariant is formulated per-action as residual in {0,1}). All **7
+  run3 morpho-blue findings DISMISSED** (zero-address owner/recipient setters
+  and permissionless liquidate by design; ValueFlow supply/repay under the
+  documented non-FoT token assumption — the residual invariant is the exact
+  balanceOf-delta discipline the detector calls for; ecrecover auth and
+  trusted-IRM accrue FPs).
+- Total: **2 CONFIRMED static-invisible findings** (basis-cash, harvest-ousd),
+  **18/18 run3 ionic findings verified**, and **7/7 + 3/3 + 19/19 run3
+  morpho-blue/rocket-pool/balancer-v2 findings DISMISSED**; seven clean
+  harnesses (credit-guild, compound-v2, hundred-bond, balancer-v2,
+  ionic-protocol, rocket-pool, morpho-blue).
+- Next: an echidna pass over the morpho-blue harness, or the 10th protocol.
