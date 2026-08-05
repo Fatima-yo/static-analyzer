@@ -715,7 +715,130 @@ HIGH: the address(0) can only be written by the owner themselves.
   stored state. Latent; benign for a from-genesis deployment, which is what
   the invariants exercise.
 
-## Status (session 12)
+## Protocol 8: rocket-pool (rETH token accounting) — sessions 13-14
+
+Harness: `invariant_projects/rocket-pool/`
+- Vendored `RocketTokenRETH.sol` + `RocketBase.sol` verbatim from the run1
+  full-code snapshot into `src/contract/contract/token/` and
+  `src/contract/contract/`, solc 0.7.6 (the real rETH deployment compiler),
+  matching the compound-v2 playbook. No source edits to the token.
+- `test/MockStorage.sol` — RocketStorage stand-in exposing the uint/address
+  maps the token reads (`getUint`, `setUserDepositBlock`, ...);
+  `test/MockDepositPool.sol` — a pool where all ETH is excess;
+  `deposit()` sets `user.deposit.block = block.number`, `mintReth` /
+  `depositExcessReth` call the token with the pool as `msg.sender` (mirroring
+  the real mint/excess gating); `test/MockNetworkBalances.sol` — oracle that
+  only ever receives honest reports; `test/MockDAOProtocolSettingsNetwork.sol`
+  — pins `network.reth.deposit.delay = 10`, `network.reth.collateral.rate =
+  0.9 ether`.
+- `test/Actor.sol` — 8 real on-chain users, each holding 100 ETH + 250 rETH;
+  deposit/depositAndMint/burn/transfer execute with the actor as `msg.sender`
+  (no prank-based balance redirection — the compound-v2 lesson).
+- `test/RocketHandler.sol` — entry points deposit/depositAndMint/burn/
+  transfer/stake/advanceBlocks/depositExcess/depositExcessCollateral. Every
+  routed action first calls `_tick()` = `VM.roll(block.number + DEPOSIT_DELAY
+  + 1)` so the `_beforeTokenTransfer` deposit-delay guard always passes (see
+  the foundry-bug note below). `_bound` preserves in-range values and maps
+  out-of-range fuzz inputs via modulo; burns are capped at the actor's rETH
+  balance so the only legitimate reverts left are liquidity-bound.
+- `test/Invariants.t.sol` — `RocketInvariants` (raw StdInvariant ABI), target
+  = handler, 8 targeted senders, `targetSelectors` = deposit + burn;
+  `test/Smoke.t.sol` — 8 deterministic tests.
+
+Invariants (all exact):
+1. `invariant_ethConserved` — `sum(actor ETH) + handler + rETH + pool +
+   validator == CONSERVATION_CONSTANT (2800 ether = 2000 seed + 8×100)`.
+   HOLDS.
+2. `invariant_rethSupplyConserved` — `sum(actor rETH) + handler rETH ==
+   reth.totalSupply()`. HOLDS.
+3. `invariant_collateralRateBounded` — `getCollateralRate() <= 1 ether`.
+   HOLDS.
+4. `invariant_rethFullyBacked` — `getEthValue(totalSupply) <= realBacking()`.
+   HOLDS.
+
+Results:
+- 8/8 smoke tests PASS, incl. the deposit-delay guard driven *directly*
+  through the protocol (bypassing the handler `_tick()`), the liquidity
+  revert, the oracle-inflation boundary, and mint-gating.
+- 4/4 invariants HOLD at runs=200/depth=120 (24k calls per invariant, 0
+  reverts) and at `FOUNDRY_INVARIANT_RUNS=500 FOUNDRY_INVARIANT_DEPTH=300`
+  (150k calls per invariant, 0 reverts). The two conservation checks are
+  exact.
+
+### Foundry bug: the invariant fuzzer commits state for reverted calls (the real find)
+
+The harness was initially red: `invariant_ethConserved` and
+`invariant_collateralRateBounded` showed phantom conservation breaks where an
+actor's balance silently dropped to 0 immediately after a *reverted* fuzz
+call — e.g. actor a2 = 0 with `sum` −100e18 in the very next state after a
+deposit-delay revert on actor a7; and the ethConserved counterexample ended
+with `a7 = 0` despite its last `DebugDeltas` showing `a7 =
+214231133446067935592`.
+
+Root cause is executor-level, not contract-level:
+- The invariant fuzzer **commits the state changeset for reverted calls too**
+  (`foundry_invariant.rs:547`, `current_run.executor.commit(&mut call_result)`,
+  sits *outside* the `!call_result.reverted` guard — `collect_data` at :557 is
+  gated, the commit is not). Under reverts, the post-revert revm changeset is
+  applied to the journaled state and a touched account can end up zeroed.
+- Isolation: deposit-only and burn-only campaigns PASS (24k calls, 0 reverts
+  each) on the same seed — the leak needs interleaved deposit+burn, i.e. the
+  deposit-delay reverting path.
+- The exact shrunk 8-call counterexample **conserves under plain EVM replay**
+  (prank + try/catch, and as a DappTest) with `a7 = 214231133446067935592` —
+  identical bytes, identical guard, no leak outside the fuzzer's `call_raw`.
+- The leak never appears after a successful call; it appears only once a
+  reverting `call_raw` fuzz call has been committed.
+
+Harness resolution: the deposit-delay guard legitimately blocks same-block
+deposit→transfer, and reverts are the trigger, so the handler advances the
+chain past DEPOSIT_DELAY with `_tick()` — modeling the passage of time the
+real protocol demands. This removes reverts from the fuzzed surface; the
+failing seed now passes all 4 invariants with 0 reverts, and the guard is
+still pinned by a smoke test that drives the protocol directly.
+
+### Cross-reference with run3 static findings (rocket-pool, 3 MEDIUM findings)
+
+| # | Detector | File:line | op | Verdict | Why |
+|---|----------|-----------|-----|---------|-----|
+| 1 | ZeroAddress | RocketBase.sol:105 | ctor `_rocketStorageAddress` | DISMISSED | Construction-time, single immutable storage reference assigned once at deploy; not attacker-controlled. Harness deploys it with a real MockStorage and runs every token path against it. |
+| 2 | FrontRunning | RocketTokenRETH.sol:132 | `burn` | DISMISSED | Burn's ETH out is `getEthValue`, set by the protocol collateral rate — a deterministic, oracle-fed price with no order book/AMM leg to front-run; deposits are additionally gated by the deposit-delay guard. Exercised ~12k burn calls per invariant at 0 reverts. |
+| 3 | MEV | RocketTokenRETH.sol:132 | `burn` | DISMISSED | Same pricing argument as FrontRunning: collateral-ratio pricing is not MEV-extractable. |
+
+Verdict: **3/3 DISMISSED**, independently corroborated by the green
+conservation/backing suite.
+
+## Protocol 8 cross-check: Echidna on the rocket-pool harness (session 14)
+
+Setup: echidna 2.3.3 (`~/.config/.foundry/bin/echidna`) + `crytic-compile`
+0.4.2 in a dedicated venv (`/tmp/opencode/echidna_venv`), compiled through
+crytic-compile's Foundry framework (`forge build`). solc 0.7.6 wired into
+`solc-select` (`~/.solc-select/artifacts/solc-0.7.6`) matching the project's
+`foundry.toml` `solc` pin. `VM.deal` cheatcode support verified empirically
+with a probe before the campaign (the handler funds its 8 actors with `deal`
+in the constructor).
+
+Harness additions:
+- `test/EchidnaRocketPool.sol` — composition wrapper over `RocketHandler`;
+  forwards the 2 fuzz actions (deposit, burn) and exposes 4 `echidna_*` view
+  properties (eth_conserved, reth_supply_conserved, collateral_rate_bounded,
+  reth_fully_backed).
+- `echidna.yaml` — `testMode: property`, `testLimit: 50000`, `seqLen: 100`,
+  `filterBlacklist: false` with an explicit whitelist of the 2 action
+  functions.
+
+Results (two seeds):
+- Seed A (default) and seed 12345: **all 4 properties passing** (~50k tests,
+  100-deep sequences, ~50k calls, 7198 instr / 8 codehashes coverage).
+  Independent confirmation of the foundry suite: the rETH conservation and
+  backing invariants hold under an unrelated fuzzer, with the foundry
+  invariant-fuzzer revert-journaling bug absent (echidna never commits
+  reverted-call state).
+
+Conclusion: two independent fuzzers (foundry 1.7.1 invariant mode and echidna
+2.3.3) agree: the rocket-pool rETH token-accounting harness is GREEN.
+
+## Status (session 14)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
 - harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
 - credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
@@ -728,8 +851,17 @@ HIGH: the address(0) can only be written by the owner themselves.
   findings CONFIRMED** — 16 ZeroAddress (8 owner setters × 2 chains, each
   smoke-pinned) and 2 StorageCollision (documented upgrade hazard; no active
   slot overlap in the current layout).
+- rocket-pool: rETH token-accounting harness GREEN (4/4 invariants at 200 and
+  500 runs, 150k calls, 0 reverts; 8/8 smoke tests; echidna 2.3.3 cross-check
+  on 2 seeds, all 4 properties passing). Root-caused a second foundry
+  invariant-fuzzer bug — it **commits state changesets for reverted calls**
+  (foundry_invariant.rs:547), zeroing actor balances after reverts — and
+  resolved it in-harness by modeling the deposit-delay block advance
+  (`_tick()`). All **3 run3 rocket-pool findings DISMISSED** (constructor
+  ZeroAddress; burn front-run/MEV against deterministic collateral-ratio
+  pricing).
 - Total: **2 CONFIRMED static-invisible findings** (basis-cash, harvest-ousd)
-  and **18/18 run3 ionic findings verified**; five clean harnesses
-  (credit-guild, compound-v2, hundred-bond, balancer-v2, ionic-protocol).
-- Next: 8th protocol (e.g. lido or rocket-pool) or an echidna pass over the
-  newer harnesses.
+  and **18/18 run3 ionic findings verified**; six clean harnesses
+  (credit-guild, compound-v2, hundred-bond, balancer-v2, ionic-protocol,
+  rocket-pool).
+- Next: 9th protocol (e.g. lido) or an echidna pass over the newer harnesses.
