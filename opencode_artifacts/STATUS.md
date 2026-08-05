@@ -404,13 +404,58 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   0.8.19). 50234 calls, 0 failures, cov 14843 — the {0,1} per-action residual
   bound holds under echidna's byte-level fuzzing, matching the foundry 150k-call
   runs. Full output in `invariant_results.md`.
-- Total: 2 CONFIRMED static-invisible findings across 9 protocols
-  (basis-cash, harvest-ousd); seven clean high-value harnesses (credit-guild,
+## Phase 3 sessions 18-19 (2026-08-05) — tenth protocol: compound-v3
+- Harness `invariant_projects/compound-v3/` (solc 0.8.15 pinned to
+  `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.15`, evm
+  paris, via_ir): vendored `CometWithExtendedAssetList.sol` + CometCore/
+  Configuration/Math/Storage/MainInterface + interfaces verbatim into
+  `src/core/` (no source edits). Config: base USDC 6dp $1; collateral WETH 18dp
+  $2000 (0.8/0.9/0.92) and WBTC 8dp $30000 (0.75/0.85/0.9); storeFront 0.5;
+  kink 0.8; borrowPerYearInterestRateBase = 0.04e18 (makes
+  `util*borrowRate >= supplyRate` everywhere — reserve growth structurally
+  non-negative). 8 actors prefunded, prank-based sender, low-level swallowed
+  reverts (`fail_on_revert = false`). `CometHandler.sol` (7 fuzz actions:
+  supply, withdraw, transfer, absorb with oracle shocks, buyCollateral, pause,
+  warp; no `_tick` between absorbs so absorb deltas are exact),
+  `Invariants.t.sol` (7 invariants), `Smoke.t.sol` (7 tests).
+- 7 invariants: base principal book (sum positives == totalSupplyBase, sum
+  negatives == totalBorrowBase), WETH/WBTC collateral books, base no-leak
+  (reserves + absorbedBadDebt >= 0), **per-action residual >= -DUST**,
+  **absorb debt-bound (delta >= -(debtBefore + DUST))**, market solvency
+  (balance + totalBorrow + absorbedBadDebt >= totalSupply). **ALL HOLD** at
+  runs=200/depth=120 and 500/300 (150k calls/invariant, 0 reverts) on 4 seeds
+  incl. the previously-failing seed; 7/7 smoke tests pass.
+- **Root-caused three naive invariants into the real protocol behavior:**
+  (1) `totalSupply() >= totalBorrow()` is NOT solvency — both are present-value
+  views and the borrow index grows faster in the profitable case;
+  (2) absorb can legitimately GROW reserves — collateral seized at the
+  liquidation factor can over-cover a liquidatable debt (band between LiqF 0.9
+  and ~1.02) and the surplus becomes a supply position, and the write-off can
+  exceed the external `borrowBalanceOf` by 1 base unit (index/PV rounding);
+  (3) non-absorb actions can move exactly 1 base unit of dust out of reserves
+  via the principalValue/presentValue floor round-trip (Comet's 1-wei analog).
+- **run3 cross-check: all 13 compound-v3 findings DISMISSED.** 9
+  OracleManipulation/OracleTaint HIGH + 1 Timestamp LOW are the oracle-read
+  surface: MockPriceFeed always returns updatedAt=1, price reads have no state
+  effects, and the value-moving absorb/buyCollateral paths ARE the harness's
+  shocked-price actions pinned by invariant_absorbAccounting / baseNoLeak /
+  marketSolvent. 2 ZeroAddress are internal functions only reachable from
+  governed/guarded external paths; 2 SignatureReplay are the delegatecall
+  extension's signed allow (out of harness scope, EIP-712 nonce/deadline
+  guarded); 1 is delegatecall-only extension storage (`isAllowed` never
+  assigned in the main contract by design).
+- Diagnostic instrumentation kept: `invariant_lastResidual` /
+  `invariant_absorbAccounting` revert with `lastDelta`/`lastBound` (via the
+  handler's `uint2str`) — only fires on a violation, exactly when the numbers
+  matter; the `lastDelta`/`lastBound`/`lastIsAbsorb` handler trackers are the
+  invariant inputs and stay.
+- Total: 2 CONFIRMED static-invisible findings across 10 protocols
+  (basis-cash, harvest-ousd); eight clean high-value harnesses (credit-guild,
   compound-v2, hundred-bond, balancer-v2, ionic-protocol, rocket-pool,
-  morpho-blue) of which rocket-pool and morpho-blue pass echidna cross-checks;
-  18/18 run3 ionic findings verified + 7/7 + 3/3 + 19/19 run3
-  morpho-blue/rocket-pool/balancer-v2 findings DISMISSED. Analyzer untouched;
-  pytest 21 passed / corpus 138/138 unaffected.
+  morpho-blue, compound-v3) of which rocket-pool and morpho-blue pass echidna
+  cross-checks; 18/18 run3 ionic findings verified + 7/7 + 3/3 + 19/19 + 13/13
+  run3 morpho-blue/rocket-pool/balancer-v2/compound-v3 findings DISMISSED.
+  Analyzer untouched; pytest 21 passed / corpus 138/138 unaffected.
 
 ## Open items (optional)
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for

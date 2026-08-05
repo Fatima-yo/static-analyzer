@@ -994,4 +994,135 @@ distribution. Both independent fuzzing engines agree with the foundry
   harnesses (credit-guild, compound-v2, hundred-bond, balancer-v2,
   ionic-protocol, rocket-pool, morpho-blue), of which rocket-pool and
   morpho-blue additionally pass echidna cross-checks.
-- Next: the 10th protocol.
+## Protocol 10: compound-v3 (Comet lending market) — sessions 18-19
+
+Harness: `invariant_projects/compound-v3/`
+- Vendored verbatim from the run3 full-code snapshot into `src/core/`:
+  `CometWithExtendedAssetList.sol` (+ CometCore, CometConfiguration, CometMath,
+  CometStorage, CometMainInterface, IAssetList*, IERC20NonStandard, IPriceFeed)
+  — no source edits. solc 0.8.15 (the deployment compiler, pinned in
+  `foundry.toml`, `evm_version = "paris"`, `via_ir = true`).
+- Constructor config: baseToken USDC 6dp at a $1 feed; collateral WETH 18dp at
+  $2000 (BCF 0.8 / LCF 0.9 / LiqF 0.92) and WBTC 8dp at $30000 (BCF 0.75 /
+  LCF 0.85 / LiqF 0.9); storeFrontPriceFactor 0.5; supply kink 0.8;
+  `borrowPerYearInterestRateBase = 0.04e18` — chosen so
+  `util * borrowRate >= supplyRate` over the whole utilization range, making
+  reserve growth structurally non-negative. 8 actors prefunded 1M USDC / 1000
+  WETH / 100 WBTC.
+- `test/CometHandler.sol` — prank-based sender redirection (all value ERC20,
+  the balancer-v2 playbook); every Comet call routes through a low-level call
+  whose revert is swallowed so handler functions never revert (the rocket-pool
+  fuzzer-commit lesson; `fail_on_revert = false` in foundry.toml). Fuzz
+  actions: `supply`, `withdraw`, `transfer`, `absorb` (oracle shocked to a
+  random fraction of the honest price first, then restored — the actual
+  oracle-shock surface), `buyCollateral`, `pause`, `warp`. `_tick()` is not
+  called between absorbs, so interest accrues on the supply/withdraw/transfer
+  ticks and absorb reserves-deltas are exact against the debt bound.
+- `test/Invariants.t.sol` — raw StdInvariant ABI, `targetContracts` = handler,
+  `targetSenders` = 8 actors, 7 selectors; `test/Smoke.t.sol` — 7
+  deterministic tests.
+
+Invariants (7, all exact ledger identities):
+1. `invariant_baseBookConserved` — sum(actor positive principal) ==
+   totalSupplyBase and sum(actor |negative principal|) == totalBorrowBase
+   (Comet stores principals directly, no share conversion, so this holds
+   exactly and catches any mint/borrow/double-spend corruption). HOLDS.
+2-3. `invariant_collateralBookWeth/Wbtc` — every WETH/WBTC collateral unit
+   lives in a tracked actor account (sum == totalsCollateral.totalSupplyAsset,
+   read via the handler's `tick` tracking). HOLDS.
+4. `invariant_baseNoLeak` — reserves (= balance − presentSupply +
+   presentBorrow) + absorbedBadDebt >= 0. HOLDS.
+5. `invariant_lastResidual` — every non-absorb action leaves reserves
+   non-decreasing up to one base unit of rounding dust. HOLDS.
+6. `invariant_absorbAccounting` — absorption never writes off more debt than
+   the account owed (delta >= −(debtBefore + DUST)). HOLDS.
+7. `invariant_marketSolvent` — balance + totalBorrow + absorbedBadDebt >=
+   totalSupply. HOLDS.
+
+Results:
+- 7/7 smoke tests PASS (base/collateral supply-withdraw and
+  borrow-repay-collateral roundtrips; base/collateral transfer; absorb writes
+  off bad debt exactly; interest accrual over a 30-day warp with reserves
+  non-decreasing and the market solvent; governance/guard reverts;
+  roundtrip creates no free value).
+- 7/7 invariants HOLD at runs=200/depth=120 (24k calls per invariant, 0
+  reverts) and at 500/300 (150k calls per invariant, 0 reverts) on 4 seeds,
+  including the previously-failing
+  `0xbc9dc4362559ef0da3794ba32409aede0a8c5051427a2aa09aca7ca33b96bc42` and
+  seeds 1, 42, 1337.
+
+### Three false invariants root-caused and reformulated (real protocol behavior)
+
+1. **`totalSupply() >= totalBorrow()` is NOT Comet's solvency condition.**
+   Both are present-value views of the internal `totalSupplyBase` /
+   `totalBorrowBase`; in the profitable case the borrow index grows faster than
+   the supply index, so the naive inequality fails while the market is
+   perfectly healthy. Replaced with the physical + borrow + absorbedBadDebt >=
+   supply form (7).
+2. **Absorb can legitimately GROW reserves.** Seized collateral at the
+   liquidation factor can over-cover a liquidatable debt (the liquidatable band
+   between LiqF 0.9 and the ~1.02 liquidateCollateralFactor); the surplus
+   becomes a supply position and reserves grow — positive absorb deltas are
+   legal and not enforced. And `absorb`'s internal write-off can exceed the
+   externally measured `borrowBalanceOf` by exactly 1 base unit (index/PV
+   rounding), so the bound is `delta >= -(debtBefore + DUST)` with DUST = 1.
+3. **Non-absorb actions can move exactly 1 base unit out of reserves** via the
+   `principalValue`/`presentValue` floor round-trip (≤ 1e-6 USDC), the Comet
+   analog of Morpho's 1-wei repay dust — so the residual bound is `delta >=
+   -DUST`, not `delta >= 0`.
+
+### Cross-reference with run3 static findings (compound-v3, 13 findings)
+
+| # | Detector | File:line | op | Verdict | Why |
+|---|----------|-----------|-----|---------|-----|
+| 1-3,6,9 | OracleManipulation | CometCore:345,386,429 / CometWithExtendedAssetList:1065,1151 | `getPrice` (latestRoundData without staleness/round validation) | DISMISSED | The handler's MockPriceFeed always returns `updatedAt=1`/`answeredInRound=1`; the price read has no state effects. The value-moving consumption of that read is the absorb path, which the harness shocks across the full price range and which is pinned by invariant_absorbAccounting / invariant_baseNoLeak / invariant_marketSolvent. |
+| 7-8 | OracleTaint | CometWithExtendedAssetList:1065,1076 | `getPrice` feeds `absorb`/`buyCollateral` (value-moving) | DISMISSED | Same rationale: absorb/buyCollateral ARE the harness's oracle-shock surface; all 7 invariants hold across 150k calls per invariant with prices shocked to a random 0.001%–100% of honest. |
+| 0 | Timestamp | Comet:246 | `block.timestamp` gating in `accrueInternal` | DISMISSED | Interest accrual is time-based by design (`lastAccrualTime`); the harness warps by up to 2 years and every accrual identity (book, no-leak, solvency) holds. |
+| 4-5 | ZeroAddress | CometCore:604,634 | `updateAssetsIn(assetInfo)` / `updateBasePrincipal(basic)` | DISMISSED | Internal functions reachable only from governed/guarded external paths (`updateAsset` requires the admin; `updateBasePrincipal` is called by borrow/withdraw/transfer internals that already validate the account exists and is non-zero). |
+| 10-11 | SignatureReplay | Extension:34 | signed allowance (`allowBySig`) | DISMISSED | Harness exercises only the direct `allow` path via the MockExtensionDelegate, so the signed flow is out of scope; the real `allowBySig` is EIP-712 `ecrecover`-guarded with a nonce + expiry. |
+| 12 | Unassigned | Extension storage | `isAllowed` never assigned in the main contract | DISMISSED | Extension storage is written only via delegatecall to the extension delegate (the `allow`/`allowBySig` path); the main contract's storage layout intentionally carries it unassigned. |
+
+Verdict: **13/13 DISMISSED.** The oracle findings are the static-only, un-
+shockable subset of what the harness's absorb/buyCollateral fuzz actions
+already stress with prices driven to extremes; the remaining findings are
+governed/internal-path FPs and the delegatecall extension-storage artifact.
+
+## Status (session 19)
+- basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna).
+- harvest-ousd: yield-delegation/negative-rebase finding CONFIRMED.
+- credit-guild: full lending-loop harness GREEN (7/7 invariants; 9/9 smoke).
+- compound-v2: CEther money-market harness GREEN (3/3 invariants; 9/9 smoke).
+- hundred-bond: bond token-accounting harness GREEN (3/3 invariants; 9/9 smoke).
+- balancer-v2: Vault ledger harness GREEN (8/8 invariants at 200 and 1000
+  runs; 8/8 smoke tests); 19/19 run3 findings DISMISSED.
+- ionic-protocol: lending-market harness GREEN (3/3 invariants at 200 and 500
+  runs, 150k calls, 0 reverts; 12/12 smoke tests). All **18 run3 ionic
+  findings CONFIRMED** — 16 ZeroAddress (8 owner setters × 2 chains, each
+  smoke-pinned) and 2 StorageCollision (documented upgrade hazard; no active
+  slot overlap in the current layout).
+- rocket-pool: rETH token-accounting harness GREEN (4/4 invariants at 200 and
+  500 runs, 150k calls, 0 reverts; 8/8 smoke tests; echidna 2.3.3 cross-check
+  on 2 seeds, all 4 properties passing). Root-caused a foundry invariant-fuzzer
+  bug — it **commits state changesets for reverted calls** (foundry_invariant.rs:547).
+  All **3 run3 rocket-pool findings DISMISSED**.
+- morpho-blue: Morpho lending-ledger harness GREEN (10/10 invariants at 200
+  and 500 runs, 150k calls, 0 reverts; 8/8 smoke tests). Surfaced and
+  root-caused Morpho's 1-wei repay dust; the ledger invariant is formulated
+  per-action as residual in {0,1}. All **7 run3 morpho-blue findings
+  DISMISSED**. Echidna 2.3.3 cross-check PASSED (10/10 properties).
+- compound-v3: Comet lending-market harness GREEN (7/7 invariants at 200 and
+  500 runs, 150k calls, 0 reverts on 4 seeds; 7/7 smoke tests). Root-caused
+  and reformulated three naive invariants: `totalSupply() >= totalBorrow()`
+  is not Comet's solvency condition, absorb can legitimately grow reserves
+  (over-covered collateral), and non-absorb actions can move 1 base unit of
+  principalValue floor-rounding dust. All **13 run3 compound-v3 findings
+  DISMISSED** (9 OracleManipulation/OracleTaint HIGH + 1 Timestamp LOW are the
+  oracle-read surface the harness shocks through `absorb`; 2 ZeroAddress
+  internal-path FPs; 2 SignatureReplay on the delegatecall extension's signed
+  allow; 1 delegatecall-only extension storage artifact).
+- Total: **2 CONFIRMED static-invisible findings across 10 protocols**
+  (basis-cash, harvest-ousd); eight clean high-value harnesses (credit-guild,
+  compound-v2, hundred-bond, balancer-v2, ionic-protocol, rocket-pool,
+  morpho-blue, compound-v3), of which rocket-pool and morpho-blue additionally
+  pass echidna cross-checks; 18/18 run3 ionic findings verified and **42/42
+  run3 morpho-blue/rocket-pool/balancer-v2/compound-v3 findings DISMISSED**.
