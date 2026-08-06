@@ -457,7 +457,56 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   run3 morpho-blue/rocket-pool/balancer-v2/compound-v3 findings DISMISSED.
   Analyzer untouched; pytest 21 passed / corpus 138/138 unaffected.
 
-## Open items (optional)
+## Phase 3 session 20 (2026-08-05) — eleventh protocol: monolith-market
+- Harness `invariant_projects/monolith-market/` (solc 0.8.13 pinned to
+  `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.13`, evm
+  paris, via_ir): vendored Lender/Vault/Factory/Coin/InterestModel + solmate
+  verbatim into `src/` (no source edits). Factory operator is `0x2000` (a
+  distinct account, constructor-set), lender operator actors[0], fee recipient
+  actors[1]; the 1% factory fee is set BEFORE `factory.deploy` (the Lender
+  caches `cachedGlobalFeeBps` only at construction + on a successful
+  `accrueInterest`). `MonolithHandler.sol` (6 actors, prank-based sender,
+  low-level swallowed reverts; 19 fuzz actions incl. liquidate with 0.1%–100%
+  price shocks, redeem, attemptWriteOff, vault ERC4626 actions, shockPrice
+  incl. stale 26h–3d feed, warp to 365d, fee/ratio/half-life setters, local+
+  global reserve pulls), `Invariants.t.sol` (5 invariants), `Smoke.t.sol`
+  (8 tests).
+- 5 invariants (exact ledger identities): coinLedger
+  (supply == freeDebt + paidDebt − localReserves − globalReserves),
+  paidSharesConserved, vaultSharesConserved (MIN_SHARES dead-share book),
+  vaultCovered, lenderHoldsNoCoin. **4/5 HOLD** at runs=200/depth=120 and
+  500/300 (150k calls/invariant, 0 reverts, seeds 42/1337); **8/8 smoke pass**.
+- **CONFIRMED finding #3 (HIGH, ledger unbacking): `Lender.writeOff` on the
+  sole remaining debtor deletes debt without burning Coin.** writeOff is
+  permissionless; it deletes the borrower's debt then redistributes it to the
+  remaining debtors ONLY `if (totalDebt > 0)` (Lender.sol:318) — when the
+  target is the last debtor the debt vanishes with no Coin burn, permanently
+  breaking `supply == debt − reserves`. Deterministic 2-call counterexample
+  (`combinedBorrow` → `attemptWriteOff`): after ~30h of staleness (inside the
+  49h unwind window `getCollateralPrice` decays the price while leaving
+  `allowLiquidations` true) a single borrower's 5.768e26 Coin debt is deleted
+  with supply unchanged → all Coin unbacked. Also reachable via a >99% price
+  collapse in a single-borrower market. NOT in run3.
+- **run3 cross-check: all 26 monolith-market findings DISMISSED** (9
+  Reentrancy HIGH = CEI-pattern flags on pure accounting / standard-ERC20
+  transfers / order-smell reserve pulls with no reentry vector; 5 AccessControl
+  HIGH = permissionless-by-design deposit/mint/redeem/liquidate; 7 ZeroAddress
+  = constructor + operator-setter inputs; 2 FrontRunning + 1 MEV = approve
+  overwrite and oracle-less ERC4626; 2 ValueFlow = fee-on-transfer assumption
+  on protocol-own ERC20s). The harness exercised every flagged function
+  thousands of times with the exact ledger identities green — none corresponds
+  to the writeOff bug.
+- Harness robustness: at extreme interest-inflated debt (fast half-life +
+  long warps) the protocol's own `getDebtOf`/`getRedeemAmountOut` overflow
+  (solmate mulDivDown, shares×debt > 2^256), so the handler try/catch-wraps
+  those reads (never-revert discipline); documented as a low availability note.
+- Total: **3 CONFIRMED static-invisible findings across 11 protocols**
+  (basis-cash, harvest-ousd, monolith-market); eight clean harnesses; **18/18
+  run3 ionic findings CONFIRMED** + **116/116 run3 findings across the other 8
+  harnessed protocols DISMISSED**. Analyzer untouched; pytest 21 passed /
+  corpus 138/138 unaffected.
+
+
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.
 - Decide whether the 3 remaining CEther `requireNoError` IntegerOverflow

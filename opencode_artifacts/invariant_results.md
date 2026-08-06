@@ -1126,3 +1126,156 @@ governed/internal-path FPs and the delegatecall extension-storage artifact.
   morpho-blue, compound-v3), of which rocket-pool and morpho-blue additionally
   pass echidna cross-checks; 18/18 run3 ionic findings verified and **42/42
   run3 morpho-blue/rocket-pool/balancer-v2/compound-v3 findings DISMISSED**.
+
+## Protocol 11: monolith-market (Lender/Vault lending market) — session 20
+
+Harness: `invariant_projects/monolith-market/`
+- Vendored verbatim from the run3 full-code snapshot into `src/`: `Lender.sol`,
+  `Vault.sol`, `Factory.sol`, `Coin.sol`, `InterestModel.sol` + solmate deps
+  (no source edits). solc 0.8.13 (the deployment compiler, pinned in
+  `foundry.toml`, `evm_version = "paris"`, `via_ir = true`).
+- Deployment: Factory operator is `0x2000` (constructor-set — a distinct
+  account, NOT actors[0]); lender operator is actors[0], fee recipient
+  actors[1]. The 1% factory fee is set BEFORE `factory.deploy` — the Lender
+  caches `cachedGlobalFeeBps` only at construction and on a successful
+  `accrueInterest`, so a post-deploy fee change would never reach the accrual.
+  One collateral asset (MockCollateral WSTONE) at a settable MockChainlinkFeed
+  ($1800, 8dp), `collateralFactor` 75%, `minDebt` 10 Coin, 30-day deadline.
+- `test/MonolithHandler.sol` — 6 actors prefunded 1M collateral; prank-based
+  sender redirection (all value ERC20); every Lender/Vault call routes through
+  a low-level call whose revert is swallowed so handler functions never revert
+  (the rocket-pool fuzzer-commit lesson; `fail_on_revert = false`). 19 fuzz
+  actions: `adjustDeposit/adjustBorrow/adjustRepay/adjustWithdraw`,
+  `combinedBorrow`, `optInRedemption/optOutRedemption`, `liquidate` (feed
+  shocked to 0.1%–100% of honest price, restored), `redeem`, `attemptWriteOff`
+  (bounded debtor/to indexes), `vaultDeposit/vaultMint/vaultWithdraw/
+  vaultRedeem` (ERC4626), `shockPrice` (fresh honest / 50–150% / stale
+  26h–3d), `warp` (0–365d), `operatorSetter` (fee/ratio/half-life setters),
+  `pullLocalReserves`, `pullGlobalReserves`.
+- `test/Invariants.t.sol` — raw StdInvariant ABI, `targetContracts` = handler,
+  `targetSenders` = 6 actors, 19 selectors; `test/Smoke.t.sol` — 8
+  deterministic tests.
+
+Invariants (5, all exact ledger identities):
+1. `invariant_coinLedger` — `coin.totalSupply() == totalFreeDebt +
+   totalPaidDebt - accruedLocalReserves - accruedGlobalReserves`. Every
+   borrow/repay/redeem/liquidate/write-off/interest-accrual/reserve-pull moves
+   supply and the debt+reserve book by the same amount, so a double mint, a
+   skipped burn or a share-book mismatch breaks it exactly. **VIOLATED
+   (CONFIRMED finding).**
+2. `invariant_paidSharesConserved` — `sum(paidDebtShares[actor]) ==
+   totalPaidDebtShares` (the redemption index only rewrites free-debt shares).
+   HOLDS.
+3. `invariant_vaultSharesConserved` — the vault share book is exactly the 6
+   actors plus the MIN_SHARES (1e16) dead shares at address(0) donated against
+   the ERC4626 inflation attack. HOLDS.
+4. `invariant_vaultCovered` — `vault.totalAssets() >= vault.totalSupply()`
+   (shares always 1:1 covered; no share inflation). HOLDS.
+5. `invariant_lenderHoldsNoCoin` — every Coin that reaches the lender (repay,
+   redeem, liquidate) is burned in the same call. HOLDS.
+
+Results:
+- 8/8 smoke tests PASS (deposit/borrow/repay/withdraw round-trip, solvency +
+  authorization guards, liquidation at a 5% price shock, redeem against free
+  debt with lazy collateral debit, vault deposit/withdraw round-trip with
+  MIN_SHARES dead-share accounting, interest accrual over a 30-day warp +
+  global reserve pull, writeOff last-debtor pin).
+- 4/5 invariants HOLD at runs=200/depth=120 (24k calls per invariant, 0
+  reverts) and at 500/300 (150k calls per invariant, 0 reverts) on seeds 42
+  and 1337.
+- `invariant_coinLedger` FAILS deterministically. Stable 2-call shrunk
+  counterexample (identical across runs, seeds, and the 500/300 deep run):
+  1. `combinedBorrow(3647824450842923331174363683827,
+     14928331485464224384976708264443215047998206326689562727012306)` from
+     actor 0x1001 (deposit + borrow).
+  2. `attemptWriteOff(27560079151)` from actor 0x1000 — `_tick` advances ~30h
+     so the feed is stale (25h threshold, in the 49h unwind window where the
+     price decays but liquidations stay enabled), then writeOff fires.
+  Debug replay: before the write-off `supply = 576805532797118723576488134`,
+  `paid = 576805532797118723576488134`, ledger TRUE (single borrower, zero
+  free debt, zero reserves); after, `paid = 0`, `supply` unchanged,
+  `loc = 12495208464770593466978`, `glo = 126214226916874681484`, ledger
+  FALSE — the entire Coin supply is unbacked.
+
+### CONFIRMED finding (HIGH): `writeOff` on the sole remaining debtor deletes debt without burning Coin
+
+- Location: `src/Lender.sol::writeOff` (lines 302-332), `decreaseDebt`
+  (lines 422-450).
+- Mechanism: `writeOff` is **permissionless** (no access control). When a
+  borrower is 100× undercollateralized (`debt > collateralValue * 100`,
+  line 313) and liquidations are enabled, it (1) `decreaseDebt(borrower,
+  type(uint).max)` — deletes the borrower's whole debt and its shares but
+  **burns no Coin** (line 315), then (2) redistributes that debt to the
+  remaining debtors via the pool totals — **but only `if (totalDebt > 0)`**
+  (line 318). When the write-off target is the *sole remaining debtor* the
+  redistribution block is skipped and the debt simply vanishes while Coin
+  supply stays put. The identity `supply == freeDebt + paidDebt - reserves`
+  breaks permanently: the Coin is unbacked.
+- Reachability (no extreme setup needed): the harness counterexample is a
+  single borrower at the honest $1800 price whose borrow succeeds (ledger
+  TRUE), then ~30h of time with no feed update — inside the staleness unwind
+  window `getCollateralPrice` decays the price toward 0 while `allowLiquidations`
+  stays **true** (the staleness branch sets only `reduceOnly`, not
+  `allowLiquidations`) — so anyone can call `writeOff(borrower, themselves)`,
+  collect the borrower's full collateral, and leave Coin permanently unbacked.
+  Also reachable via a >99% price collapse in a single-borrower market.
+- Impact: protocol insolvency — minted Coin permanently exceeds its backing;
+  redemption requires free debt, so the unbacked supply cannot be burned.
+- Class: cross-function ledger accounting (delete-without-burn on a special
+  case). Static-invisible: none of the 26 run3 findings targets this branch —
+  run3's `Lender.sol:326` Reentrancy flag is the `collateral.safeTransfer`
+  CEI order inside the same function, a different issue; the ledger break is
+  not a reentrancy.
+
+### Secondary note (low, availability): getters overflow at extreme interest-inflated debt
+- solmate `mulDivDown` (FixedPointMathLib.sol:44) reverts when
+  `shares * totalDebt` overflows uint256. With the operator's allowed 12h
+  minimum half-life and long warps, interest compounds debt astronomically
+  (observed `totalPaidDebt = 1.4e54`, `paidDebtShares = 1.66e26`; product
+  2.3e80 > 2^256). At that point the protocol's own `getDebtOf` — used
+  internally by `adjust`/`liquidate`/`setRedemptionStatus` — and
+  `getRedeemAmountOut` revert (availability DoS on astronomically inflated
+  positions). Not a ledger break (the interest is held in the reserve
+  accounts, which the coin-ledger identity subtracts). Requires unrealistically
+  long undercollateralized positions, so low severity. The handler now
+  try/catch-wraps these reads so handler functions never revert; the 4 holding
+  invariants still run 150k calls with 0 handler reverts.
+
+### Cross-reference with run3 static findings (monolith-market, 26 findings)
+| # | Detector | File:line | Verdict | Why |
+|---|----------|-----------|---------|-----|
+| 1-3,16,19 | AccessControl | ERC4626.sol:60/73/95, Lender.sol:260/339 | DISMISSED | `deposit`/`mint`/`redeem` (ERC4626) and `liquidate`/`redeem` are permissionless-by-design entry points (any receiver, liquidation/redemption incentives). All five are fuzz actions; every ledger identity holds across them. |
+| 13-15,17,18,21,23,24 | Reentrancy | Lender.sol:141/174/286/326/347/388/602/609, Factory.sol:154 | DISMISSED | CEI-pattern flags. 141/388 are pure internal accounting (no external calls); 174/286/326/347 are `safeTransfer`/`transferFrom` on standard ERC20s (no callbacks) — the fuzzer runs them thousands of times with all ledger identities green; 602/609 (`pullLocalReserves`/`pullGlobalReserves`) zero the reserve after `coin.mint` — an order smell, but `coin.mint` has no external call so it cannot reenter, and `checkCoinLedger`/`checkLenderHoldsNoCoin` hold across all reserve pulls; Factory:154 is the one-time CREATE3 deploy. |
+| 5-7,9,12,22,25 | ZeroAddress | Factory.sol:71/85/95, Vault.sol:19, Lender.sol:80/585, Coin.sol:10 | DISMISSED | Constructor params and operator-only setters (`setPendingOperator`, `setFeeRecipient`, CREATE3 address computation); deployer/operator-controlled inputs with no third-party state-machine consequence. |
+| 4,10 | FrontRunning | ERC20.sol:68 (approve), Vault.sol:60 | DISMISSED | SWC-114 approve overwrite (pattern-TP; needs a racing malicious spender — the harness uses max approvals); Vault `deposit` has no slippage to front-run (exact share price, MIN_SHARES inflation guard smoke-pinned). |
+| 11 | MEV | Vault.sol:60 | DISMISSED | ERC4626 deposit/withdraw at the exact share price with no oracle — nothing to sandwich. |
+| 0,20 | ValueFlow | ERC4626.sol:48, Lender.sol:346 | DISMISSED | Both require fee-on-transfer/rebase tokens. Coin and the vault asset are protocol-own standard ERC20s; the exact share-book and coin-ledger invariants would catch any balance-vs-book divergence. |
+
+Verdict: **26/26 DISMISSED** (9 Reentrancy HIGH, 5 AccessControl HIGH, 7
+ZeroAddress, 2 FrontRunning, 2 ValueFlow, 1 MEV). None of the 26 corresponds
+to the confirmed `writeOff` ledger bug — it lives in the one special-case
+branch (the sole-debtor redistribution skip) that static patterns cannot see,
+and which the exact coin-ledger identity is uniquely positioned to catch.
+
+## Status (session 20)
+- monolith-market: Lender/Vault lending-market harness. 4/5 invariants HOLD
+  (150k calls/invariant, 0 reverts on seeds 42/1337), 8/8 smoke tests.
+  **CONFIRMED finding #3 (HIGH): `Lender.writeOff` on the sole remaining
+  debtor deletes debt without burning Coin → permanently unbacked Coin.**
+  Stable 2-call counterexample (`combinedBorrow` → `attemptWriteOff`), reached
+  through the oracle-staleness unwind window (25–49h stale, liquidations still
+  enabled) or a >99% price collapse in a single-borrower market; not in run3
+  (all **26/26 run3 monolith findings DISMISSED** — they are CEI-pattern
+  reentrancy flags, permissionless-by-design AccessControl, governance
+  ZeroAddress, approve/MEV, and fee-on-transfer ValueFlow, none of which is
+  the ledger break). Secondary low note: `getDebtOf`/`getRedeemAmountOut`
+  mulDiv-overflow DoS at extreme interest-inflated debt.
+- Total: **3 CONFIRMED static-invisible findings across 11 protocols**
+  (basis-cash Boardroom phantom rewards, harvest-ousd yield-delegation
+  fund-lock, monolith writeOff unbacking); eight clean high-value harnesses
+  (credit-guild, compound-v2, hundred-bond, balancer-v2, ionic-protocol,
+  rocket-pool, morpho-blue, compound-v3), of which rocket-pool and morpho-blue
+  pass echidna cross-checks; **18/18 run3 ionic findings CONFIRMED** and
+  **116/116 run3 findings across the other 8 harnessed protocols DISMISSED**
+  (credit-guild 41, compound-v2 7, balancer-v2 19, rocket-pool 3, morpho-blue
+  7, compound-v3 13, monolith 26; hundred-bond 0).

@@ -1,12 +1,15 @@
-# CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 compound-v3)
+# CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 session 20 monolith-market)
 
-Resume point: Phase 3 protocol 10 (compound-v3) is COMPLETE and COMMITTED
-(compound-v3 commit). The Comet lending-market harness is GREEN (7/7
-invariants at 200/120 and 500/300, 150k calls, 0 reverts on 4 seeds; 7/7
-smoke tests); all 13 run3 compound-v3 findings DISMISSED. Next: the 11th
-protocol (see NEXT STEP).
+Resume point: Phase 3 protocol 11 (monolith-market) is COMPLETE, uncommitted.
+The monolith Lender/Vault harness is GREEN on 4/5 invariants at 200/120 and
+500/300 (150k calls, 0 reverts) + 8/8 smoke; the 5th invariant
+(invariant_coinLedger) FAILS on a CONFIRMED HIGH protocol bug: `Lender.writeOff`
+on the sole remaining debtor deletes debt without burning Coin -> permanently
+unbacked Coin (2-call counterexample combinedBorrow -> attemptWriteOff, NOT in
+run3). All 26 run3 monolith findings DISMISSED. Next: commit this session, then
+pick the 12th protocol (see NEXT STEP).
 
-## Phase 3 status (10 protocols)
+## Phase 3 status (11 protocols)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna 2.3.3 agree).
 - harvest-ousd: yield-delegation/negative-rebase fund-lock finding CONFIRMED.
 - credit-guild: NO finding. 7/7 invariants HOLD, 9/9 smoke, 41/41 run3 DISMISSED.
@@ -26,6 +29,46 @@ protocol (see NEXT STEP).
   DISMISSED. Root-caused three naive invariants (solvency condition, absorb
   can grow reserves, 1-unit principalValue dust) into the real protocol
   behavior.
+- monolith-market: **CONFIRMED finding #3 (HIGH)** — `Lender.writeOff` on the
+  sole remaining debtor deletes debt without burning Coin (permanently unbacked
+  Coin; Lender.sol:302-332, redistribution gated on `totalDebt > 0`).
+  4/5 invariants HOLD (150k calls, 0 reverts), 8/8 smoke; invariant_coinLedger
+  FAILS on the 2-call counterexample. All 26/26 run3 findings DISMISSED.
+  Secondary low note: getDebtOf/getRedeemAmountOut mulDiv overflow at extreme
+  interest-inflated debt.
+
+## monolith-market harness (session 20, this session's work)
+- Path: `invariant_projects/monolith-market/` (solc 0.8.13 pinned to
+  `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.13`, evm
+  paris, via_ir=true). foundry.toml `[invariant] runs=200 depth=120
+  fail_on_revert=false`.
+- Vendored verbatim into `src/`: Lender/Vault/Factory/Coin/InterestModel +
+  solmate (no source edits). Factory operator = 0x2000 (distinct from the
+  lender operator actors[0]; fee recipient actors[1]); factory fee 1% set
+  BEFORE `factory.deploy` so the Lender caches it at construction.
+- `MonolithHandler.sol` (6 actors prefunded 1M collateral; prank-based sender,
+  low-level swallowed reverts; 19 fuzz actions), `Invariants.t.sol` (5 exact
+  ledger invariants), `Smoke.t.sol` (8 tests). 4/5 invariants HOLD at 200/120
+  and 500/300 (150k calls, 0 reverts on seeds 42/1337); 8/8 smoke PASS.
+- KEY FINDING (CONFIRMED HIGH): `Lender.writeOff` — permissionless; deletes the
+  borrower's debt with no Coin burn (Lender.sol:315) then redistributes to the
+  remaining debtors only `if (totalDebt > 0)` (line 318). Sole-debtor write-off
+  skips the redistribution, so `supply == freeDebt + paidDebt - reserves` breaks
+  permanently. Stable 2-call counterexample:
+  1. `combinedBorrow(3647824450842923331174363683827,
+     14928331485464224384976708264443215047998206326689562727012306)` actor 0x1001
+  2. `attemptWriteOff(27560079151)` actor 0x1000 (~30h staleness => price
+     decays in the 49h unwind window while allowLiquidations stays true).
+  Reachable via oracle staleness or >99% price collapse in a single-borrower
+  market. Smoke-pinned: `test_writeoff_last_debtor_breaks_coin_backing`.
+- Handler robustness: getDebtOf/getRedeemAmountOut overflow (solmate
+  mulDivDown shares*debt > 2^256) at extreme interest-inflated debt; the
+  handler try/catch-wraps those view reads so it never reverts (documented low
+  availability note).
+- run3 cross-check: 26/26 DISMISSED (9 Reentrancy HIGH CEI-pattern flags, 5
+  AccessControl HIGH permissionless-by-design, 7 ZeroAddress governance inputs,
+  2 FrontRunning + 1 MEV approve/ERC4626, 2 ValueFlow fee-on-transfer
+  assumption). Details in `invariant_results.md`.
 
 ## compound-v3 harness (sessions 18-19, this session's work)
 - Path: `invariant_projects/compound-v3/` (solc 0.8.15 pinned to
@@ -104,9 +147,10 @@ protocol (see NEXT STEP).
   liquidate AccessControl = permissionless by design; setAuthorizationWithSig =
   EIP-712 ecrecover; _accrueInterest reentrancy = owner-whitelisted IRM).
 
-## NEXT STEP (11th protocol) — pick a target from the run3 canonical list
-compound-v3 is done. The next session starts protocol 11: pick a remaining
-high-value project from
+## NEXT STEP (12th protocol) — pick a target from the run3 canonical list
+monolith-market is done (session 20, UNCOMMITTED — commit `invariant_projects/
+monolith-market/` + the updated artifacts first). The next session starts
+protocol 12: pick a remaining high-value project from
 `opencode_artifacts/run3/`, build the same playbook harness
 (`invariant_projects/<proto>/`), then document + commit.
 Echidna environment for future cross-checks (all set up this session):
@@ -138,4 +182,5 @@ canonical artifacts = run3) and Phase 3 sessions 1-2 (basis-cash + harvest
 OUSD CONFIRMED findings). Phase 3 sessions 3-4 (credit-guild), 5-6
 (compound-v2), 7-8 (hundred-bond), 9-10 (balancer-v2), 11-12 (ionic),
 13-14 (rocket-pool), 15-17 (morpho-blue, incl. echidna cross-check) and 18-19
-(compound-v3) are summarized in the sections above.
+(compound-v3) and session 20 (monolith-market, CONFIRMED writeOff unbacking
+finding + 26/26 run3 DISMISSED) are summarized in the sections above.
