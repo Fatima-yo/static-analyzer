@@ -6,6 +6,28 @@ pushed to `origin/release-0.2` (HEAD `4ca58b2`). The remaining optional
 item (echidna cross-check on kpk) was declined — the 150k-call/3-seed foundry
 run already corroborates the dismissals.
 
+## TOMORROW / PENDING WORK
+**Optional: echidna cross-check on the kpk harness** (deferred from session
+21, 2026-08-05).
+- Goal: independently re-run the 2 kpk invariants
+  (`invariant_shareBook`, `invariant_assetEscrow`) under echidna's byte-level
+  fuzzer, corroborating the foundry 150k-call/3-seed green runs and the
+  56/56 run3 kpk dismissals (14 unique x4 chains).
+- Playbook (as in sessions 17/14): add `test/EchidnaKpk.sol` (composition
+  wrapper forwarding the KpkHandler fuzz actions as echidna functions) +
+  `echidna.yaml` (testLimit 50000, seqLen 100, whitelist of the 9 fuzz
+  actions); wire solc 0.8.24 into solc-select (`solc-select install 0.8.24 &&
+  solc-select use 0.8.24`); run
+  `cd invariant_projects/kpk && echidna test/EchidnaKpk.sol --contract
+  EchidnaKpk --config echidna.yaml` with `$HOME/.local/bin` + the echidna venv
+  on PATH.
+- Environment (already set up): venv `/tmp/opencode/echidna_venv`
+  (crytic-compile 0.4.2), echidna binary `~/.config/.foundry/bin/echidna`.
+  NOTE: solc-select global must be switched from 0.8.19 to 0.8.24 for kpk,
+  then restored if any morpho-blue re-run is wanted.
+- Record results in `opencode_artifacts/invariant_results.md` (kpk section)
+  and commit; update this file to mark the item done.
+
 ## Phase 3 campaign summary (12 protocols)
 - **3 CONFIRMED static-invisible protocol bugs** (all fund-lock / accounting
   breakage, none exploitable for theft):
