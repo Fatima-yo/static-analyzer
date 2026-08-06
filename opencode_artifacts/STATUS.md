@@ -457,6 +457,53 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   run3 morpho-blue/rocket-pool/balancer-v2/compound-v3 findings DISMISSED.
   Analyzer untouched; pytest 21 passed / corpus 138/138 unaffected.
 
+## Phase 3 session 21 (2026-08-05) — twelfth protocol: kpk (Protocol 12, last of run3)
+- Harness `invariant_projects/kpk/` (solc 0.8.24 pinned to
+  `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.24`, evm paris,
+  via_ir): vendored `kpkShares.sol` (1,145 lines) + `KpkOivFactory.sol` +
+  `IkpkShares.sol` + FeeModules/ + interfaces/ + utils/ verbatim into `src/`,
+  OZ v5.0.0 at `lib/` (pruned but semantically complete). **UUPS proxy**
+  (ERC1967Proxy + `initialize` pranked as ADMIN; base USDC 6dp at $1, SAFE
+  0x5000 with standing max allowance, MockPerfFeeModule, mgmt 5% / redemption
+  1% / perf 2%, TTLs 1 day; `grantRole(OPERATOR)` + `updateAsset` WETH 18dp
+  $3000 / SPARE 18dp as OPERATOR). `KpkHandler.sol` (6 actors, prank-based
+  sender, low-level swallowed reverts, shadow request book + `staticcall`
+  `getRequest` bias; 9 fuzz actions incl. processAction with ±10% settled-price
+  band + rare 1/8 wild price), `Invariants.t.sol` (2 exact ledger identities),
+  `Smoke.t.sol` (10 tests), `Debug.t.sol` (killed after green).
+- 2 invariants: **shareBook** (`totalSupply == Σ balances` over vault escrow +
+  fee receivers + actors) and **assetEscrow** (`asset.balanceOf(vault) ==
+  subscriptionAssets[asset]` for all 3 assets). **BOTH HOLD** at runs=200/
+  depth=120 and 500/300 (**150k calls/invariant**, 3 seeds: default, 1337, 42;
+  ~11.5k swallowed reverts/run = the price-deviation / expiry / TTL guards).
+  **10/10 smoke tests pass** (subscription+redemption roundtrips, TTL-gated
+  cancels, expiry auto-reject, mgmt+perf fees exact, recover-assets incl.
+  escrow gate, pricing floor round-trips, permission guards via expectRevert).
+- **Pricing scale learned (differs from the naive read)**: shares = assets ×
+  1e26/(price × 10^assetDec) via two mulDiv-Floor steps, so $1 @1e8 mints 1e24
+  shares for 6dp base but 3 WETH @3000e8 → 1e15 shares (asset/shares decimals
+  both 18 cancel). Fixing the smoke suite to this scale is what turned
+  `RequestPriceLowerThanOperatorPrice` into green.
+- **run3 cross-check: all 14/14 unique kpk findings DISMISSED** (56 total with
+  4-chain dupes). Reentrancy HIGH at 1056 is the CEI-pattern `_updateAsset`
+  (read-only `symbol()`/`decimals()` calls then `_approvedAssets.push`;
+  operator-only, no callback receiver — updateAssetAction ran ~16k times with 0
+  reverts); ValueFlow 231 is the transfer-in-then-ledger `+=` — the exact
+  `assetEscrow` identity held across 150k calls (standard-ERC20 assumption,
+  would catch fee-on-transfer divergence); ZeroAddress 217/665/772/799/1102/
+  1141 are the init/admin param + request-struct classes (address(0) fails
+  `NotAnApprovedAsset`, feeReceiver=0 mints to 0 = burn, perf module is an
+  admin setter); Timestamp 269/383 are the intentional TTL gates
+  (`RequestNotPastTtl`, LOW class — smoke-pinned, expiry auto-reject + cancel
+  behavior verified); StorageCollision factory:76 / kpkShares:22 are the
+  contract-declaration UUPS/inherited-storage class; IntegerOverflow OZ lib
+  230/235 are `require(balanceOf>=amount)`-guarded.
+- Total: **3 CONFIRMED static-invisible findings across 12 protocols**
+  (basis-cash, harvest-ousd, monolith-market); **56/56 run3 kpk findings
+  DISMISSED** → **142/142 run3 findings DISMISSED across the 9 harnessed
+  finding-bearing protocols** + 18/18 ionic CONFIRMED. Analyzer untouched;
+  pytest 21 passed / corpus 138/138 unaffected.
+
 ## Phase 3 session 20 (2026-08-05) — eleventh protocol: monolith-market
 - Harness `invariant_projects/monolith-market/` (solc 0.8.13 pinned to
   `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.13`, evm

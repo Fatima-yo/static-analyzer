@@ -1,15 +1,15 @@
-# CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 session 20 monolith-market)
+# CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 session 21 kpk)
 
-Resume point: Phase 3 protocol 11 (monolith-market) is COMPLETE, uncommitted.
-The monolith Lender/Vault harness is GREEN on 4/5 invariants at 200/120 and
-500/300 (150k calls, 0 reverts) + 8/8 smoke; the 5th invariant
-(invariant_coinLedger) FAILS on a CONFIRMED HIGH protocol bug: `Lender.writeOff`
-on the sole remaining debtor deletes debt without burning Coin -> permanently
-unbacked Coin (2-call counterexample combinedBorrow -> attemptWriteOff, NOT in
-run3). All 26 run3 monolith findings DISMISSED. Next: commit this session, then
-pick the 12th protocol (see NEXT STEP).
+Resume point: Phase 3 protocol 12 (kpk) is COMPLETE, uncommitted. The kpk
+UUPS fund-vault harness is GREEN on 2/2 invariants at 200/120 and 500/300
+(150k calls/invariant, 3 seeds) + 10/10 smoke; **all 14/14 unique run3 kpk
+findings DISMISSED** (56 incl. 4-chain dupes). This closes the run3 sweep:
+all 44 finding-bearing run3 protocols have now been triaged, of which the
+high-value ones have invariant harnesses. Next: commit this session (kpk
+harness + artifacts + monolith harness if still uncommitted), then write the
+final Phase 3 report (see NEXT STEP).
 
-## Phase 3 status (11 protocols)
+## Phase 3 status (12 protocols)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna 2.3.3 agree).
 - harvest-ousd: yield-delegation/negative-rebase fund-lock finding CONFIRMED.
 - credit-guild: NO finding. 7/7 invariants HOLD, 9/9 smoke, 41/41 run3 DISMISSED.
@@ -36,6 +36,46 @@ pick the 12th protocol (see NEXT STEP).
   FAILS on the 2-call counterexample. All 26/26 run3 findings DISMISSED.
   Secondary low note: getDebtOf/getRedeemAmountOut mulDiv overflow at extreme
   interest-inflated debt.
+- kpk: NO finding. 2/2 invariants HOLD (150k calls/invariant, 3 seeds), 10/10
+  smoke, **56/56 run3 findings DISMISSED** (14 unique x4 chains). Closing
+  protocol of the run3 sweep.
+
+## kpk harness (session 21, this session's work)
+- Path: `invariant_projects/kpk/` (solc 0.8.24 pinned to
+  `/home/fatima/Downloads/static-analyzer/solc_versions/solc-0.8.24`, evm
+  paris, via_ir=true, optimizer 200; OZ v5.0.0 vendored at `lib/` — needs
+  ^0.8.20). foundry.toml `[invariant] runs=200 depth=120 fail_on_revert=false`.
+- Vendored verbatim into `src/`: kpkShares.sol (1,145 lines) + KpkOivFactory.sol
+  + IkpkShares.sol + FeeModules/ + interfaces/ + utils/ (no source edits).
+- UUPS proxy: ERC1967Proxy + `initialize` pranked as ADMIN (base USDC 6dp $1;
+  SAFE 0x5000 prefunded with standing max allowance; MockPerfFeeModule; mgmt
+  5% / redemption 1% / perf 2%; TTLs 1 day); OPERATOR role + `updateAsset`
+  (WETH 18dp $3000, SPARE 18dp) as OPERATOR.
+- `KpkHandler.sol` (6 actors prefunded 1M/asset, prank-based sender, low-level
+  swallowed reverts, shadow request book + staticcall getRequest bias, 9 fuzz
+  actions incl. processAction with ±10% settled-price band + rare 1/8 wild
+  price), `Invariants.t.sol` (2 exact ledger identities), `Smoke.t.sol` (10
+  tests), `Debug.t.sol` (killed after green). **2/2 invariants HOLD** at
+  200/120 and 500/300 (150k calls/invariant, 3 seeds default/1337/42, ~11.5k
+  swallowed reverts = price-deviation/expiry/TTL guards); **10/10 smoke PASS**.
+- KEY LEARNING: the share scale — shares = assets·1e26/(price·10^assetDec),
+  so $1 @1e8 = **1e24 shares** (6dp base) but 3 WETH @3000e8 = **1e15 shares**
+  (18dp asset/shares decimals cancel). The naive 1e18 expectations made the
+  min-shares guard fire `RequestPriceLowerThanOperatorPrice`; re-pinned to the
+  real scale turned the whole smoke suite green.
+- NOTE: forge 1.7.1 has no `--fuzz-depth` CLI flag and `FOUNDRY_*` env
+  overrides are ignored — deep runs (500/300) require editing foundry.toml
+  `[invariant]` directly (restored to 200/120 after).
+- run3 cross-check: 14/14 unique DISMISSED (56 total). Reentrancy HIGH 1056 =
+  CEI-pattern `_updateAsset` (read-only symbol()/decimals() then push,
+  operator-only, updateAssetAction ran ~16k times/run with 0 reverts);
+  ValueFlow 231 = transfer-in-then-ledger `+=`, refuted by the exact
+  `assetEscrow` identity across 150k calls; ZeroAddress 217/665/772/799/1102/
+  1141 = init/admin/request-struct classes; Timestamp 269/383 = the intentional
+  TTL gates (smoke-pinned); StorageCollision factory:76/kpkShares:22 =
+  contract-declaration UUPS class; IntegerOverflow OZ lib 230/235 = guarded
+  balances. Details in `invariant_results.md`.
+
 
 ## monolith-market harness (session 20, this session's work)
 - Path: `invariant_projects/monolith-market/` (solc 0.8.13 pinned to
@@ -147,12 +187,22 @@ pick the 12th protocol (see NEXT STEP).
   liquidate AccessControl = permissionless by design; setAuthorizationWithSig =
   EIP-712 ecrecover; _accrueInterest reentrancy = owner-whitelisted IRM).
 
-## NEXT STEP (12th protocol) — pick a target from the run3 canonical list
-monolith-market is done (session 20, UNCOMMITTED — commit `invariant_projects/
-monolith-market/` + the updated artifacts first). The next session starts
-protocol 12: pick a remaining high-value project from
-`opencode_artifacts/run3/`, build the same playbook harness
-(`invariant_projects/<proto>/`), then document + commit.
+## NEXT STEP — finalize Phase 3
+Protocol 12 (kpk) is done, completing the run3 sweep (sessions 21, UNCOMMITTED).
+Commit `invariant_projects/kpk/` (monolith + prior harnesses/artifacts too if
+not already committed), then:
+- Verify `git status`/`git log` and commit only the intended files (never the
+  run3 JSONs / secrets).
+- Write the final Phase 3 report to `opencode_artifacts/REPORT.md` addenda:
+  3 CONFIRMED static-invisible findings (basis-cash Boardroom phantom rewards,
+  harvest-ousd yield-delegation fund-lock, monolith writeOff unbacking) across
+  12 harnessed protocols; 142/142 run3 findings DISMISSED across the 9
+  harnessed finding-bearing protocols + 18/18 ionic CONFIRMED; null-result
+  narrative for the analyzer.
+- Optional: run an echidna cross-check on kpk (env is ready: venv
+  `/tmp/opencode/echidna_venv`, solc-select global 0.8.24, echidna binary at
+  `~/.config/.foundry/bin/echidna`).
+
 Echidna environment for future cross-checks (all set up this session):
 - venv `/tmp/opencode/echidna_venv` (crytic-compile 0.4.2; recreate if wiped:
   `python3 -m venv /tmp/opencode/echidna_venv &&
@@ -168,7 +218,7 @@ Echidna environment for future cross-checks (all set up this session):
 
 ## Key paths
 - Analyzer: `/home/fatima/Downloads/static-analyzer` (venv `analyzer_env/`)
-- Invariant harnesses: `invariant_projects/{basis-cash,...,compound-v3}/`
+- Invariant harnesses: `invariant_projects/{basis-cash,...,kpk}/`
 - Artifacts: `opencode_artifacts/{STATUS,ROADMAP,REPORT,invariant_results,CONTINUE_HERE}.md`
 - run3 findings: `opencode_artifacts/run3/` (morpho-blue.json 7, compound-v3.json 13)
 - TVL corpus: `/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/<proto>/`

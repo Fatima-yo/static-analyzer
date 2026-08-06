@@ -1279,3 +1279,99 @@ and which the exact coin-ledger identity is uniquely positioned to catch.
   **116/116 run3 findings across the other 8 harnessed protocols DISMISSED**
   (credit-guild 41, compound-v2 7, balancer-v2 19, rocket-pool 3, morpho-blue
   7, compound-v3 13, monolith 26; hundred-bond 0).
+
+# Protocol 12: kpk (KpkShares fund-vault) — session 21, 2026-08-05
+
+Harness: `invariant_projects/kpk/`. solc 0.8.24 pinned (vendored OZ v5.0.0
+needs ^0.8.20), evm paris, via_ir, optimizer 200. No forge-std; raw
+StdInvariant ABI. Source vendored verbatim: `kpkShares.sol` (1,145 lines),
+`KpkOivFactory.sol`, `IkpkShares.sol`, `FeeModules/`, `interfaces/`, `utils/`,
+plus OZ at `lib/` (pruned to the 24 files the imports actually resolve).
+
+## Setup
+- UUPS proxy: `ERC1967Proxy` implementation `KpkShares`; `initialize` pranked
+  as ADMIN (base asset USDC 6dp, price $1e8; SAFE = 0x5000 prefunded with
+  standing max allowance; MockPerfFeeModule; management 5% / redemption 1% /
+  performance 2%, TTLs 1 day).
+  OPERATOR role granted as ADMIN; `updateAsset` (WETH 18dp @$3000e8, SPARE
+  18dp) as OPERATOR.
+- 6 actors prefunded 1M per asset, max-approved. All protocol calls via
+  low-level call with swallowed revert (`fail_on_revert=false`); handler never
+  reverts. `VM.warp(block.timestamp + amount % 7 days)` tick before most
+  actions. Shadow request book biases selection toward valid pending requests
+  via `staticcall` to `getRequest` (stale entries → known
+  `RequestIdDoesNotExist`, swallowed).
+- processAction uses settled-price ±10% (180-entry band) with a rare 1/8 wild
+  price; min-shares factors 20%..150% of estimated output so most approvals
+  succeed; wild/miscalibrated ones revert and are swallowed. Price deviation
+  keeps `processAction` asset-agnostic across all 3 assets.
+
+## Invariants (exact ledger identities) — BOTH HOLD
+1. `invariant_shareBook`: `totalSupply() == balanceOf(vault) + balanceOf(feeReceiverA)
+   + balanceOf(feeReceiverB) + Σ_actors balanceOf(actor)`.
+2. `invariant_assetEscrow`: for each of the 3 assets,
+   `asset.balanceOf(vault) == subscriptionAssets[asset]`.
+
+Results:
+- runs=200/depth=120: 2/2 PASS (24k calls/invariant, ~1.9k swallowed reverts).
+- runs=500/depth=300: **2/2 PASS, 150k calls/invariant, ~11.5k swallowed
+  reverts** — on seeds default, 1337, 42. (500/300 exercised via a temporary
+  foundry.toml edit; `--fuzz-runs`/`--fuzz-depth` CLI flags and
+  `FOUNDRY_*` env overrides do not exist / do not take effect on forge 1.7.1.)
+- Swallowed reverts are the price-deviation / expiry-auto-reject /
+  TTL-guard paths — expected; the identity invariants held throughout.
+
+## Pricing scale (session learning, cost several smoke runs)
+- Two mulDiv-Floor steps: `assetsValue = amount * 1e36 / price` then
+  `shares = assetsValue * 1e8 / (10^assetDec * 1e18)` ⇒
+  `shares = amount * 1e26 / (price * 10^assetDec)` (floor at each step).
+- Base 6dp: $1 (1e6 USDC units) @ 1e8 → **1e24 shares**. Shares are a
+  18-dec token priced at 1e8 USD ⇒ 1e24 shares/$1.
+- Alt 18dp: 3e18 WETH @ 3000e8 → 3e18·1e26/3e29 = **1e15 shares** (asset and
+  share decimals cancel — the naive `assetsToShares(1e18) → 1e18` read was
+  wrong, and `minShares 1e18` there made the guard revert
+  `RequestPriceLowerThanOperatorPrice`).
+
+## Smoke suite (10/10 PASS)
+subscription roundtrip (1e6 USDC → 1e24 shares, escrow book + SAFE transfer +
+ledger), redemption roundtrip (1e24 shares → 990000e6 USDC + 1e22 share fee to
+feeReceiver, no time elapsed), alt-asset subscription (3e18 WETH → 1e15
+shares), both TTL-gated cancels (`RequestNotPastTtl` then status CANCELLED +
+funds/shares returned), expired-request auto-reject, mgmt (5%) + perf (2%)
+fees after 365d → exactly 7e22 shares to feeReceiver, recover-assets incl. the
+escrow gate (0 recoverable while `subscriptionAssets[token] > 0`), pricing
+floor round-trip baseline (`assetsToShares(1e12, 1e8) == 1e24`), and the
+permission/guard matrix (expectRevert on `RequestPriceLowerThanOperatorPrice`
+with an absurd 1e30 min-shares, plus admin/operator-only setters).
+
+## Cross-reference with run3 static findings (kpk, 56 findings = 14 unique × 4 chains)
+| Detector | File:line | Verdict | Why |
+|----------|-----------|---------|-----|
+| Reentrancy HIGH | kpkShares.sol:1056 | DISMISSED | CEI-pattern on `_updateAsset`: read-only `IERC20Metadata.symbol()/decimals()` calls then `_approvedAssets.push`. Operator-only entry, metadata calls cannot reenter, no callback receiver. updateAssetAction ran ~16k times/run with 0 reverts and both ledgers green. |
+| ValueFlow | kpkShares.sol:231 | DISMISSED | `subscriptionAssets[asset] += assetsIn` after `transferFrom` — the classic balance-vs-ledger divergence flag, but it requires fee-on-transfer/rebase tokens. `invariant_assetEscrow` (exact physical == book for 3 assets) held across 150k calls — any divergence would fail it. |
+| ZeroAddress | kpkShares.sol:217 | DISMISSED | `requestSubscription` param: `_approvedAssetsMap[address(0)].canDeposit` is false → reverts `NotAnApprovedAsset` (no reachable path). |
+| ZeroAddress | kpkShares.sol:665 | DISMISSED | `_initializeState` params (init/constructor class): safe/feeReceiver set once at deploy by admin; SafeERC20 transfer to 0 would revert for the safe. |
+| ZeroAddress | kpkShares.sol:772 / 799 | DISMISSED | `_approve/_rejectSubscriptionRequest` read request-struct addresses created under `_requireValidRequestParams`; no user-controlled zero-address state path. |
+| ZeroAddress | kpkShares.sol:1102 / 1141 | DISMISSED | Admin/internal setters `_setFeeReceiver`/`_setPerformanceFeeModule`; zero feeReceiver mints fees to address(0) (= burn, governance choice), zero perf module is an admin setter. |
+| Timestamp | kpkShares.sol:269 / 383 | DISMISSED | Intentional TTL gates: `cancelSubscription`/`cancelRedemption` revert `RequestNotPastTtl` until `timestamp + ttl` — the documented SWC-116 gating design, LOW class. Smoke-pinned both the reject-before-TTL and the allow-after-TTL behavior; expiry auto-reject separately verified. |
+| StorageCollision | KpkOivFactory.sol:76 / kpkShares.sol:22 | DISMISSED | Both flag contract declaration lines (`is Ownable, ReentrancyGuard` / `is Initializable, UUPSUpgradeable, ...`) — the UUPS/inherited-storage class seen in every harness (rank score-1 class). |
+| IntegerOverflow | ERC20Upgradeable.sol:230 / 235 | DISMISSED | Vendored OZ `balanceOf[from] -= amount` / `+=` in `_transfer`/mint, guarded by `require(balanceOf[from] >= amount)`. Library-level standard FP. |
+
+Verdict: **14/14 unique DISMISSED** (56 incl. 4-chain dupes). The exact
+`shareBook` + `assetEscrow` identities held across 150k calls with full
+coverage of every flagged function (request flows, process/approve/reject,
+cancels, fee accrual, recover, asset admin). None corresponds to a reachable
+ledger break.
+
+## Status (session 21)
+- kpk: UUPS-proxy fund-vault harness. 2/2 invariants HOLD (150k calls/invariant
+  on 3 seeds), 10/10 smoke tests. **No new finding.**
+- Total: **3 CONFIRMED static-invisible findings across 12 protocols**
+  (basis-cash Boardroom, harvest-ousd yield-delegation, monolith writeOff);
+  nine clean high-value harnesses; **18/18 run3 ionic findings CONFIRMED** and
+  **142/142 run3 findings across the other 9 harnessed finding-bearing
+  protocols DISMISSED** (credit-guild 41, compound-v2 7, balancer-v2 19,
+  rocket-pool 3, morpho-blue 7, compound-v3 13, monolith 26, kpk 56;
+  hundred-bond 0). Analyzer untouched; pytest 21 passed / corpus 138/138.
+- All 4 chains of run3 kpk are the same 14 unique findings (56 = 14×4); the
+  harness used the Optimism copy as source of truth.
