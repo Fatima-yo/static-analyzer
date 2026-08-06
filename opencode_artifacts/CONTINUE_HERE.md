@@ -1,13 +1,38 @@
 # CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 session 21 kpk)
 
-Resume point: Phase 3 protocol 12 (kpk) is COMPLETE, uncommitted. The kpk
-UUPS fund-vault harness is GREEN on 2/2 invariants at 200/120 and 500/300
-(150k calls/invariant, 3 seeds) + 10/10 smoke; **all 14/14 unique run3 kpk
-findings DISMISSED** (56 incl. 4-chain dupes). This closes the run3 sweep:
-all 44 finding-bearing run3 protocols have now been triaged, of which the
-high-value ones have invariant harnesses. Next: commit this session (kpk
-harness + artifacts + monolith harness if still uncommitted), then write the
-final Phase 3 report (see NEXT STEP).
+Resume point: **Phase 3 campaign COMPLETE.** Protocol 12 (kpk) closed the
+run3 sweep; final REPORT.md addenda #7-#12 written; all work committed and
+pushed to `origin/release-0.2` (HEAD `4ca58b2`). The remaining optional
+item (echidna cross-check on kpk) was declined — the 150k-call/3-seed foundry
+run already corroborates the dismissals.
+
+## Phase 3 campaign summary (12 protocols)
+- **3 CONFIRMED static-invisible protocol bugs** (all fund-lock / accounting
+  breakage, none exploitable for theft):
+  1. basis-cash Boardroom: phantom/retroactive reward inflation — late
+     claimers' `claimDividends`/`withdraw` revert (stuck funds); foundry +
+     echidna agree.
+  2. harvest-ousd: yield delegation + negative rebase underflows the target's
+     credits → target account permanently reverts (fund-lock).
+  3. monolith-market: permissionless `Lender.writeOff` on the sole remaining
+     debtor deletes debt without burning Coin → permanently unbacked Coin.
+- **142/142 run3 findings DISMISSED** across the 9 harnessed finding-bearing
+  protocols (credit-guild 41, compound-v2 7, balancer-v2 19, rocket-pool 3,
+  morpho-blue 7, compound-v3 13, monolith 26, kpk 56, harvest 5... see
+  STATUS.md for the running tally) and **18/18 run3 ionic findings
+  CONFIRMED** (16 provable owner-only ZeroAddress setters + 2 latent
+  StorageCollision upgrade hazards).
+- Clean high-value harnesses (9): credit-guild, compound-v2, hundred-bond,
+  balancer-v2, rocket-pool, morpho-blue, compound-v3, kpk, plus ionic
+  (findings confirmed but all MEDIUM/low-exploitability).
+- Tooling wins: root-caused the foundry invariant-fuzzer revert-journaling bug
+  (foundry_invariant.rs:547); the prank+value revert-leak trap (compound-v2);
+  Morpho's 1-wei repay dust; Comet's three naive-invariant traps; kpk's share
+  scale (1e24/$1 at 8dp prices).
+- Bottom line for the analyzer: on the 22-protocol corpus the detectors'
+  findings are overwhelmingly FPs (142/142 dismissed), but the invariant
+  harnesses found 3 real static-invisible bugs — the analyzer's precision
+  story stands, and invariant testing proved complementary value.
 
 ## Phase 3 status (12 protocols)
 - basis-cash: Boardroom phantom-reward finding CONFIRMED (foundry + echidna 2.3.3 agree).
@@ -187,23 +212,19 @@ final Phase 3 report (see NEXT STEP).
   liquidate AccessControl = permissionless by design; setAuthorizationWithSig =
   EIP-712 ecrecover; _accrueInterest reentrancy = owner-whitelisted IRM).
 
-## NEXT STEP — finalize Phase 3
-Protocol 12 (kpk) is done, completing the run3 sweep (sessions 21, UNCOMMITTED).
-Commit `invariant_projects/kpk/` (monolith + prior harnesses/artifacts too if
-not already committed), then:
-- Verify `git status`/`git log` and commit only the intended files (never the
-  run3 JSONs / secrets).
-- Write the final Phase 3 report to `opencode_artifacts/REPORT.md` addenda:
-  3 CONFIRMED static-invisible findings (basis-cash Boardroom phantom rewards,
-  harvest-ousd yield-delegation fund-lock, monolith writeOff unbacking) across
-  12 harnessed protocols; 142/142 run3 findings DISMISSED across the 9
-  harnessed finding-bearing protocols + 18/18 ionic CONFIRMED; null-result
-  narrative for the analyzer.
-- Optional: run an echidna cross-check on kpk (env is ready: venv
-  `/tmp/opencode/echidna_venv`, solc-select global 0.8.24, echidna binary at
-  `~/.config/.foundry/bin/echidna`).
+## NEXT STEP — done (campaign complete)
+- Phase 3 report addenda #7-#12 written to `opencode_artifacts/REPORT.md`
+  (ionic, rocket-pool, morpho-blue, compound-v3, monolith, kpk).
+- All sessions committed + pushed to `origin/release-0.2` (HEAD `4ca58b2`):
+  `ebd8417` (rocket-pool), `b769e20` (morpho-blue), `82e4118` (echidna),
+  `d6fe668` (compound-v3), `dc5b9c7` (monolith), `02740a3` (kpk),
+  `4ca58b2` (report).
+- Optional echidna cross-check on kpk DECLINED (foundry 150k-call/3-seed run
+  is sufficient corroboration). If ever wanted, the env is ready: venv
+  `/tmp/opencode/echidna_venv` (crytic-compile 0.4.2), solc-select global
+  must be switched to 0.8.24, echidna binary at `~/.config/.foundry/bin/echidna`.
 
-Echidna environment for future cross-checks (all set up this session):
+## Echidna environment (set up during session 17, still current)
 - venv `/tmp/opencode/echidna_venv` (crytic-compile 0.4.2; recreate if wiped:
   `python3 -m venv /tmp/opencode/echidna_venv &&
   /tmp/opencode/echidna_venv/bin/pip install crytic-compile`).

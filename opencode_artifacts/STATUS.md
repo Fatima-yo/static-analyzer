@@ -553,6 +553,26 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   harnessed protocols DISMISSED**. Analyzer untouched; pytest 21 passed /
   corpus 138/138 unaffected.
 
+## Phase 3 — campaign complete (2026-08-05, after session 21)
+- Final REPORT.md addenda #7-#12 written (ionic, rocket-pool, morpho-blue,
+  compound-v3, monolith, kpk). All 12 sessions committed + pushed to
+  `origin/release-0.2` (HEAD `4ca58b2`). Optional kpk echidna cross-check
+  declined (foundry 150k-call/3-seed corroboration deemed sufficient).
+- Campaign outcome across 12 harnessed protocols: **3 CONFIRMED
+  static-invisible protocol bugs** (basis-cash Boardroom phantom rewards,
+  harvest-ousd yield-delegation fund-lock, monolith writeOff unbacking — all
+  fund-lock/accounting breakage, none exploitable for theft); **142/142 run3
+  findings DISMISSED** across the 9 harnessed finding-bearing protocols
+  (credit-guild 41, compound-v2 7, balancer-v2 19, rocket-pool 3, morpho-blue
+  7, compound-v3 13, monolith 26, kpk 56; harvest 5 cross-checked in session
+  2) and **18/18 run3 ionic findings CONFIRMED** (all MEDIUM, owner-only
+  zero-address setters + latent upgrade hazard).
+- Analyzer untouched throughout; pytest 21 passed / corpus 138/138 every
+  session. The invariant harnesses are now the counterbalance to the static
+  run: they both dismiss the detector FPs at scale and surface the control-
+  flow/edge-case bugs static patterns cannot see.
+
+
 
 - Consider a run-once/flag guard (`require(once)` + write-after-call) nuance for
   the basis-cash distributors, or accept as low-severity findings.
