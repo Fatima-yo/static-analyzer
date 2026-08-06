@@ -2,6 +2,120 @@
 
 Generated: 2026-08-03
 
+> **Phase 3 addendum #12 (2026-08-05, session 21)**: final protocol of the
+> run3 sweep — **kpk** (Onchain Investment Vehicles `KpkShares` fund-vault,
+> 1,145 lines + `KpkOivFactory`; solc 0.8.24, vendored OZ v5.0.0). Harness
+> `invariant_projects/kpk/` deploys the vault behind a UUPS proxy, pranks
+> `initialize` as ADMIN (USDC base at $1, SAFE 0x5000, mock perf module, mgmt
+> 5% / redemption 1% / perf 2%, 1-day TTLs), grants OPERATOR and adds WETH/
+> SPARE assets, then fuzzes the full request lifecycle — subscription /
+> redemption requests, operator process/approve/reject with a ±10%
+> settled-price band and rare wild price, TTL-gated cancels, expiry
+> auto-reject, fee accrual, recover-assets, asset admin — through a shadow
+> request book that biases toward valid pending requests. Result: **2/2 exact
+> ledger invariants HOLD** (`totalSupply == Σ balances` over vault escrow +
+> fee receivers + actors; `asset.balanceOf(vault) == subscriptionAssets[asset]`
+> for all 3 assets) at 200/120 and 500/300 (**150k calls/invariant, 3 seeds**,
+> ~11.5k swallowed reverts = price-deviation/expiry/TTL guards); 10/10 smoke
+> tests pass after re-pinning the share scale (shares = assets·1e26/
+> (price·10^assetDec) ⇒ $1 @1e8 = **1e24 shares** for the 6dp base but 3 WETH
+> @3000e8 = **1e15 shares** for the 18dp asset — the naive 1e18 expectations
+> made the min-shares guard fire). **All 56/56 run3 kpk findings DISMISSED**
+> (14 unique × 4 chains): the Reentrancy HIGH (kpkShares:1056) is the
+> CEI-pattern `_updateAsset` (read-only `symbol()/decimals()` then
+> `_approvedAssets.push`, operator-only, ~16k fuzz calls with 0 reverts); the
+> ValueFlow (231) transfer-then-ledger `+=` is refuted by the exact assetEscrow
+> identity across 150k calls (standard-ERC20 assumption); ZeroAddress
+> (217/665/772/799/1102/1141) are init/admin/request-struct classes (zero asset
+> fails `NotAnApprovedAsset`; feeReceiver=0 mints to 0 = burn); Timestamp
+> (269/383) are the intentional `RequestNotPastTtl` gates; StorageCollision
+> (factory:76, kpkShares:22) are contract-declaration UUPS/inherited-storage
+> class; IntegerOverflow (OZ lib 230/235) are `require(balanceOf>=amount)`-
+> guarded. Full writeup + pricing walkthrough: `invariant_results.md`.
+
+> **Phase 3 addendum #11 (2026-08-05, session 20)**: eleventh protocol —
+> **monolith-market** (Lender/Vault/Factory/Coin lending market, solc 0.8.13,
+> solmate deps). Harness `invariant_projects/monolith-market/` vendored the
+> full stack verbatim, set the 1% factory fee before `factory.deploy`, and
+> fuzzed 19 actions (borrow/liquidate with 0.1%–100% price shocks, redeem,
+> vault ERC4626 flows, stale-oracle warps, fee/ratio setters, reserve pulls)
+> against 5 exact ledger invariants. Result: **4/5 HOLD** at 200/120 and 500/300
+> (150k calls, 0 reverts, seeds 42/1337), 8/8 smoke pass. The 5th
+> (invariant_coinLedger: `supply == freeDebt + paidDebt − reserves`) **FAILS on
+> a CONFIRMED HIGH protocol bug**: permissionless `Lender.writeOff` on the sole
+> remaining debtor deletes the debt with no Coin burn — the redistribution
+> branch is gated on `totalDebt > 0` (Lender.sol:318), so a single-borrower
+> write-off (via oracle staleness inside the 49h unwind window, or a >99% price
+> collapse) permanently unbacks the Coin supply. **NOT in run3** — this is a
+> static-invisible control-flow special case. **All 26/26 run3 monolith
+> findings DISMISSED** (CEI-pattern reentrancy flags, permissionless-by-design
+> AccessControl, governance ZeroAddress, approve/MEV, fee-on-transfer
+> ValueFlow). Full writeup + per-finding table: `invariant_results.md`.
+
+> **Phase 3 addendum #10 (2026-08-05, sessions 18-19)**: tenth protocol —
+> **compound-v3 Comet** (`CometWithExtendedAssetList`, solc 0.8.15). Harness
+> `invariant_projects/compound-v3/` configured USDC base + WETH/WBTC collateral
+> markets with `borrowPerYearInterestRateBase = 0.04e18` (makes reserve growth
+> structurally non-negative) and fuzzed supply/withdraw/transfer/absorb (oracle
+> shocked)/buyCollateral/pause/warp. Result: **7/7 invariants HOLD** (base and
+> collateral books, no-leak reserves, per-action residual ≥ −DUST, absorb
+> debt-bound, solvency) at 200/120 and 500/300 (150k calls, 0 reverts, 4 seeds);
+> 7/7 smoke pass. Three naive invariants were root-caused into the real
+> protocol behavior: `totalSupply >= totalBorrow` is NOT Comet's solvency
+> condition (both are present-value views), absorb can legitimately grow
+> reserves (over-covered collateral + 1-unit index rounding), and non-absorb
+> actions can move 1 base unit of principalValue floor-rounding dust.
+> **All 13/13 run3 compound-v3 findings DISMISSED** (OracleManipulation/Taint =
+> the shocked-price absorb surface pinned by the debt-bound/solvency
+> invariants; internal ZeroAddress; delegatecall-extension SignatureReplay/
+> storage). Full writeup: `invariant_results.md`.
+
+> **Phase 3 addendum #9 (2026-08-05, sessions 15-17)**: ninth protocol —
+> **morpho-blue** (Morpho lending ledger, solc 0.8.19). Harness
+> `invariant_projects/morpho-blue/` wired two cross-token markets (USDC/WETH
+> LLTV 86% fee 10%; WETH/USDC LLTV 80%) on mock IRM/oracle/ERC20s and fuzzed
+> 12 actions including liquidations with oracle shocks. Result: **10/10
+> invariants HOLD** at 200/120 and 500/300 (150k calls, 0 reverts), 8/8 smoke
+> pass, plus an **echidna 2.3.3 cross-check: 10/10 properties passing** (50k
+> calls, byte-level fuzzing). Surfaced and root-caused Morpho's **1-wei repay
+> dust**: the virtual-share model lets a full-book-share repay overpay 1 wei
+> into the pool, so the absolute balance-sheet identity is inexact and
+> accumulating — the ledger invariant was reformulated as an exact per-action
+> residual in {0,1}. **All 7/7 run3 morpho findings DISMISSED** (one-way-door
+> ZeroAddress, non-fee-on-transfer ValueFlow, permissionless liquidate,
+> EIP-712 sig-check, owner-whitelisted IRM read). Also root-caused a foundry
+> invariant-fuzzer bug: it journals state for reverted calls
+> (foundry_invariant.rs:547). Full writeup: `invariant_results.md`.
+
+> **Phase 3 addendum #8 (2026-08-05, sessions 13-14)**: eighth protocol —
+> **rocket-pool rETH** (token accounting, solc 0.8.24). Harness
+> `invariant_projects/rocket-pool/` vendored the RocketTokenRETH/OzV1/OzV2
+> oracle contracts, fuzzed deposit/mint/burn/swapTo/swapFrom/warp with a
+> controllable oracle rate, and checked **4/4 exact conservation invariants**
+> (totalSupply == Σ balances incl. the contract's own burn-fee escrow; ETH-in
+> == collateral + pending). **All HOLD** at 200/120 and 500/300 (150k calls),
+> 8/8 smoke pass, echidna cross-check green on 2 seeds. **All 3/3 run3 rETH
+> findings DISMISSED** (FrontRunning/MEV on oracle-priced mint/burn guarded by
+> `isValidOracle` + ETH reserves). Full writeup: `invariant_results.md`.
+
+> **Phase 3 addendum #7 (2026-08-05, sessions 11-12)**: seventh protocol —
+> **ionic-protocol** (Ionic lending markets, solc 0.8.10). Harness
+> `invariant_projects/ionic-protocol/` vendored the core verbatim with three
+> permission-neutralizing stubs (PoolLens / IonicUniV3Liquidator /
+> AuthoritiesRegistry) at literal import paths, and fuzzed mint/redeem/borrow/
+> repay/liquidate/repayBehalf/transfer through real Actor contracts (no
+> cheatcode value flows) plus the admin-setter actions. Result: **3/3
+> invariants HOLD** (cToken conservation exact, underlying conservation exact,
+> borrow ledger within 1e9 rounding) at 200/120 and 500/300 (150k calls, 0
+> reverts); 12/12 smoke pass. **All 18/18 run3 ionic findings CONFIRMED** — 16
+> ZeroAddress are 8 unique owner-only setters (AddressesProvider +
+> SafeOwnableUpgradeable, incl. `transferOwnership(0)` leaving the contract
+> ownerless) that provably accept `address(0)` without revert (each
+> smoke-pinned), plus 2 StorageCollision that are a documented latent upgrade
+> hazard (a `pendingOwner` slot insert would shift every field on a plain-
+> Ownable upgrade; benign from-genesis). Full writeup + per-setter table:
+> `invariant_results.md`.
+
 > **Phase 3 addendum #6 (2026-08-04, sessions 9-10)**: invariant testing on a
 > sixth protocol — **balancer-v2 Vault** (`0xba1222...566bf2c8`, the protocol
 > with the most run3 findings at 19 and the Phase-1 top-ranked flashLoan
