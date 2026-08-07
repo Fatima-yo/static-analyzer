@@ -1375,3 +1375,39 @@ ledger break.
   hundred-bond 0). Analyzer untouched; pytest 21 passed / corpus 138/138.
 - All 4 chains of run3 kpk are the same 14 unique findings (56 = 14×4); the
   harness used the Optimism copy as source of truth.
+
+### Protocol 12 cross-check: Echidna on the kpk harness (session 22)
+
+`test/EchidnaKpk.sol` (composition wrapper over `KpkHandler`, the rocket-pool/
+morpho-blue pattern — forwards the 9 fuzz actions, exposes the 2 ledger
+identities as `echidna_share_book` / `echidna_asset_escrow` view properties)
++ `echidna.yaml` (testMode property, testLimit 50000, seqLen 100, whitelist of
+the 9 forwarded fuzz actions). echidna 2.3.3 with crytic-compile 0.4.2
+(recreated venv at `/tmp/opencode/echidna_venv`; pip needed the mitmproxy CA
+cert: `--cert ~/.mitmproxy/mitmproxy-ca-cert.pem`). solc 0.8.24 wired into
+solc-select offline by copying the local `solc_versions/solc-0.8.24` binary
+into `~/.solc-select/artifacts/solc-0.8.24/solc-0.8.24` and setting
+`global-version` to 0.8.24. Compiled through crytic-compile's solc framework
+on the single wrapper file with `--compile-force-framework solc` (crytic-compile
+auto-applies the foundry.toml remappings, so the `@openzeppelin/contracts/`
+imports resolve without explicit `--solc-remaps`).
+
+Results (3 seeds):
+- default, 12345, 5539492503410371496 (the morpho cross-check seed):
+  **2/2 properties passing** each run (~50.1-50.3k tests/run, 100-deep
+  sequences, ~50k calls, cov 18964-19419 instr, 6 codehashes, corpus 15-20).
+
+```
+echidna_share_book: passing
+echidna_asset_escrow: passing
+Unique instructions: 18991
+Unique codehashes: 6
+Corpus size: 17
+Seed: 5539492503410371496
+Total calls: 50210
+```
+
+**2/2 properties passing.** The exact share-book and asset-escrow identities
+hold under echidna's byte-level calldata fuzzing too, independently
+confirming the foundry 150k-call/3-seed runs and the 56/56 run3 kpk
+dismissals. Both fuzzing engines agree: the kpk fund-vault ledger is sound.

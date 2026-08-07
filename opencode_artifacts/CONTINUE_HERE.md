@@ -7,26 +7,16 @@ item (echidna cross-check on kpk) was declined — the 150k-call/3-seed foundry
 run already corroborates the dismissals.
 
 ## TOMORROW / PENDING WORK
-**Optional: echidna cross-check on the kpk harness** (deferred from session
-21, 2026-08-05).
-- Goal: independently re-run the 2 kpk invariants
-  (`invariant_shareBook`, `invariant_assetEscrow`) under echidna's byte-level
-  fuzzer, corroborating the foundry 150k-call/3-seed green runs and the
-  56/56 run3 kpk dismissals (14 unique x4 chains).
-- Playbook (as in sessions 17/14): add `test/EchidnaKpk.sol` (composition
-  wrapper forwarding the KpkHandler fuzz actions as echidna functions) +
-  `echidna.yaml` (testLimit 50000, seqLen 100, whitelist of the 9 fuzz
-  actions); wire solc 0.8.24 into solc-select (`solc-select install 0.8.24 &&
-  solc-select use 0.8.24`); run
-  `cd invariant_projects/kpk && echidna test/EchidnaKpk.sol --contract
-  EchidnaKpk --config echidna.yaml` with `$HOME/.local/bin` + the echidna venv
-  on PATH.
-- Environment (already set up): venv `/tmp/opencode/echidna_venv`
-  (crytic-compile 0.4.2), echidna binary `~/.config/.foundry/bin/echidna`.
-  NOTE: solc-select global must be switched from 0.8.19 to 0.8.24 for kpk,
-  then restored if any morpho-blue re-run is wanted.
-- Record results in `opencode_artifacts/invariant_results.md` (kpk section)
-  and commit; update this file to mark the item done.
+**DONE — echidna cross-check on the kpk harness** (session 22, 2026-08-07).
+`test/EchidnaKpk.sol` + `echidna.yaml` added; echidna 2.3.3 + crytic-compile
+0.4.2 (venv recreated, pip needed `--cert ~/.mitmproxy/mitmproxy-ca-cert.pem`);
+solc 0.8.24 wired into solc-select offline (copied `solc_versions/solc-0.8.24`
+into `~/.solc-select/artifacts/solc-0.8.24/`, global = 0.8.24); compiled via
+the solc framework with `--crytic-args "--compile-force-framework solc"`
+(crytic-compile auto-applies foundry.toml remappings). **2/2 properties
+passing on 3 seeds** (default, 12345, 5539492503410371496; ~50.2k calls each,
+cov 18964-19419). Recorded in `invariant_results.md`. This closes the final
+open item — the Phase 3 campaign is fully done.
 
 ## Phase 3 campaign summary (12 protocols)
 - **3 CONFIRMED static-invisible protocol bugs** (all fund-lock / accounting
