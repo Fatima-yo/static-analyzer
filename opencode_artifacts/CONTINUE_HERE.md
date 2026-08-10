@@ -1,22 +1,65 @@
-# CONTINUE HERE — session state (saved 2026-08-05 ~after Phase 3 session 21 kpk)
+# CONTINUE HERE — session state (saved 2026-08-10 after session 23 echidna cross-checks)
 
-Resume point: **Phase 3 campaign COMPLETE.** Protocol 12 (kpk) closed the
-run3 sweep; final REPORT.md addenda #7-#12 written; all work committed and
-pushed to `origin/release-0.2` (HEAD `4ca58b2`). The remaining optional
-item (echidna cross-check on kpk) was declined — the 150k-call/3-seed foundry
-run already corroborates the dismissals.
+Resume point: **echidna cross-checks over the remaining 5 clean harnesses
+(session 23, 2026-08-10).** 1/5 done, 1/5 in progress with known harness
+artifacts, 3/5 not started. Full state + exact next steps below.
 
-## TOMORROW / PENDING WORK
-**DONE — echidna cross-check on the kpk harness** (session 22, 2026-08-07).
-`test/EchidnaKpk.sol` + `echidna.yaml` added; echidna 2.3.3 + crytic-compile
-0.4.2 (venv recreated, pip needed `--cert ~/.mitmproxy/mitmproxy-ca-cert.pem`);
-solc 0.8.24 wired into solc-select offline (copied `solc_versions/solc-0.8.24`
-into `~/.solc-select/artifacts/solc-0.8.24/`, global = 0.8.24); compiled via
-the solc framework with `--crytic-args "--compile-force-framework solc"`
-(crytic-compile auto-applies foundry.toml remappings). **2/2 properties
-passing on 3 seeds** (default, 12345, 5539492503410371496; ~50.2k calls each,
-cov 18964-19419). Recorded in `invariant_results.md`. This closes the final
-open item — the Phase 3 campaign is fully done.
+## PENDING WORK — echidna cross-check on the 5 clean harnesses
+
+echidna 2.3.3 + crytic-compile 0.4.2; venv RECREATED this session at
+`/tmp/opencode/echidna_venv` (was wiped). Run pattern (matches sessions 17/22):
+`cd invariant_projects/<proj> && echidna test/Echidna<X>.sol --contract
+Echidna<X> --config echidna.yaml` with `$HOME/.local/bin`,
+`$HOME/.config/.foundry/bin` and `/tmp/opencode/echidna_venv/bin` on PATH.
+Echidna 2.3.3 emulates the forge cheatcode precompile
+(0x7109709...): `startPrank/stopPrank/warp/roll/deal` all work, so the
+foundry handlers compile+run unchanged under a composition wrapper.
+
+Status:
+- **hundred-bond: DONE, 3/3 passing** (`EchidnaHundredBond.sol` + `echidna.yaml`,
+  50,201 calls, seed 8510885813380032445, cov 5522, corpus 6).
+- **compound-v2: IN PROGRESS.** Wrapper + yaml written. `echidna_borrow_sum`
+  failed on the handler's fixed 1e9-wei tolerance (diff ~1.014e9 wei on
+  ~1.028e24 total ≈ 1e-15 relative — known Compound-v2 per-actor truncation
+  dust). Wrapper now uses a magnitude-scaled tolerance
+  `max(1e9, total/1e12)` via `_borrowSumScaled`. NEXT: re-run; expect a NEW
+  artifact — at deep horizons the market borrowIndex (~1e54 after ~165k
+  accrual blocks) makes `borrowBalanceStoredInternal`'s `mulUInt(principal,
+  borrowIndex)` overflow uint256 and the vendored cToken reverts, aborting the
+  property call. That is the protocol's overflow-protection branch tripping
+  under echidna's unbounded per-call block advances (foundry capped rolls to
+  +500), NOT a finding. To finish: constrain the elapsed blocks per accrual in
+  the wrapper (e.g. a cool-down action that force-accrues in small chunks and
+  periodically drains/rebalances, or bound `borrowIndex`) so the ledger check
+  runs to completion; then re-run for the green 3/3.
+- **credit-guild: NOT STARTED.** Handler surface: 17 actions
+  (actorBorrow/actorAddCollateral/actorPartialRepay/actorRepay/actorCall/
+  actorBid/actorForgive/actorDonateSurplus/actorIncrementGauge/
+  actorDecrementGauge/actorTransferGuild/actorTransferCredit/
+  actorTransferCollateral/actorApplyLoss/actorClaimRewards/actorEnterRebase/
+  actorExitRebase + warpDays) and 7 checks
+  (checkCreditConservation/checkGuildConservation/
+  checkGaugeWeightConservation/checkVotesConservation/
+  checkCollateralConservation/checkIssuanceConsistency/
+  checkIssuanceWithinCaps). solc 0.8.13.
+- **balancer-v2: NOT STARTED.** Handler surface: 8 actions
+  (swapGivenIn/swapGivenOut/joinPool/exitPool/flashLoan/depositInternal/
+  withdrawInternal/transferInternal) and 3 checks
+  (checkTokenConservation(uint8)/checkVaultLedger(uint8)/
+  checkPoolShares(uint8)). solc 0.7.6 (project pins a local solc binary in
+  foundry.toml — confirm echidna honors it). The single `vm.` hit in
+  BalancerHandler.sol is a comment, not code.
+- **compound-v3: NOT STARTED.** Handler surface: 7 actions
+  (supply/withdraw/transfer/absorb/buyCollateral/pause/warp) and 6 checks
+  (checkBaseBookConserved/checkCollateralBookConserved(uint256)/
+  checkBaseNoLeak/checkLastResidual/checkAbsorbAccounting/
+  checkMarketSolvent). solc 0.8.15 (local solc binary in foundry.toml).
+
+After all 5: append each result to `opencode_artifacts/invariant_results.md`
+(protocol-13 hundred-bond and protocol-14 compound-v2 sections already
+written), then commit + push. NOTE: crytic-export/ dirs (combined_solc.json)
+are build artifacts — DO NOT commit; `invariant_projects/.gitignore` should
+exclude them.
 
 ## Phase 3 campaign summary (12 protocols)
 - **3 CONFIRMED static-invisible protocol bugs** (all fund-lock / accounting
