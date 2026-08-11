@@ -1,0 +1,13 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaBalancer.swapGivenIn(uint8,uint8,uint8,uint8,uint256)"
+  - "EchidnaBalancer.swapGivenOut(uint8,uint8,uint8,uint8,uint256)"
+  - "EchidnaBalancer.joinPool(uint8,uint8,uint8,uint256)"
+  - "EchidnaBalancer.exitPool(uint8,uint8,uint8,uint256)"
+  - "EchidnaBalancer.flashLoan(uint8,uint8,uint256,uint8)"
+  - "EchidnaBalancer.depositInternal(uint8,uint8,uint256)"
+  - "EchidnaBalancer.withdrawInternal(uint8,uint8,uint256)"
+  - "EchidnaBalancer.transferInternal(uint8,uint8,uint8,uint256)"
