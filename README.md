@@ -2,6 +2,8 @@
 
 A modular, extensible, and pythonic static analyzer for Solidity smart contracts. Designed for creativity, efficiency, and beauty. Easy to use, easy to extend, and a showcase of advanced Python features and best practices.
 
+Disclaimer: This content serves solely as a proof of concept showcasing past DeFi hacking incidents. It is strictly intended for educational purposes and should not be interpreted as encouraging or endorsing any form of illegal activities or actual hacking attempts. The provided information is for informational and learning purposes only, and any actions taken based on this content are solely the responsibility of the individual. The usage of this information should adhere to applicable laws, regulations, and ethical standards.
+
 ---
 
 ## 📋 Table of Contents
