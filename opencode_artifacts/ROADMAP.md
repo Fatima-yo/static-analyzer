@@ -196,11 +196,20 @@ then we go for the high-impact").
 1. Done — tooling + run: `tools/slither_worker.py` + `run_slither_corpus.sh`.
    Final run: 1,584 OK / 11 VYPER / 16 FAIL (13 unique real FAILs, mostly
    unfixable). 47k+ findings in `top_findings.tsv`.
-2. NEXT — aggregate High-impact findings (incorrect-return, reentrancy-*,
-   unchecked-transfer, arbitrary-send-erc20, controlled-delegatecall, ...) from
-   `slither_2026_08_14_final/top_findings.tsv` + `results/*.json` by detector
-   and protocol; produce a protocol-level triage report.
-3. Optional cleanup: remove leftover `*.sanitized` / `.extracted` dirs from
+2. Done — High-impact aggregation: 1,407 High findings / 522 protocols / 19
+   detectors. Per-protocol spreadsheet produced: `high_findings_review.xlsx`
+   (3 sheets: by_protocol, all_findings, by_detector) + `high_findings_all.tsv`
+   + `top_findings.tsv`, now in the TVL repo at `findings/` (committed to TVL
+   `main`, also copied to `/home/fatima/Desktop/TVL/findings/`).
+3. NEXT — triage the High-impact findings: bucket by detector x protocol;
+   auto-exclude known FP clusters (proxy `_fallback()` incorrect-return, OZ
+   `Math.mulDiv` incorrect-exp, solady incorrect-shift); hand-review
+   high-signal outliers (controlled-delegatecall erasure/yam/aave, suicidal
+   axelar, unprotected-upgrade aso, unchecked-transfer withdrawal paths,
+   reentrancy-eth clusters); output protocol-level report ranked by real
+   exploitability. Cross-validation already exists for credit-guild, kpk,
+   compound, ionic (142/142 DISMISSED, 18/18 ionic CONFIRMED).
+4. Optional cleanup: remove leftover `*.sanitized` / `.extracted` dirs from
    `output/full_code/` (3 stale `.sanitized` FAIL rows).
 
 ---
