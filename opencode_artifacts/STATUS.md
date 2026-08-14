@@ -144,7 +144,7 @@ Resolved since newruns8 triage:
 ## Re-run commands
 Protocols:
   analyzer_env/bin/python main.py analyze \
-    "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/<proto>" \
+    "/home/fatima/Downloads/TVL/output/corpus_2026_08_01/full_code/<proto>" \
     --categories security --format json -o /tmp/opencode/newrunsX/<proto>.json
 Tests:
   analyzer_env/bin/python -m pytest tests/ -q
@@ -582,3 +582,10 @@ Diff (old vs new): inline python keyed by (detector, basename, line_number).
   re-verified against the corpus before shipping (recall risk).
 - Optional future: a "pure/view function" exemption in the ranker to de-skew
   no-guard signals on non-attackable reads (lido isValidBump class).
+
+
+## Slither corpus campaign (2026-08-14)
+- Ran slither-analyzer 0.11.6 (default detectors, all impact levels, --fail-none) over the 1,574-protocol TVL corpus (1,600 address-dirs). Final run `slither_2026_08_14_final`: 1,584 OK / 11 VYPER / 16 FAIL (~99%). 3 of the 16 FAIL rows are stale `.sanitized` pseudo-dirs (artifacts of sanitize_tree; run script now excludes them) -> 13 unique real FAILs, mostly unfixable (solc stack-too-deep, Slither ternary limitation, missing OZ sources, tload/mcopy vs pinned solc).
+- Tooling added: `tools/slither_worker.py` (per-import full-path solc remaps, space-separated; --allow-paths; Etherscan JSON-blob extraction; sanitize_tree; Vyper detection; --via-ir retry) + `run_slither_corpus.sh`. Run history: v1 86.2%/42,666 findings, v2 93.7%/47,891, v3 97.75%, final ~99%.
+- Pipeline work committed to TVL repo: address-discovery fix (01_defillama.py), metadata crash fix (02_metadata.py), export_deployments_csv.py.
+- NEXT: triage High-impact findings (aggregate top_findings.tsv by detector + protocol, produce protocol-level report).

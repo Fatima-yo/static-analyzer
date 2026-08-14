@@ -1,4 +1,79 @@
-# CONTINUE HERE — session state (saved 2026-08-10 after session 23 echidna cross-checks)
+# CONTINUE HERE — session state (saved 2026-08-14 after Slither corpus campaign)
+
+Resume point: **Slither coverage campaign on the 1,574-protocol corpus COMPLETE
+(2026-08-14).** `slither_2026_08_14_final`: 1,584/1,600 address-dirs OK
+(99%), 11 VYPER, 16 FAIL (3 are stale `.sanitized` pseudo-dirs → 13 unique
+real FAILs, most unfixable). 47k+ findings in `top_findings.tsv`. NEXT: per
+user's stated order — "clean up to push coverage, then we go for the
+high-impact" — the coverage push is done; the next phase is **triage of
+High-impact findings** (aggregate by detector + protocol from
+`opencode_artifacts/slither_2026_08_14_final/top_findings.tsv` and
+`results/*.json`).
+
+## Slither corpus campaign (2026-08-14, sessions on the static-analyzer side)
+
+- **Runs** (artifacts in `opencode_artifacts/`; the large `results/` subdirs
+  are gitignored, TSV/logs committed):
+  - v1 `slither_2026_08_14`: 1,365 OK / 235 FAIL (86.2% protos), 42,666 findings
+  - v2 `slither_2026_08_14_v2`: 1,499 OK / 101 FAIL (93.7%), 47,891 findings
+  - v3 `slither_2026_08_14_v3`: 1,564 OK / 36 FAIL (97.75%)
+  - **FINAL `slither_2026_08_14_final`: 1,584 OK / 11 VYPER / 16 FAIL (~99%)**
+- **Key tooling**: `tools/slither_worker.py` + `run_slither_corpus.sh` (in
+  `static-analyzer` repo root; full corpus ~2-3 min at 8 workers). Worker
+  features: per-import full-path solc remaps (SPACE-separated — slither
+  splits on space, commas break it), `--allow-paths <addr_dir>`, entry
+  preference for non-lib paths, Etherscan multi-file JSON blob extraction to
+  `.extracted/`, `sanitize_tree` (unbalanced `slither-disable-end`), Vyper
+  detection (`.vy` or `# @version`), `--via-ir` retry on stack-too-deep.
+  Environment: venv `slither_env` (slither 0.11.6, crytic-compile 0.4.2),
+  solc binaries under `~/.solc-select/artifacts/`.
+- **Remaining 13 unique FAILs** (mostly unfixable): chaintools (0.8.20
+  stack-too-deep 34 slots), nxd-protocol (Slither ternary limitation),
+  morpheusai (`.././@layerzerolabs` malformed), omni-exchange-flux/v2/v3
+  (OZ source absent from corpus), safe (`./vendor/@openzeppelin/...` — fix
+  = absolute-path remap key proven with bare solc, not yet wired into
+  worker), fren-pets (identifier already declared), gnosis-protocol-v1
+  (0.4.10), juicebox-v2/v3 (IJBToken type mismatch), rumpel-labs (tload),
+  sera (mcopy vs pinned 0.8.24).
+- **Cleanup to do later**: remove leftover `*.sanitized` and `.extracted`
+  dirs from `/home/fatima/Downloads/TVL/output/full_code/` (3 stale
+  `.sanitized` FAIL rows in final `results.tsv` are artifacts of these).
+
+## TVL pipeline coverage session (2026-08-14)
+
+## TVL pipeline coverage session (2026-08-14)
+
+- **Mapped the pipeline** (`/home/fatima/Downloads/TVL/src/run.sh` + stages
+  01-05, `db.py`, `chain_ids.py`). Root cause of the 89/7224 funnel: discovery
+  relied only on GitHub repo scans (`03_contract_discovery.py`) for deployment
+  artifacts (`broadcast/`, `deployments/`, `addresses.json`); DefiLlama's own
+  `address` field was being discarded.
+- **Highest-yield fix identified + implemented** (`src/01_defillama.py`):
+  parse each protocol's `address` (bare `0x...` = Ethereum; `chain:0x...`
+  prefix-mapped via `chain_ids`) into `contract_address`. Quantified live:
+  4,146/8,042 protocols have an address; ~1,900 deployment rows became
+  backfillable — 21x the previous 89, no GitHub scanning required.
+- **Fixed a latent crash** in `02_metadata.py`: DefiLlama returns `github` as a
+  list (e.g. `['lidofinance']`) which SQLite cannot bind; values are now
+  JSON-serialized before `save_deployments`.
+- **Full re-run** (fresh `output_<ts>`, detached `setsid nohup` since the
+  shell reaped the first background attempt):
+  - 7,262 deployments | **1,966 with contract_address** (was 89)
+  - 1,596 verified via Etherscan V2 | **1,574 protocols with source**
+  - 18,085 `.sol` files in `full_code/` | 0 errors
+  - Chain spread: Ethereum 882, Arbitrum 226, Avalanche 168, Base 166,
+    Fantom 164, Polygon 128, Cronos 72, zkSync Era 39, Optimism 35, Blast 32,
+    Kava 30, Harmony 22, Moonriver 1, Mode 1.
+- **Consolidated output dirs**: old/interrupted `output_2026_*` runs merged
+  into a single `output/` (see Key paths). Old corpus + 14 analysis reports
+  preserved under `output/corpus_2026_08_01/` and `output/reports_2026_08_01/`.
+- **New helper**: `src/export_deployments_csv.py` — dump the deployments table
+  to CSV (explicit path, newest output dir, or `OUTPUT_DB` env).
+- Next logical step (not started): run the static analyzer over the new
+  1,574-protocol corpus (`output/full_code/`) and compare findings vs the
+  run3 baseline (60-protocol corpus).
+
+## Prior session state (2026-08-10, session 23 echidna cross-checks)
 
 Resume point: **echidna cross-check campaign on the 5 clean harnesses COMPLETE
 (session 23, 2026-08-10).** All 5 green on 3 seeds each. The Phase 3 harness
@@ -275,7 +350,10 @@ static-invisible findings (basis-cash, harvest-ousd, monolith-market),
 - Invariant harnesses: `invariant_projects/{basis-cash,...,kpk}/`
 - Artifacts: `opencode_artifacts/{STATUS,ROADMAP,REPORT,invariant_results,CONTINUE_HERE}.md`
 - run3 findings: `opencode_artifacts/run3/` (morpho-blue.json 7, compound-v3.json 13)
-- TVL corpus: `/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/<proto>/`
+- TVL pipeline: `/home/fatima/Downloads/TVL` (`src/run.sh` stages 01-05, venv `tvl_env/`)
+- TVL corpus (current, 1,574 protocols): `/home/fatima/Downloads/TVL/output/full_code/<proto>/`
+- TVL old corpus (2026-08-01, preserved): `/home/fatima/Downloads/TVL/output/corpus_2026_08_01/full_code/<proto>/`
+- TVL analysis reports (old run): `/home/fatima/Downloads/TVL/output/reports_2026_08_01/`
 - Forge: `~/.config/.foundry/bin/forge` (1.7.1); Echidna: same dir (2.3.3)
 
 ## Historical context (Phases 1-2)

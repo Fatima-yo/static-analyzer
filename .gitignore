@@ -52,3 +52,7 @@ solc_versions/solc-*
 # Foundry build output
 out/
 opencode_artifacts/exploit_pocs/out/
+
+# Large per-dir Slither result JSONs (1.3-1.6GB per run) - keep only TSV/logs
+tools/slither_out/
+opencode_artifacts/slither_*/results/
