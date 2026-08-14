@@ -188,6 +188,23 @@ Phase 3 sessions 9-10 (2026-08-04) — sixth protocol DONE (balancer-v2):
 - Next slots: 7th protocol harness (lido / ionic-protocol / rocket-pool) and/or
   an echidna pass over the newer harnesses.
 
+## Phase 5 — Slither corpus sweep of the 1,574-protocol TVL corpus (2026-08-14)
+Status: coverage COMPLETE (~99%, `slither_2026_08_14_final`); **triage of
+High-impact findings is the next step** (per user: "clean up to push coverage,
+then we go for the high-impact").
+
+1. Done — tooling + run: `tools/slither_worker.py` + `run_slither_corpus.sh`.
+   Final run: 1,584 OK / 11 VYPER / 16 FAIL (13 unique real FAILs, mostly
+   unfixable). 47k+ findings in `top_findings.tsv`.
+2. NEXT — aggregate High-impact findings (incorrect-return, reentrancy-*,
+   unchecked-transfer, arbitrary-send-erc20, controlled-delegatecall, ...) from
+   `slither_2026_08_14_final/top_findings.tsv` + `results/*.json` by detector
+   and protocol; produce a protocol-level triage report.
+3. Optional cleanup: remove leftover `*.sanitized` / `.extracted` dirs from
+   `output/full_code/` (3 stale `.sanitized` FAIL rows).
+
+---
+
 ## Phase 4 — Exploit-archetype library
 Goal: encode what we learned from real exploits so it is reusable.
 
