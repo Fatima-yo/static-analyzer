@@ -1,0 +1,66 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 234,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8114:23:5"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 259,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8899:28:5"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 287,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "9883:22:5"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_nameFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2542:28:17"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_versionFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2576:31:17"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'acceptOwnership' writes an ownership/admin state variable but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/lib/openzeppelin-contracts/contracts/access/Ownable2Step.sol",
+    "source_code": "1734:212:3"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'USDe' inherits from multiple state-bearing base contracts (Ownable2Step, Ownable, ERC20, ERC20Permit, EIP712); verify storage layout ordering.",
+    "line_number": 14,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/contracts/USDe.sol",
+    "source_code": "478:645:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setMinter' uses address parameter(s) [newMinter] without a zero-address check.",
+    "line_number": 22,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/ethena-usde/Ethereum_1/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/contracts/USDe.sol",
+    "source_code": "753:129:0"
+  }
+]

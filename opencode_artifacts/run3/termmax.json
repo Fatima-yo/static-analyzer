@@ -1,0 +1,194 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/dependencies/openzeppelin-contracts-upgradeable-5.2.0/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8294:24:78"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 225,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/dependencies/openzeppelin-contracts-upgradeable-5.2.0/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8081:23:78"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool_] without a zero-address check.",
+    "line_number": 32,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "1225:173:56"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [underlying_] without a zero-address check.",
+    "line_number": 38,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "1404:792:56"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 90,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "3383:459:56"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool_] without a zero-address check.",
+    "line_number": 35,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "1279:173:54"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [underlying_] without a zero-address check.",
+    "line_number": 41,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "1458:777:54"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 142,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "5745:459:54"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 39,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "1389:17:53"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [thirdPool_] without a zero-address check.",
+    "line_number": 37,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "1206:792:53"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 140,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "5462:459:53"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool] without a zero-address check.",
+    "line_number": 19,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Ethereum_1/0xd594eb03a43b4974aa7b32b5740cdece961151fa/contracts/v2/factory/TermMax4626Factory.sol",
+    "source_code": "789:632:50"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 230,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/dependencies/openzeppelin-contracts-upgradeable-5.2.0/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8294:24:37"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 225,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/dependencies/openzeppelin-contracts-upgradeable-5.2.0/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8081:23:37"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool_] without a zero-address check.",
+    "line_number": 32,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "1225:173:15"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [underlying_] without a zero-address check.",
+    "line_number": 38,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "1404:792:15"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 90,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/VariableERC4626ForAave.sol",
+    "source_code": "3383:459:15"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool_] without a zero-address check.",
+    "line_number": 35,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "1279:173:13"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [underlying_] without a zero-address check.",
+    "line_number": 41,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "1458:777:13"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 142,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626ForAave.sol",
+    "source_code": "5745:459:13"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 39,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "1389:17:12"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'initialize' uses address parameter(s) [thirdPool_] without a zero-address check.",
+    "line_number": 37,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "1206:792:12"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_updateBufferConfig' uses address parameter(s) [bufferConfig_] without a zero-address check.",
+    "line_number": 140,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/tokens/StableERC4626For4626.sol",
+    "source_code": "5462:459:12"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [aavePool] without a zero-address check.",
+    "line_number": 19,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/termmax/Arbitrum_42161/0xe306a0a5ac675dab1cd77aa7873d241715aeb217/contracts/v2/factory/TermMax4626Factory.sol",
+    "source_code": "789:632:9"
+  }
+]

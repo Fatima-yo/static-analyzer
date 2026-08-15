@@ -1,0 +1,10 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '__setTarget' uses address parameter(s) [_target] without a zero-address check.",
+    "line_number": 40,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/across/Ethereum_1/0x0bf07b2e415f02711ffbb32491f8ec9e5489b2e7/contracts/PermissionSplitterProxy.sol",
+    "source_code": "1591:144:0"
+  }
+]

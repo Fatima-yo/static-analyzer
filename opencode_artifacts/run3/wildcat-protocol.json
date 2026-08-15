@@ -1,0 +1,10 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 163,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/wildcat-protocol/Ethereum_1/0xfeb516d9d946dd487a9346f6fee11f40c6945ee4/lib/solady/src/auth/Ownable.sol",
+    "source_code": "7442:46:1"
+  }
+]

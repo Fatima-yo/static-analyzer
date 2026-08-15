@@ -1,0 +1,210 @@
+[
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('assets') is credited to 'shares' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 48,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/lib/solmate/src/tokens/ERC4626.sol",
+    "source_code": "1735:31:1"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'mint' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 60,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/lib/solmate/src/tokens/ERC4626.sol",
+    "source_code": "2072:467:1"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'withdraw' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 73,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/lib/solmate/src/tokens/ERC4626.sol",
+    "source_code": "2545:679:1"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'redeem' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 95,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/lib/solmate/src/tokens/ERC4626.sol",
+    "source_code": "3230:713:1"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'approve' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 68,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/lib/solmate/src/tokens/ERC20.sol",
+    "source_code": "2461:211:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_operator] without a zero-address check.",
+    "line_number": 71,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Factory.sol",
+    "source_code": "2391:124:8"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setPendingOperator' uses address parameter(s) [_pendingOperator] without a zero-address check.",
+    "line_number": 85,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Factory.sol",
+    "source_code": "2759:127:8"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setFeeRecipient' uses address parameter(s) [_feeRecipient] without a zero-address check.",
+    "line_number": 95,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Factory.sol",
+    "source_code": "3098:115:8"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 154,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Factory.sol",
+    "source_code": "5366:24:8"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_lender] without a zero-address check.",
+    "line_number": 19,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Vault.sol",
+    "source_code": "525:270:11"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 60,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Vault.sol",
+    "source_code": "1943:594:11"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 60,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Vault.sol",
+    "source_code": "1943:594:11"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_collateral, _feed, _coin, _vault, _interestModel, _factory, _operator] without a zero-address check.",
+    "line_number": 80,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "3118:941:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 141,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "5278:19:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 174,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "7118:59:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 286,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "12336:53:10"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'liquidate' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 260,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "10964:1907:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 326,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "14624:46:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 347,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "15586:54:10"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'redeem' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 339,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "15235:965:10"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('amountIn') is credited to 'totalFreeDebt' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 346,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "15551:25:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 388,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "17794:78:10"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setPendingOperator' uses address parameter(s) [_pendingOperator] without a zero-address check.",
+    "line_number": 585,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "26760:182:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 602,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "27362:43:10"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 609,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Lender.sol",
+    "source_code": "27603:37:10"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_minter] without a zero-address check.",
+    "line_number": 10,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/monolith-market/Ethereum_1/0x0b72f6c999c1a4380a6ca894afd0a138a7ee9986/src/Coin.sol",
+    "source_code": "176:128:7"
+  }
+]

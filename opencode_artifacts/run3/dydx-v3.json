@@ -1,0 +1,82 @@
+[
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 1907,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "45502:41:0"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 1942,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "46458:17:0"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "HIGH",
+    "message": "Oracle read ('getprice') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 1942,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "46458:17:0"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 2575,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "62940:27:0"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 5559,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "144589:28:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [riskParams, riskLimits] without a zero-address check.",
+    "line_number": 5685,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/SoloMargin.sol",
+    "source_code": "148280:218:0"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 2263,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/implementation/0x56e7d4520abfecf10b38368b00723d9bd3c21ee1/OperationImpl.sol",
+    "source_code": "56917:41:1"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 2298,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/implementation/0x56e7d4520abfecf10b38368b00723d9bd3c21ee1/OperationImpl.sol",
+    "source_code": "57873:17:1"
+  },
+  {
+    "detector": "OracleTaint",
+    "severity": "HIGH",
+    "message": "Oracle read ('getprice') feeds a function that moves value or updates balances, without staleness/manipulation validation. An attacker controlling the price source (stale feed, flashable liquidity, short TWAP window) can taint the payout amount.",
+    "line_number": 2298,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/implementation/0x56e7d4520abfecf10b38368b00723d9bd3c21ee1/OperationImpl.sol",
+    "source_code": "57873:17:1"
+  },
+  {
+    "detector": "OracleManipulation",
+    "severity": "HIGH",
+    "message": "Chainlink oracle read detected without staleness/round validation. Validate updatedAt/answeredInRound before using the price.",
+    "line_number": 4147,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/dydx-v3/Ethereum_1/0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e/implementation/0x56e7d4520abfecf10b38368b00723d9bd3c21ee1/OperationImpl.sol",
+    "source_code": "107985:28:1"
+  }
+]

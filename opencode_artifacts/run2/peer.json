@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'removeMembers' appears to perform a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 142,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/peer/Base_8453/0x39f80118f9eb619135f116171b6cb91d372c5af2/contracts/registries/AddressGroupRegistry.sol",
+    "source_code": "6088:523:2"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_createGroup' uses address parameter(s) [_curator] without a zero-address check.",
+    "line_number": 245,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/peer/Base_8453/0x39f80118f9eb619135f116171b6cb91d372c5af2/contracts/registries/AddressGroupRegistry.sol",
+    "source_code": "9934:347:2"
+  }
+]

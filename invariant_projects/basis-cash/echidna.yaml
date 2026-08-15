@@ -1,0 +1,10 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaBasisCash.actorStake(uint8,uint256)"
+  - "EchidnaBasisCash.actorWithdraw(uint8,uint256)"
+  - "EchidnaBasisCash.actorClaim(uint8)"
+  - "EchidnaBasisCash.allocateSeigniorage(uint256)"
+  - "EchidnaBasisCash.warpDays(uint256)"

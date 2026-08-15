@@ -1,0 +1,17 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaMorphoBlue.supply(uint256,uint256)"
+  - "EchidnaMorphoBlue.supplyCollateral(uint256,uint256)"
+  - "EchidnaMorphoBlue.borrow(uint256,uint256)"
+  - "EchidnaMorphoBlue.withdraw(uint256,uint256)"
+  - "EchidnaMorphoBlue.withdrawCollateral(uint256,uint256)"
+  - "EchidnaMorphoBlue.repay(uint256,uint256)"
+  - "EchidnaMorphoBlue.liquidate(uint256,uint256)"
+  - "EchidnaMorphoBlue.accrue(uint256)"
+  - "EchidnaMorphoBlue.warp(uint256)"
+  - "EchidnaMorphoBlue.setFee(uint256,uint256)"
+  - "EchidnaMorphoBlue.setFeeRecipient(uint256,uint256)"
+  - "EchidnaMorphoBlue.setOwner(uint256,uint256)"

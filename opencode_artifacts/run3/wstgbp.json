@@ -1,0 +1,10 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_wrapper] without a zero-address check.",
+    "line_number": 64,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/wstgbp/Ethereum_1/0x4f93a2e29b0aa75875ab922d780b6dc59b415b6a/src/adapter/WsgemHookHelper.sol",
+    "source_code": "4178:882:2"
+  }
+]

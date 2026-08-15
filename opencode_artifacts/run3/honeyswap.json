@@ -1,0 +1,18 @@
+[
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'GlobalPauseController' inherits from multiple state-bearing base contracts (OwnableUpgradeable, Initializable, ContextUpgradeable, UUPSUpgradeable); verify storage layout ordering.",
+    "line_number": 6,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/honeyswap/Polygon_137/0x9fd8ee20d4152505fa6a50343c81a5ac68ba1606/pkg/contracts/src/pausing/GlobalPauseController.sol",
+    "source_code": "135:3160:12"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 75,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/honeyswap/Polygon_137/0x9fd8ee20d4152505fa6a50343c81a5ac68ba1606/pkg/contracts/src/pausing/GlobalPauseController.sol",
+    "source_code": "2980:123:12"
+  }
+]

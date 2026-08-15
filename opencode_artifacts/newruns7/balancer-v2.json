@@ -1,0 +1,194 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '_setAuthorizer' uses address parameter(s) [newAuthorizer] without a zero-address check.",
+    "line_number": 88,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/VaultAuthorization.sol",
+    "source_code": "3911:150:31"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_vault] without a zero-address check.",
+    "line_number": 57,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/ProtocolFeesCollector.sol",
+    "source_code": "2533:252:27"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 82,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "3151:19:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 123,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "4726:6:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 124,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "4784:6:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 137,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "5308:6:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 147,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "5769:6:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 147,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "5781:14:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '*'.",
+    "line_number": 147,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolRegistry.sol",
+    "source_code": "5785:5:25"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 193,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/UserBalance.sol",
+    "source_code": "7793:25:29"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 77,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/FlashLoans.sol",
+    "source_code": "3326:32:23"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 243,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolBalances.sol",
+    "source_code": "10105:20:24"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 242,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/PoolBalances.sol",
+    "source_code": "10040:20:24"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 72,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/AssetTransfersHandler.sol",
+    "source_code": "3225:25:21"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-'.",
+    "line_number": 131,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/AssetTransfersHandler.sol",
+    "source_code": "5563:22:21"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or equality-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 56,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/Swaps.sol",
+    "source_code": "2389:2144:28"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or equality-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 107,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/Swaps.sol",
+    "source_code": "4539:1825:28"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 411,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/Swaps.sol",
+    "source_code": "17868:12:28"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 412,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/vault/Swaps.sol",
+    "source_code": "17890:13:28"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/lib/helpers/TemporarilyPausable.sol",
+    "source_code": "2697:37:8"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+'.",
+    "line_number": 55,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/lib/helpers/TemporarilyPausable.sol",
+    "source_code": "2818:41:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or equality-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 91,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/lib/helpers/TemporarilyPausable.sol",
+    "source_code": "3793:358:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or equality-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 115,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/lib/helpers/TemporarilyPausable.sol",
+    "source_code": "4544:237:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "MEDIUM",
+    "message": "block.timestamp used for randomness or equality-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 57,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/balancer-v2/Ethereum_1/0xba12222222228d8ba445958a75a0704d566bf2c8/contracts/lib/helpers/SignaturesValidator.sol",
+    "source_code": "2311:1170:7"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 211,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "7284:22:6"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 206,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "7073:21:6"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_nameFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 51,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2692:28:18"
+  },
+  {
+    "detector": "Uninitialized",
+    "severity": "MEDIUM",
+    "message": "State variable '_versionFallback' is declared without an initializer and is never assigned anywhere in the contract.",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol",
+    "source_code": "2726:31:18"
+  },
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'acceptOwnership' writes an ownership/admin state variable but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/lib/openzeppelin-contracts/contracts/access/Ownable2Step.sol",
+    "source_code": "1761:229:3"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 58,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/src/L1/L1LiskToken.sol",
+    "source_code": "2721:101:24"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 58,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/lisk-bridge/Ethereum_1/0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f/src/L1/L1LiskToken.sol",
+    "source_code": "2721:101:24"
+  }
+]

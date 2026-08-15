@@ -1,0 +1,34 @@
+[
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 239,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/open-dollar/Arbitrum_42161/0x221a0f68770658c15b525d0f89f5da2baab5f321/node_modules/openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "8472:23:1"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 264,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/open-dollar/Arbitrum_42161/0x221a0f68770658c15b525d0f89f5da2baab5f321/node_modules/openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "9257:28:1"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 292,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/open-dollar/Arbitrum_42161/0x221a0f68770658c15b525d0f89f5da2baab5f321/node_modules/openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+    "source_code": "10241:22:1"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'OpenDollar' inherits from multiple state-bearing base contracts (ERC20Upgradeable, Initializable, ContextUpgradeable, AuthorizableUpgradeable); verify storage layout ordering.",
+    "line_number": 37,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/open-dollar/Arbitrum_42161/0x221a0f68770658c15b525d0f89f5da2baab5f321/src/contracts/tokens/SystemCoin.sol",
+    "source_code": "1089:36:7"
+  }
+]

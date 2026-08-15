@@ -1,0 +1,10 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_wrappedNativeToken] without a zero-address check.",
+    "line_number": 35,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/compound-blue/Polygon_137/0x92ef06dbccf841194437afac61bbcd5e3530fadb/src/Hopscotch.sol",
+    "source_code": "802:98:4"
+  }
+]

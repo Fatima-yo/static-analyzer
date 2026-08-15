@@ -1,0 +1,42 @@
+[
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'approve' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 404,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/harvest-finance/Ethereum_1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/implementation/0xd86756dbb01e75a11aadacb75c8495759ed92033/contracts/token/OUSD.sol",
+    "source_code": "15025:207:8"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 414,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/harvest-finance/Ethereum_1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/implementation/0xd86756dbb01e75a11aadacb75c8495759ed92033/contracts/token/OUSD.sol",
+    "source_code": "15366:565:8"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 414,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/harvest-finance/Ethereum_1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/implementation/0xd86756dbb01e75a11aadacb75c8495759ed92033/contracts/token/OUSD.sol",
+    "source_code": "15366:565:8"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 434,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/harvest-finance/Ethereum_1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/implementation/0xd86756dbb01e75a11aadacb75c8495759ed92033/contracts/token/OUSD.sol",
+    "source_code": "16049:569:8"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 434,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/harvest-finance/Ethereum_1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/implementation/0xd86756dbb01e75a11aadacb75c8495759ed92033/contracts/token/OUSD.sol",
+    "source_code": "16049:569:8"
+  }
+]

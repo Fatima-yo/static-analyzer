@@ -1,0 +1,14 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaCompoundV2.actorMint(uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorRedeem(uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorBorrow(uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorRepay(uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorRepayBehalf(uint8,uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorLiquidate(uint8,uint8,uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorTransfer(uint8,uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.actorTransferFrom(uint8,uint8,uint8,uint8,uint256)"
+  - "EchidnaCompoundV2.warpBlocks(uint256)"

@@ -1,0 +1,23 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaCreditGuild.actorBorrow(uint8,uint8,uint256,uint256)"
+  - "EchidnaCreditGuild.actorAddCollateral(uint8,uint256,uint256)"
+  - "EchidnaCreditGuild.actorPartialRepay(uint8,uint256,uint256)"
+  - "EchidnaCreditGuild.actorRepay(uint8,uint256)"
+  - "EchidnaCreditGuild.actorCall(uint8,uint256)"
+  - "EchidnaCreditGuild.actorBid(uint8,uint256)"
+  - "EchidnaCreditGuild.actorForgive(uint8,uint256)"
+  - "EchidnaCreditGuild.actorDonateSurplus(uint8,uint256)"
+  - "EchidnaCreditGuild.actorIncrementGauge(uint8,uint8,uint256)"
+  - "EchidnaCreditGuild.actorDecrementGauge(uint8,uint8,uint256)"
+  - "EchidnaCreditGuild.actorTransferGuild(uint8,uint8,uint256)"
+  - "EchidnaCreditGuild.actorTransferCredit(uint8,uint8,uint256)"
+  - "EchidnaCreditGuild.actorTransferCollateral(uint8,uint8,uint256)"
+  - "EchidnaCreditGuild.actorApplyLoss(uint8,uint8)"
+  - "EchidnaCreditGuild.actorClaimRewards(uint8)"
+  - "EchidnaCreditGuild.actorEnterRebase(uint8)"
+  - "EchidnaCreditGuild.actorExitRebase(uint8)"
+  - "EchidnaCreditGuild.warpDays(uint256)"

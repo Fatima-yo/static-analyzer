@@ -1,0 +1,7 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaRocketPool.deposit(uint256,uint256)"
+  - "EchidnaRocketPool.burn(uint256,uint256)"

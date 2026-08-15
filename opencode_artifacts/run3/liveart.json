@@ -1,0 +1,26 @@
+[
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 235,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/liveart/Base_8453/0x953ab05cfcc670fc0cb18bbda1f2d2d1c60b4c72/contracts/ArtStaking.sol",
+    "source_code": "9044:908:0"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 298,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/liveart/Base_8453/0x953ab05cfcc670fc0cb18bbda1f2d2d1c60b4c72/contracts/ArtStaking.sol",
+    "source_code": "11463:301:0"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 368,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/liveart/Base_8453/0x953ab05cfcc670fc0cb18bbda1f2d2d1c60b4c72/contracts/ArtStaking.sol",
+    "source_code": "14867:202:0"
+  }
+]

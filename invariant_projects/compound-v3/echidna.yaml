@@ -1,0 +1,12 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaCompoundV3.supply(uint256,uint256)"
+  - "EchidnaCompoundV3.withdraw(uint256,uint256)"
+  - "EchidnaCompoundV3.transfer(uint256,uint256)"
+  - "EchidnaCompoundV3.absorb(uint256,uint256)"
+  - "EchidnaCompoundV3.buyCollateral(uint256,uint256)"
+  - "EchidnaCompoundV3.pause(uint256)"
+  - "EchidnaCompoundV3.warp(uint256)"

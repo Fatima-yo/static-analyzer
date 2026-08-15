@@ -1,0 +1,66 @@
+[
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 2413,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/implementation/0xd377919fa87120584b21279a491f82d5265a139c/TokenizedStrategy.sol",
+    "source_code": "92955:7068:0"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 2607,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/implementation/0xd377919fa87120584b21279a491f82d5265a139c/TokenizedStrategy.sol",
+    "source_code": "100617:568:0"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_factory] without a zero-address check.",
+    "line_number": 3374,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/implementation/0xd377919fa87120584b21279a491f82d5265a139c/TokenizedStrategy.sol",
+    "source_code": "127245:119:0"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 234,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8114:23:2"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '+='.",
+    "line_number": 259,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "8899:28:2"
+  },
+  {
+    "detector": "IntegerOverflow",
+    "severity": "MEDIUM",
+    "message": "Potential integer overflow/underflow with operator '-='.",
+    "line_number": 287,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+    "source_code": "9883:22:2"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_lender] without a zero-address check.",
+    "line_number": 55,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/src/allocator/Strategy.sol",
+    "source_code": "2326:362:16"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'setAllowed' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 152,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/flex/Ethereum_1/0x467ce10870747372968ba98463a1d9af9fb27751/src/allocator/Strategy.sol",
+    "source_code": "5969:148:16"
+  }
+]

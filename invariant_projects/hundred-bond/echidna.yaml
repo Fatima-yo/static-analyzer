@@ -1,0 +1,9 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaHundredBond.ownerMint(uint8,uint256)"
+  - "EchidnaHundredBond.actorBurn(uint8,uint256)"
+  - "EchidnaHundredBond.actorRedeem(uint8)"
+  - "EchidnaHundredBond.warp(uint256)"

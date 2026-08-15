@@ -1,0 +1,14 @@
+testMode: property
+testLimit: 50000
+seqLen: 100
+filterBlacklist: false
+filterFunctions:
+  - "EchidnaKpk.requestSubscriptionAction(uint256,uint256)"
+  - "EchidnaKpk.cancelSubscriptionAction(uint256,uint256)"
+  - "EchidnaKpk.requestRedemptionAction(uint256,uint256)"
+  - "EchidnaKpk.cancelRedemptionAction(uint256,uint256)"
+  - "EchidnaKpk.processAction(uint256,uint256)"
+  - "EchidnaKpk.recoverAction(uint256)"
+  - "EchidnaKpk.updateAssetAction(uint256,uint256)"
+  - "EchidnaKpk.setterAction(uint256,uint256)"
+  - "EchidnaKpk.warp(uint256)"

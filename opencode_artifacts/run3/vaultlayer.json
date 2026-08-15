@@ -1,0 +1,66 @@
+[
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'updateAllowedNFT' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 193,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "7725:560:8"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'updateAllowedERC20' overwrites an allowance without a zero-then-set first (SWC-114); the old spender can front-run the reset and spend the full amount.",
+    "line_number": 205,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "8291:257:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 470,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "19553:1491:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 501,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "21133:628:8"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'claimDefaultedLoan' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 517,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "21848:1210:8"
+  },
+  {
+    "detector": "Timestamp",
+    "severity": "LOW",
+    "message": "block.timestamp used for randomness or time-based gating. Use block.number or a commit-reveal scheme for randomness; avoid exact-time gating.",
+    "line_number": 517,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "21848:1210:8"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'claimDefaultedLoan' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 517,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "21848:1210:8"
+  },
+  {
+    "detector": "ValueFlow",
+    "severity": "MEDIUM",
+    "message": "The amount requested in the token transfer ('lenderFee') is credited to 'protocolFeeBalance' without verifying the balance actually received. A fee-on-transfer or rebasing token makes the recorded credit diverge from real holdings, letting a counterparty over-credit and redirect funds; read balanceOf(address(this)) deltas instead.",
+    "line_number": 527,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/vaultlayer/Polygon_137/0xa5e2bc2bbb8f72de7a899730eae35dc710aeee35/src/NFTLendMarket.sol",
+    "source_code": "22409:52:8"
+  }
+]

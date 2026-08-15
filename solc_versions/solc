@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+"""solc dispatcher: pick the installed compiler version that satisfies the
+most source files in a standard-json request, then exec it.
+
+Installed binaries live in the sibling directory 'solc_versions/' as
+'solc-<version>'. Invoked exactly like `solc`, reading --standard-json from
+stdin when present, otherwise exec'ing the latest installed version.
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+VERSIONS_DIR = Path(__file__).resolve().parent.parent / "solc_versions"
+IMPORT_RE = re.compile(r'import\s+(?:{[^}]+}\s+from\s+)?["\']([^"\']+)["\']')
+PRAGMA_RE = re.compile(r"pragma\s+solidity\s+([^;]+);")
+
+# (major, minor, patch) tuple parse
+def parse_ver(s):
+    parts = re.findall(r"\d+", s)
+    if len(parts) < 2:
+        return None
+    return tuple(int(p) for p in (parts[0], parts[1], parts[2] if len(parts) > 2 else 0))
+
+
+def cmp(a, b):
+    return (a > b) - (a < b)
+
+
+def satisfies(version, constraint):
+    """Minimal solc pragma satisfier: handles ^, >=, <=, >, <, =, and spaces
+    (treated as &&). Returns True/False."""
+    if not constraint:
+        return True
+    tokens = re.split(r"\s+|\|\|", constraint.strip())
+    for tok in tokens:
+        if not tok:
+            continue
+        m = re.match(r"(\^|>=|<=|>|<|=)?\s*(\d+(?:\.\d+){0,2})", tok)
+        if not m:
+            return False
+        op = m.group(1) or "="
+        tgt = parse_ver(m.group(2))
+        if not tgt:
+            return False
+        if op == "^":
+            # ^0.x.y means >=0.x.y <0.(x+1).0 ; ^x.y means >=x.y.0 <(x+1).0.0
+            if version[0] > 0 or tgt[0] > 0:
+                if not (version >= tgt and version < (tgt[0] + 1, 0, 0)):
+                    return False
+            else:
+                if not (version >= tgt and version < (tgt[0], tgt[1] + 1, 0)):
+                    return False
+        elif op == ">=":
+            if version < tgt:
+                return False
+        elif op == "<=":
+            if version > tgt:
+                return False
+        elif op == ">":
+            if version <= tgt:
+                return False
+        elif op == "<":
+            if version >= tgt:
+                return False
+        else:  # exact (also covers "=" with leading digit like 0.8.23)
+            if version != tgt:
+                return False
+    return True
+
+
+def _has_stack_too_deep(output):
+    for e in output.get("errors", []):
+        if e.get("severity") == "error" and "Stack too deep" in e.get("formattedMessage", ""):
+            return True
+    return False
+
+
+def installed_versions():
+    vers = []
+    for p in VERSIONS_DIR.glob("solc-*"):
+        m = re.match(r"solc-(\d+\.\d+\.\d+)", p.name)
+        if m:
+            vers.append((parse_ver(m.group(1)), p))
+    return sorted(vers, key=lambda x: x[0])
+
+
+def extract_pragmas(standard_input):
+    sources = standard_input.get("sources", {})
+    pragmas = []
+    for src in sources.values():
+        content = src.get("content", "") if isinstance(src, dict) else str(src)
+        for m in PRAGMA_RE.finditer(content):
+            pragmas.append(m.group(1))
+        if len(pragmas) > 200:  # bound work for huge trees
+            break
+    return pragmas
+
+
+def build_remappings(standard_input):
+    """Map bare imports (e.g. '@aragon/os/x.sol') to the matching source key
+    so solc can resolve them from the standard-json source map. Relative
+    imports ('./', '../') are resolved natively from the source keys."""
+    sources = standard_input.get("sources", {})
+    keys = sorted(sources.keys(), key=lambda k: len(k))
+    by_suffix = {}
+    for k in keys:
+        start = 0
+        while True:
+            i = k.find("/", start)
+            if i == -1:
+                break
+            by_suffix.setdefault(k[i:], []).append(k)
+            start = i + 1
+
+    imports = set()
+    for src in sources.values():
+        content = src.get("content", "") if isinstance(src, dict) else str(src)
+        for m in IMPORT_RE.finditer(content):
+            imports.add(m.group(1))
+
+    remappings = {}
+    for imp in sorted(imports):
+        if imp.startswith("./") or imp.startswith("../") or imp.startswith("/"):
+            continue
+        lookup = imp[1:] if imp.startswith("@") else imp
+        candidates = by_suffix.get("/" + lookup, [])
+        if not candidates:
+            # Vendored deps relocate the package root (e.g.
+            # '@openzeppelin/contracts/X' lives at
+            # '.../lib/openzeppelin-contracts/contracts/X' or
+            # '.../dependencies/chainlink-contracts-1.2.0/src/v0.8/X').
+            # Fall back to the longest path suffix that exists in-tree,
+            # dropping leading package-name components.
+            parts = lookup.split("/")
+            for start in range(1, len(parts)):
+                cands = by_suffix.get("/" + "/".join(parts[start:]))
+                if cands:
+                    candidates = cands
+                    break
+        if not candidates:
+            continue
+        key = min(candidates, key=len)
+        remappings[imp] = key
+    return remappings
+
+
+def main():
+    args = sys.argv[1:]
+    data = sys.stdin.read()
+    stdin_bytes = data.encode() if data else b""
+
+    installed = installed_versions()
+    if not installed:
+        sys.stderr.write("solc-dispatch: no binaries in %s\n" % VERSIONS_DIR)
+        return 1
+
+    chosen = installed[-1]  # latest as fallback
+
+    if "--standard-json" in args and data.strip():
+        try:
+            standard_input = json.loads(data)
+            remaps = build_remappings(standard_input)
+            if remaps:
+                settings = standard_input.setdefault("settings", {})
+                existing = settings.get("remappings", [])
+                settings["remappings"] = existing + sorted(
+                    "%s=%s" % (k, v) for k, v in remaps.items()
+                )
+            pragmas = extract_pragmas(standard_input)
+            if pragmas:
+                best_count = -1
+                for version, path in installed:
+                    count = sum(1 for p in pragmas if satisfies(version, p))
+                    # prefer greater match count; tie -> newer version
+                    if count >= best_count:
+                        best_count = count
+                        chosen = (version, path)
+        except Exception as e:
+            sys.stderr.write("solc-dispatch: %s\n" % e)
+
+    if stdin_bytes:
+        payload = json.dumps(standard_input).encode() if "--standard-json" in args and data.strip() else stdin_bytes
+        result = subprocess.run([str(chosen[1])] + args, input=payload, capture_output=True)
+        # Some large projects fail codegen with "Stack too deep". Retry once
+        # with via-IR (available since 0.8.x) which does not change the parsed
+        # AST, only the codegen pipeline.
+        if "--standard-json" in args and data.strip() and chosen[0] >= (0, 8, 5):
+            try:
+                out = json.loads(result.stdout)
+                if _has_stack_too_deep(out):
+                    settings = standard_input.setdefault("settings", {})
+                    settings["viaIR"] = True
+                    optimizer = settings.setdefault("optimizer", {})
+                    if not isinstance(optimizer, dict):
+                        optimizer = {}
+                        settings["optimizer"] = optimizer
+                    optimizer.setdefault("enabled", True)
+                    optimizer.setdefault("runs", 200)
+                    retry = subprocess.run(
+                        [str(chosen[1])] + args,
+                        input=json.dumps(standard_input).encode(),
+                        capture_output=True,
+                    )
+                    try:
+                        out2 = json.loads(retry.stdout)
+                        if not _has_stack_too_deep(out2):
+                            result = retry
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+        sys.stdout.buffer.write(result.stdout)
+        sys.stderr.buffer.write(result.stderr)
+        return result.returncode
+    return subprocess.run([str(chosen[1])] + args).returncode
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,122 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [_USC, _CHI, _priceFeedAggregator, _reserveHolder] without a zero-address check.",
+    "line_number": 118,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "4289:450:13"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setReserveHolder' uses address parameter(s) [_reserveHolder] without a zero-address check.",
+    "line_number": 135,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "4778:134:13"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 240,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "8532:55:13"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 247,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "8700:611:13"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 247,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "8700:611:13"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 266,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "9350:583:13"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'mint' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 266,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "9350:583:13"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 285,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "9972:832:13"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'burn' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 285,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "9972:832:13"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'executeArbitrageWithReserveSell' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 309,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "10843:428:13"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'executeArbitrageWithReserveSell' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 309,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "10843:428:13"
+  },
+  {
+    "detector": "FrontRunning",
+    "severity": "MEDIUM",
+    "message": "Function 'executeArbitrage' moves funds or uses price data without slippage/deadline protection; may be vulnerable to front-running.",
+    "line_number": 323,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "11310:201:13"
+  },
+  {
+    "detector": "MEV",
+    "severity": "MEDIUM",
+    "message": "Function 'executeArbitrage' is an order- or price-sensitive operation without slippage/deadline protection.",
+    "line_number": 323,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "11310:201:13"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 521,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "19529:40:13"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 548,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/chi-protocol/Ethereum_1/0x594f4983df88c3d84caa6eb30c18fba1986ed6f1/src/ArbitrageV5.sol",
+    "source_code": "20544:38:13"
+  }
+]

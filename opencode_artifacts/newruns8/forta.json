@@ -1,0 +1,58 @@
+[
+  {
+    "detector": "AccessControl",
+    "severity": "HIGH",
+    "message": "Function 'disableRouter' performs a privileged operation but lacks access control (no auth modifier or msg.sender/tx.origin check).",
+    "line_number": 21,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/utils/Routed.sol",
+    "source_code": "659:232:21"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [trustedForwarder] without a zero-address check.",
+    "line_number": 14,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/utils/ForwardedContext.sol",
+    "source_code": "476:386:18"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '__AccessManaged_init' uses address parameter(s) [manager] without a zero-address check.",
+    "line_number": 36,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/utils/AccessManaged.sol",
+    "source_code": "1235:290:17"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function 'setAccessManager' uses address parameter(s) [newManager] without a zero-address check.",
+    "line_number": 56,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/utils/AccessManaged.sol",
+    "source_code": "2134:313:17"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'FortaStaking' inherits from multiple state-bearing base contracts (BaseComponentUpgradeable, ForwardedContext, ContextUpgradeable, Initializable, AccessManagedUpgradeable, RoutedUpgradeable, UUPSUpgradeable, ERC1967UpgradeUpgradeable, ERC1155SupplyUpgradeable, ERC1155Upgradeable, ERC165Upgradeable); verify storage layout ordering.",
+    "line_number": 52,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/staking/FortaStaking.sol",
+    "source_code": "3025:33141:3"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'StakeSubjectGateway' inherits from multiple state-bearing base contracts (BaseComponentUpgradeable, ForwardedContext, ContextUpgradeable, Initializable, AccessManagedUpgradeable, RoutedUpgradeable, UUPSUpgradeable, ERC1967UpgradeUpgradeable); verify storage layout ordering.",
+    "line_number": 16,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/staking/stake_subjects/StakeSubjectGateway.sol",
+    "source_code": "546:7095:16"
+  },
+  {
+    "detector": "StorageCollision",
+    "severity": "MEDIUM",
+    "message": "Contract 'RewardsDistributor' inherits from multiple state-bearing base contracts (BaseComponentUpgradeable, ForwardedContext, ContextUpgradeable, Initializable, AccessManagedUpgradeable, RoutedUpgradeable, UUPSUpgradeable, ERC1967UpgradeUpgradeable); verify storage layout ordering.",
+    "line_number": 20,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/forta/Polygon_137/0xf7239f26b79145297737166b0c66f4919af9c507/implementation/0x0ce6c6e938c49ecf0caa2825a8e3b8fe25e27ed9/contracts/components/staking/rewards/RewardsDistributor.sol",
+    "source_code": "729:17443:10"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [vault] without a zero-address check.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Ethereum_1/0x7cd87c02ccda091378e5c9a713be5035807f8c1b/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "2463:97:46"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 339,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Ethereum_1/0x7cd87c02ccda091378e5c9a713be5035807f8c1b/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "13658:18:46"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [vault] without a zero-address check.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Base_8453/0x6121a3d1beb8810e8c89666ae13c39abd5a1d580/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "2463:97:24"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 339,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Base_8453/0x6121a3d1beb8810e8c89666ae13c39abd5a1d580/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "13658:18:24"
+  },
+  {
+    "detector": "ZeroAddress",
+    "severity": "MEDIUM",
+    "message": "Function '' uses address parameter(s) [vault] without a zero-address check.",
+    "line_number": 53,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Arbitrum_42161/0xac4960e60209ef090f2c2bc921d2fa603b7280dc/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "2463:97:2"
+  },
+  {
+    "detector": "Reentrancy",
+    "severity": "HIGH",
+    "message": "Potential reentrancy: external call is followed by a state modification (checks-effects-interactions violation).",
+    "line_number": 339,
+    "file_path": "/home/fatima/Downloads/TVL/output_2026_08_01_22_58_07/full_code/levva/Arbitrum_42161/0xac4960e60209ef090f2c2bc921d2fa603b7280dc/contracts/adapters/levvaPool/LevvaPoolAdapter.sol",
+    "source_code": "13658:18:2"
+  }
+]
